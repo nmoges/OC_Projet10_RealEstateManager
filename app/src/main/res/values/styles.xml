@@ -1,11 +1,72 @@
 <resources>
 
+    <!-- Theme -->
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="AppTheme" parent="Theme.MaterialComponents.Light.DarkActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <!-- No Action Bar theme -->
+    <style name="AppTheme.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:textColorSecondary">@color/white</item>
+    </style>
+
+    <!-- Styles -->
+    <!-- Floating Action Button -->
+    <style name="FloatingActionButtonCustom" parent="Widget.Design.FloatingActionButton">
+        <item name="android:layout_margin">@dimen/fab_margin</item>
+        <item name="android:src">@drawable/ic_baseline_add_24dp_white</item>
+        <item name="borderWidth">0dp</item>
+        <item name="backgroundTint">@color/colorPrimary</item>
+        <item name="tint">@color/white</item>
+    </style>
+
+    <!-- EditText -->
+    <style name="EditTextCustom" parent = "Widget.AppCompat.EditText">
+        <item name="android:textColor">@color/grey50</item>
+        <item name="android:textColorHint">@color/grey50</item>
+        <item name="android:background">@android:color/transparent</item>
+    </style>
+
+    <!-- CardView -->
+    <style name="CardViewCustom" parent="CardView">
+        <item name="android:paddingTop">5dp</item>
+        <item name="android:paddingBottom">5dp</item>
+        <item name="android:orientation">vertical</item>
+    </style>
+
+    <!-- TextInputLayout -->
+    <style name="TextInputLayoutCustom" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="boxBackgroundColor">#FFFFFF</item>
+        <item name="boxStrokeColor">@color/colorPrimary</item>
+        <item name="boxStrokeWidth">1dp</item>
+    </style>
+
+    <!-- MaterialTextView -->
+    <style name="MaterialTextViewTitleCustom">
+        <item name="android:textColor">@color/colorPrimaryDark</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+
+    <!-- MaterialButton -->
+    <style name="ConfirmationMaterialButton">
+        <item name="android:textAllCaps">false</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:layout_marginTop">20dp</item>
+        <item name="android:layout_marginBottom">20dp</item>
+        <item name="backgroundTint">@color/colorPrimary</item>
+        <item name="cornerRadius">@dimen/corner_radius_button</item>
+    </style>
+
+    <style name="AddMediaMaterialButton">
+        <item name="android:textAllCaps">false</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="backgroundTint">@color/white</item>
+        <item name="cornerRadius">@dimen/corner_radius_button</item>
+    </style>
 </resources>
