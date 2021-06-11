@@ -7,6 +7,7 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="actionOverflowMenuStyle">@style/OverflowMenuCustom</item>
     </style>
 
     <!-- No Action Bar theme -->
@@ -69,4 +70,11 @@
         <item name="backgroundTint">@color/white</item>
         <item name="cornerRadius">@dimen/corner_radius_button</item>
     </style>
+
+    <!-- Overflow Menu toolbar -->
+    <style name="OverflowMenuCustom" parent="Widget.AppCompat.PopupMenu.Overflow">
+        <item name="overlapAnchor">true</item>
+        <item name="android:popupBackground">@drawable/overflow_menu_shape</item>
+    </style>
+
 </resources>
