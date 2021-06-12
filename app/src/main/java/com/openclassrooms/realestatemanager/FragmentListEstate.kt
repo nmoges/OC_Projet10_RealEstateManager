@@ -33,11 +33,10 @@ class FragmentListEstate : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initializeToolbar()
-    }
-
-    private fun initializeToolbar() {
-        (activity as MainActivity).setToolbarTitle(R.string.str_toolbar_fragment_list_estate_title)
+        // Initialize toolbar
+        (activity as MainActivity).setToolbarProperties(
+                                                    R.string.str_toolbar_fragment_list_estate_title,
+                                       false)
     }
 
     @SuppressLint("RestrictedApi")

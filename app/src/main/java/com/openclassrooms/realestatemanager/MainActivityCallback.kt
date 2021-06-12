@@ -6,5 +6,5 @@ import androidx.annotation.StringRes
  * Callback interface allowing child fragments to access [MainActivity] methods.
  */
 interface MainActivityCallback {
-    fun setToolbarTitle(@StringRes title: Int)
+    fun setToolbarProperties(@StringRes title: Int, backIconDisplay: Boolean)
 }

@@ -3,8 +3,10 @@ package com.openclassrooms.realestatemanager
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.annotation.StringRes
+import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import com.openclassrooms.realestatemanager.databinding.ActivityMainBinding
 
@@ -17,8 +19,9 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
     private lateinit var binding: ActivityMainBinding
 
     companion object {
-        val FAB_STATUT_KEY = "FAB_STATUS_KEY"
+        const val FAB_STATUS_KEY = "FAB_STATUS_KEY"
     }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -38,8 +41,13 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
             binding.toolbar.setTitleTextColor(resources.getColor(R.color.white))
     }
 
-    override fun setToolbarTitle(@StringRes title: Int) {
-        binding.toolbar.title = resources.getString(title)
+    override fun setToolbarProperties(@StringRes title: Int, backIconDisplay: Boolean) {
+        supportActionBar?.title = resources.getString(title)
+        supportActionBar?.setDisplayHomeAsUpEnabled(backIconDisplay)
+        if (backIconDisplay)
+            supportActionBar?.setHomeAsUpIndicator(ResourcesCompat.getDrawable(resources,
+                R.drawable.ic_baseline_arrow_back_24dp_white,
+                null))
     }
 
     private fun handleFloatingActionButton() {
@@ -49,20 +57,19 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
         }
     }
 
-    private fun launchFragmentTransaction(fragment: Fragment, TAG: String) {
+    private fun launchFragmentTransaction(fragment: Fragment, tag: String) {
         supportFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container_view, fragment, TAG)
+            .replace(R.id.fragment_container_view, fragment, tag)
             .commit()
     }
 
     override fun onBackPressed() {
-        if (supportFragmentManager.findFragmentByTag(FragmentNewEstate.TAG) != null) {
+        if (supportFragmentManager.findFragmentByTag(FragmentNewEstate.TAG) != null ||
+            supportFragmentManager.findFragmentByTag(FragmentEstateDetails.TAG) != null) {
             // Restore list fragment
             launchFragmentTransaction(FragmentListEstate.newInstance(), FragmentListEstate.TAG)
             // Restore floating action button
             binding.fab.show()
-            // Restore toolbar title
-            setToolbarTitle(R.string.str_toolbar_fragment_list_estate_title)
         }
         else super.onBackPressed()
     }
@@ -70,7 +77,7 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         // Save state
-        outState.putInt(FAB_STATUT_KEY, binding.fab.visibility)
+        outState.putInt(FAB_STATUS_KEY, binding.fab.visibility)
     }
 
     /**
@@ -78,7 +85,7 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
      * @param savedInstanceState: [Bundle]
      */
     private fun restoreViews(savedInstanceState: Bundle) {
-        val visibility: Int = savedInstanceState.getInt(FAB_STATUT_KEY)
+        val visibility: Int = savedInstanceState.getInt(FAB_STATUS_KEY)
         if (visibility == View.VISIBLE) binding.fab.show()
         else binding.fab.hide()
     }

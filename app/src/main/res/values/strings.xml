@@ -13,6 +13,9 @@
     <!-- menu_fragment_new_estate.xml -->
     <string name="str_item_reset">Reset</string>
 
+    <!-- menu_fragment_estate_details.xml -->
+    <string name="str_item_edit">Edit</string>
+
     <!-- fragment_new_estate.xml -->
     <string name="str_toolbar_fragment_new_estate_title">Create new estate</string>
     <string name="str_new_estate_name_section_title">Name</string>
