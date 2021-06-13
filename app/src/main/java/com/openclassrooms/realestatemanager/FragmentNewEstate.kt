@@ -42,4 +42,14 @@ class FragmentNewEstate : Fragment() {
         super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.menu_fragment_new_estate, menu)
     }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when(item.itemId) {
+            android.R.id.home -> {
+                (activity as MainActivity).onBackPressed()
+            }
+            R.id.reset -> { }
+        }
+        return super.onOptionsItemSelected(item)
+    }
 }

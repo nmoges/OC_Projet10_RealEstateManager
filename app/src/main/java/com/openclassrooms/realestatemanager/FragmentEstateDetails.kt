@@ -35,4 +35,18 @@ class FragmentEstateDetails : Fragment() {
         super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.menu_fragment_estate_details, menu)
     }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when(item.itemId) {
+            android.R.id.home -> {
+                (activity as MainActivity).onBackPressed()
+            }
+            R.id.edit -> {
+                (activity as MainActivity).launchFragmentTransaction(
+                                                            FragmentNewEstate.newInstance(),
+                                                            FragmentNewEstate.TAG)
+            }
+        }
+        return super.onOptionsItemSelected(item)
+    }
 }

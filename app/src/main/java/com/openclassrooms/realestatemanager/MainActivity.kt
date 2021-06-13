@@ -57,7 +57,7 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
         }
     }
 
-    private fun launchFragmentTransaction(fragment: Fragment, tag: String) {
+    fun launchFragmentTransaction(fragment: Fragment, tag: String) {
         supportFragmentManager.beginTransaction()
             .replace(R.id.fragment_container_view, fragment, tag)
             .commit()

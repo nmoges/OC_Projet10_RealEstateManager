@@ -1,9 +1,505 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".FragmentEstateDetails">
 
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintRight_toRightOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingTop="20dp"
+            android:paddingBottom="20dp">
+
+            <!-- "Media" section -->
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/title_section_media"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+                android:paddingBottom="10dp"
+                android:layout_marginStart="20dp"
+                android:text="Media"
+                style="@style/MaterialTextViewTitleCustom"/>
+
+            <HorizontalScrollView
+                android:id="@+id/horizontal_scroll_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:scrollbars="none">
+
+               <LinearLayout
+                   android:id="@+id/linear_layout"
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:orientation="horizontal">
+
+                   <FrameLayout
+                       android:layout_width="wrap_content"
+                       android:layout_height="wrap_content">
+                       <ImageView
+                           android:scaleType="fitXY"
+                           android:layout_width="150dp"
+                           android:layout_height="150dp"
+                           android:layout_margin="20dp" />
+                       <View
+                           android:layout_width="150dp"
+                           android:layout_height="50dp"
+                           android:layout_marginBottom="20dp"
+                           android:background="#77666666"
+                           android:layout_gravity="center_horizontal|bottom"/>
+                       <TextView
+                           android:text="Lounge 1"
+                           android:textSize="12sp"
+                           android:textColor="#FFFFFF"
+                           android:layout_gravity="bottom"
+                           android:layout_marginStart="30dp"
+                           android:layout_marginBottom="40dp"
+                           android:layout_width="wrap_content"
+                           android:layout_height="wrap_content"/>
+                   </FrameLayout>
+
+                   <FrameLayout
+                       android:layout_width="wrap_content"
+                       android:layout_height="wrap_content">
+                       <ImageView
+                           android:scaleType="fitXY"
+                           android:layout_width="150dp"
+                           android:layout_height="150dp"
+                           android:layout_margin="20dp" />
+                       <View
+                           android:layout_width="150dp"
+                           android:layout_height="50dp"
+                           android:layout_marginBottom="20dp"
+                           android:background="#77666666"
+                           android:layout_gravity="center_horizontal|bottom"/>
+                       <TextView
+                           android:text="Lounge 1"
+                           android:textSize="12sp"
+                           android:textColor="#FFFFFF"
+                           android:layout_gravity="bottom"
+                           android:layout_marginStart="30dp"
+                           android:layout_marginBottom="40dp"
+                           android:layout_width="wrap_content"
+                           android:layout_height="wrap_content"/>
+                   </FrameLayout>
+
+                   <FrameLayout
+                       android:layout_width="wrap_content"
+                       android:layout_height="wrap_content">
+                       <ImageView
+                           android:scaleType="fitXY"
+                           android:layout_width="150dp"
+                           android:layout_height="150dp"
+                           android:layout_margin="20dp" />
+                       <View
+                           android:layout_width="150dp"
+                           android:layout_height="50dp"
+                           android:layout_marginBottom="20dp"
+                           android:background="#77666666"
+                           android:layout_gravity="center_horizontal|bottom"/>
+                       <TextView
+                           android:text="Lounge 1"
+                           android:textSize="12sp"
+                           android:textColor="#FFFFFF"
+                           android:layout_gravity="bottom"
+                           android:layout_marginStart="30dp"
+                           android:layout_marginBottom="40dp"
+                           android:layout_width="wrap_content"
+                           android:layout_height="wrap_content"/>
+                   </FrameLayout>
+
+                   <FrameLayout
+                       android:layout_width="wrap_content"
+                       android:layout_height="wrap_content">
+                       <ImageView
+                           android:scaleType="fitXY"
+                           android:layout_width="150dp"
+                           android:layout_height="150dp"
+                           android:layout_margin="20dp" />
+                       <View
+                           android:layout_width="150dp"
+                           android:layout_height="50dp"
+                           android:layout_marginBottom="20dp"
+                           android:background="#77666666"
+                           android:layout_gravity="center_horizontal|bottom"/>
+                       <TextView
+                           android:text="Lounge 1"
+                           android:textSize="12sp"
+                           android:textColor="#FFFFFF"
+                           android:layout_gravity="bottom"
+                           android:layout_marginStart="30dp"
+                           android:layout_marginBottom="40dp"
+                           android:layout_width="wrap_content"
+                           android:layout_height="wrap_content"/>
+                   </FrameLayout>
+
+                   <FrameLayout
+                       android:layout_width="wrap_content"
+                       android:layout_height="wrap_content">
+                       <ImageView
+                           android:scaleType="fitXY"
+                           android:layout_width="150dp"
+                           android:layout_height="150dp"
+                           android:layout_margin="20dp" />
+                       <View
+                           android:layout_width="150dp"
+                           android:layout_height="50dp"
+                           android:layout_marginBottom="20dp"
+                           android:background="#77666666"
+                           android:layout_gravity="center_horizontal|bottom"/>
+                       <TextView
+                           android:text="Lounge 1"
+                           android:textSize="12sp"
+                           android:textColor="#FFFFFF"
+                           android:layout_gravity="bottom"
+                           android:layout_marginStart="30dp"
+                           android:layout_marginBottom="40dp"
+                           android:layout_width="wrap_content"
+                           android:layout_height="wrap_content"/>
+                   </FrameLayout>
+
+                   <FrameLayout
+                       android:layout_width="wrap_content"
+                       android:layout_height="wrap_content">
+                       <ImageView
+                           android:scaleType="fitXY"
+                           android:layout_width="150dp"
+                           android:layout_height="150dp"
+                           android:layout_margin="20dp" />
+                       <View
+                           android:layout_width="150dp"
+                           android:layout_height="50dp"
+                           android:layout_marginBottom="20dp"
+                           android:background="#77666666"
+                           android:layout_gravity="center_horizontal|bottom"/>
+                       <TextView
+                           android:text="Lounge 1"
+                           android:textSize="12sp"
+                           android:textColor="#FFFFFF"
+                           android:layout_gravity="bottom"
+                           android:layout_marginStart="30dp"
+                           android:layout_marginBottom="40dp"
+                           android:layout_width="wrap_content"
+                           android:layout_height="wrap_content"/>
+                   </FrameLayout>
+
+                   <FrameLayout
+                       android:layout_width="wrap_content"
+                       android:layout_height="wrap_content">
+                       <ImageView
+                           android:scaleType="fitXY"
+                           android:layout_width="150dp"
+                           android:layout_height="150dp"
+                           android:layout_margin="20dp" />
+                       <View
+                           android:layout_width="150dp"
+                           android:layout_height="50dp"
+                           android:layout_marginBottom="20dp"
+                           android:background="#77666666"
+                           android:layout_gravity="center_horizontal|bottom"/>
+                       <TextView
+                           android:text="Lounge 1"
+                           android:textSize="12sp"
+                           android:textColor="#FFFFFF"
+                           android:layout_gravity="bottom"
+                           android:layout_marginStart="30dp"
+                           android:layout_marginBottom="40dp"
+                           android:layout_width="wrap_content"
+                           android:layout_height="wrap_content"/>
+                   </FrameLayout>
+
+                   <FrameLayout
+                       android:layout_width="wrap_content"
+                       android:layout_height="wrap_content">
+                       <ImageView
+                           android:scaleType="fitXY"
+                           android:layout_width="150dp"
+                           android:layout_height="150dp"
+                           android:layout_margin="20dp" />
+                       <View
+                           android:layout_width="150dp"
+                           android:layout_height="50dp"
+                           android:layout_marginBottom="20dp"
+                           android:background="#77666666"
+                           android:layout_gravity="center_horizontal|bottom"/>
+                       <TextView
+                           android:text="Lounge 1"
+                           android:textSize="12sp"
+                           android:textColor="#FFFFFF"
+                           android:layout_gravity="bottom"
+                           android:layout_marginStart="30dp"
+                           android:layout_marginBottom="40dp"
+                           android:layout_width="wrap_content"
+                           android:layout_height="wrap_content"/>
+                   </FrameLayout>
+               </LinearLayout>
+
+            </HorizontalScrollView>
+
+            <!-- "Description" section -->
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/title_section_description"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
+                android:layout_marginStart="20dp"
+                android:text="Description"
+                style="@style/MaterialTextViewTitleCustom"/>
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/text_section_description"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginStart="20dp"
+                android:textSize="15sp"
+                android:text="@string/text_test"/>
+
+            <GridLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:rowCount="2"
+                android:columnCount="2"
+                android:layout_gravity="center">
+
+                <!-- Surface -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="15dp"
+                    android:layout_column="0"
+                    android:layout_row="0">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            android:src="@drawable/ic_baseline_settings_overscan_24dp_grey41"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"/>
+                        <GridLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:rowCount="2"
+                            android:columnCount="1"
+                            android:layout_marginStart="15dp">
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Surface"
+                                android:textStyle="bold"
+                                android:layout_row="0"
+                                android:layout_column="0"/>
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="750 sq m"
+                                android:layout_marginStart="10dp"
+                                android:layout_row="1"
+                                android:layout_column="0"/>
+                        </GridLayout>
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <!-- Number of rooms -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="15dp"
+                    android:layout_column="1"
+                    android:layout_row="0">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            android:src="@drawable/ic_baseline_home_24dp_grey41"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"/>
+                        <GridLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:rowCount="2"
+                            android:columnCount="1"
+                            android:layout_marginStart="15dp">
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Number of rooms"
+                                android:textStyle="bold"
+                                android:layout_row="0"
+                                android:layout_column="0"/>
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="8"
+                                android:layout_marginStart="10dp"
+                                android:layout_row="1"
+                                android:layout_column="0"/>
+                        </GridLayout>
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <!-- Number of bedrooms -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="15dp"
+                    android:layout_column="0"
+                    android:layout_row="1">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            android:src="@drawable/ic_baseline_hotel_24dp_grey41"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"/>
+                        <GridLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:rowCount="2"
+                            android:columnCount="1"
+                            android:layout_marginStart="15dp">
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Number of bedrooms"
+                                android:textStyle="bold"
+                                android:layout_row="0"
+                                android:layout_column="0"/>
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="4"
+                                android:layout_marginStart="10dp"
+                                android:layout_row="1"
+                                android:layout_column="0"/>
+                        </GridLayout>
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <!-- Number of bathrooms -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="15dp"
+                    android:layout_column="1"
+                    android:layout_row="1">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            android:src="@drawable/ic_baseline_hot_tub_24dp_grey41"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"/>
+                        <GridLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:rowCount="2"
+                            android:columnCount="1"
+                            android:layout_marginStart="15dp"
+                            android:layout_marginEnd="15dp">
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Number of bathrooms"
+                                android:textStyle="bold"
+                                android:layout_row="0"
+                                android:layout_column="0"/>
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="2"
+                                android:layout_marginStart="10dp"
+                                android:layout_row="1"
+                                android:layout_column="0"/>
+                        </GridLayout>
+                    </LinearLayout>
+
+                </LinearLayout>
+            </GridLayout>
+
+            <!-- Address -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="10dp"
+                android:layout_gravity="center">
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:src="@drawable/ic_baseline_location_on_24dp_grey41"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="top"/>
+
+                <GridLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:rowCount="2"
+                    android:columnCount="1"
+                    android:layout_marginStart="15dp"
+                    android:layout_marginEnd="15dp">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Location"
+                        android:textStyle="bold"
+                        android:layout_row="0"
+                        android:layout_column="0"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="740 Park Avenue\nApt 6/7A\nNew York\nNY 10021\n United States"
+                        android:layout_marginStart="10dp"
+                        android:layout_row="1"
+                        android:layout_column="0"/>
+                </GridLayout>
+                <View
+                    android:layout_width="150dp"
+                    android:layout_height="150dp"
+                    android:background="@color/grey41"/>
+            </LinearLayout>
+            <!--<androidx.fragment.app.FragmentContainerView
+                android:id="@+id/google_map"
+                android:name="com.google.android.gms.maps.SupportMapFragment"
+                android:layout_width="200dp"
+                android:layout_height="150dp"
+                android:layout_gravity="center"/>-->
+        </LinearLayout>
+
+
+    </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

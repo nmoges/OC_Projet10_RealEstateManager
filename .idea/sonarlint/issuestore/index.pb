@@ -4,8 +4,6 @@
 :
 
 .gitignore,a\5\a5cc2925ca8258af241be7e5b0381edf30266302
-<
-build.gradle,f\0\f07866736216be0ee2aba49e392191aeae700a35
 {
 Kapp/src/test/java/com/openclassrooms/realestatemanager/ExampleUnitTest.java,8\9\898380a1c53ec87e83954806b3c943c41b0ad9f6
 X
@@ -26,5 +24,7 @@ Aapp/src/main/java/com/openclassrooms/realestatemanager/Utils.java,f\1\f1cdde1a
 Zapp/src/androidTest/java/com/openclassrooms/realestatemanager/ExampleInstrumentedTest.java,4\8\487c28697bf452bfc6d531c52f896d8339abb227
 A
 gradle.properties,2\a\2afbb999f001938c88fa43fc2ef52abf0f8213e4
-P
- app/src/main/AndroidManifest.xml,8\c\8c55c3ccc257e5907959013f99656e4c8ec3903e
+|
+Lapp/src/main/java/com/openclassrooms/realestatemanager/FragmentListEstate.kt,9\d\9d4bb713584d945950facd002897b645805a4e2b
+~
+Napp/src/main/java/com/openclassrooms/realestatemanager/MainActivityCallback.kt,5\9\59961658c6384722bbb409bd50944962b1dfca33

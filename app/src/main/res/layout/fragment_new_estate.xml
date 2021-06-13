@@ -30,19 +30,19 @@
                 android:paddingBottom="10dp">
                 <!-- Title -->
                 <com.google.android.material.textview.MaterialTextView
-                    style="@style/MaterialTextViewTitleCustom"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
-                    android:text="@string/str_new_estate_name_section_title" />
+                    android:text="@string/str_new_estate_name_section_title"
+                    style="@style/MaterialTextViewTitleCustom"/>
                 <!-- Edit field -->
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/new_estate_name_section_text_input_layout"
-                    style="@style/TextInputLayoutCustom"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
-                    android:layout_marginEnd="20dp">
+                    android:layout_marginEnd="20dp"
+                    style="@style/TextInputLayoutCustom">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/new_estate_name_section_text_input_edit"
