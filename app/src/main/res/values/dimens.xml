@@ -1,14 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Normal size screen -->
-
     <!-- main_activity.xml -->
     <dimen name="fab_margin">20dp</dimen>
-
     <!-- style.xml -->
     <dimen name="corner_radius_button">50dp</dimen>
-
-    <!-- fragment_list_estate_item.xml -->
-    <dimen name="list_estate_item_height">100dp</dimen>
-    <dimen name="list_estate_item_img_dimens">100dp</dimen>
 </resources>

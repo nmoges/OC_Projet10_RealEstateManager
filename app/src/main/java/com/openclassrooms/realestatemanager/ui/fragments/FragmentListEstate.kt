@@ -1,10 +1,12 @@
-package com.openclassrooms.realestatemanager
+package com.openclassrooms.realestatemanager.ui.fragments
 
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.*
 import androidx.appcompat.view.menu.MenuBuilder
 import androidx.fragment.app.Fragment
+import com.openclassrooms.realestatemanager.ui.activities.MainActivity
+import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.databinding.FragmentListEstateBinding
 
 /**
@@ -35,7 +37,7 @@ class FragmentListEstate : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         // Initialize toolbar
         (activity as MainActivity).setToolbarProperties(
-                                                    R.string.str_toolbar_fragment_list_estate_title,
+            R.string.str_toolbar_fragment_list_estate_title,
                                        false)
     }
 

@@ -1,8 +1,10 @@
-package com.openclassrooms.realestatemanager
+package com.openclassrooms.realestatemanager.ui.fragments
 
 import android.os.Bundle
 import android.view.*
 import androidx.fragment.app.Fragment
+import com.openclassrooms.realestatemanager.ui.activities.MainActivity
+import com.openclassrooms.realestatemanager.R
 
 class FragmentEstateDetails : Fragment() {
 
@@ -27,7 +29,7 @@ class FragmentEstateDetails : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         // Initialize toolbar
         (activity as MainActivity).setToolbarProperties(
-                                                    R.string.str_toolbar_fragment_list_estate_title,
+            R.string.str_toolbar_fragment_list_estate_title,
                                        true)
     }
 
@@ -41,11 +43,7 @@ class FragmentEstateDetails : Fragment() {
             android.R.id.home -> {
                 (activity as MainActivity).onBackPressed()
             }
-            R.id.edit -> {
-                (activity as MainActivity).launchFragmentTransaction(
-                                                            FragmentNewEstate.newInstance(),
-                                                            FragmentNewEstate.TAG)
-            }
+            R.id.edit -> { }
         }
         return super.onOptionsItemSelected(item)
     }

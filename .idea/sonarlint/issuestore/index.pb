@@ -24,7 +24,3 @@ Aapp/src/main/java/com/openclassrooms/realestatemanager/Utils.java,f\1\f1cdde1a
 Zapp/src/androidTest/java/com/openclassrooms/realestatemanager/ExampleInstrumentedTest.java,4\8\487c28697bf452bfc6d531c52f896d8339abb227
 A
 gradle.properties,2\a\2afbb999f001938c88fa43fc2ef52abf0f8213e4
-|
-Lapp/src/main/java/com/openclassrooms/realestatemanager/FragmentListEstate.kt,9\d\9d4bb713584d945950facd002897b645805a4e2b
-~
-Napp/src/main/java/com/openclassrooms/realestatemanager/MainActivityCallback.kt,5\9\59961658c6384722bbb409bd50944962b1dfca33

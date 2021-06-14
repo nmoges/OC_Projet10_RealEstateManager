@@ -1,4 +1,4 @@
-package com.openclassrooms.realestatemanager
+package com.openclassrooms.realestatemanager.ui.activities
 
 import androidx.annotation.StringRes
 

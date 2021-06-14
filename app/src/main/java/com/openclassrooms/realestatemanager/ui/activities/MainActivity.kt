@@ -1,14 +1,17 @@
-package com.openclassrooms.realestatemanager
+package com.openclassrooms.realestatemanager.ui.activities
 
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.annotation.StringRes
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
+import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.databinding.ActivityMainBinding
+import com.openclassrooms.realestatemanager.ui.fragments.FragmentEstateDetails
+import com.openclassrooms.realestatemanager.ui.fragments.FragmentListEstate
+import com.openclassrooms.realestatemanager.ui.fragments.FragmentNewEstate
 
 /**
  * [AppCompatActivity] subclass which defines the main activity of the application.
@@ -36,9 +39,9 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
     private fun initializeToolbar() {
         setSupportActionBar(binding.toolbar)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
-            binding.toolbar.setTitleTextColor(resources.getColor(R.color.white, null))
+            binding.toolbar?.setTitleTextColor(resources.getColor(R.color.white, null))
         else
-            binding.toolbar.setTitleTextColor(resources.getColor(R.color.white))
+            binding.toolbar?.setTitleTextColor(resources.getColor(R.color.white))
     }
 
     override fun setToolbarProperties(@StringRes title: Int, backIconDisplay: Boolean) {
@@ -51,9 +54,9 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
     }
 
     private fun handleFloatingActionButton() {
-        binding.fab.setOnClickListener {
+        binding.fab?.setOnClickListener {
             launchFragmentTransaction(FragmentNewEstate.newInstance(), FragmentNewEstate.TAG)
-            binding.fab.hide()
+            binding.fab?.hide()
         }
     }
 
@@ -69,7 +72,7 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
             // Restore list fragment
             launchFragmentTransaction(FragmentListEstate.newInstance(), FragmentListEstate.TAG)
             // Restore floating action button
-            binding.fab.show()
+            binding.fab?.show()
         }
         else super.onBackPressed()
     }
@@ -77,7 +80,7 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         // Save state
-        outState.putInt(FAB_STATUS_KEY, binding.fab.visibility)
+        binding.fab?.let { outState.putInt(FAB_STATUS_KEY, it.visibility) }
     }
 
     /**
@@ -86,7 +89,7 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
      */
     private fun restoreViews(savedInstanceState: Bundle) {
         val visibility: Int = savedInstanceState.getInt(FAB_STATUS_KEY)
-        if (visibility == View.VISIBLE) binding.fab.show()
-        else binding.fab.hide()
+        if (visibility == View.VISIBLE) binding.fab?.show()
+        else binding.fab?.hide()
     }
 }

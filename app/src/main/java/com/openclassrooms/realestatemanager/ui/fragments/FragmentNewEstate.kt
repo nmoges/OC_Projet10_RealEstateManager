@@ -1,8 +1,10 @@
-package com.openclassrooms.realestatemanager
+package com.openclassrooms.realestatemanager.ui.fragments
 
 import android.os.Bundle
 import android.view.*
 import androidx.fragment.app.Fragment
+import com.openclassrooms.realestatemanager.ui.activities.MainActivity
+import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.databinding.FragmentNewEstateBinding
 
 /**
@@ -34,7 +36,7 @@ class FragmentNewEstate : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         // Initialize toolbar
         (activity as MainActivity).setToolbarProperties(
-                                                     R.string.str_toolbar_fragment_new_estate_title,
+            R.string.str_toolbar_fragment_new_estate_title,
                                         true)
     }
 

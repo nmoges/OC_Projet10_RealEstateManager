@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".FragmentEstateDetails">
+    tools:context=".ui.fragments.FragmentEstateDetails">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -25,10 +25,9 @@
                 android:id="@+id/title_section_media"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-
                 android:paddingBottom="10dp"
                 android:layout_marginStart="20dp"
-                android:text="Media"
+                android:text="@string/str_details_media_section_title"
                 style="@style/MaterialTextViewTitleCustom"/>
 
             <HorizontalScrollView
@@ -50,7 +49,7 @@
                            android:scaleType="fitXY"
                            android:layout_width="150dp"
                            android:layout_height="150dp"
-                           android:layout_margin="20dp" />
+                           android:layout_margin="20dp"/>
                        <View
                            android:layout_width="150dp"
                            android:layout_height="50dp"
@@ -254,7 +253,7 @@
                 android:paddingTop="10dp"
                 android:paddingBottom="10dp"
                 android:layout_marginStart="20dp"
-                android:text="Description"
+                android:text="@string/str_details_description_section_title"
                 style="@style/MaterialTextViewTitleCustom"/>
 
             <com.google.android.material.textview.MaterialTextView
@@ -266,7 +265,7 @@
                 android:layout_marginEnd="20dp"
                 android:layout_marginStart="20dp"
                 android:textSize="15sp"
-                android:text="@string/text_test"/>
+                android:text="@string/fake_description"/>
 
             <GridLayout
                 android:layout_width="wrap_content"
@@ -285,16 +284,12 @@
                     android:layout_column="0"
                     android:layout_row="0">
 
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-
                         <ImageView
                             android:src="@drawable/ic_baseline_settings_overscan_24dp_grey41"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_gravity="center"/>
+                            android:layout_gravity="center"
+                            android:contentDescription="@string/str_content_desc_surface_icon"/>
                         <GridLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -304,19 +299,18 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Surface"
+                                android:text="@string/str_details_surface_sub_section_title"
                                 android:textStyle="bold"
                                 android:layout_row="0"
                                 android:layout_column="0"/>
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="750 sq m"
+                                android:text="@string/fake_surface_value"
                                 android:layout_marginStart="10dp"
                                 android:layout_row="1"
                                 android:layout_column="0"/>
                         </GridLayout>
-                    </LinearLayout>
 
                 </LinearLayout>
 
@@ -328,16 +322,12 @@
                     android:layout_column="1"
                     android:layout_row="0">
 
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-
                         <ImageView
                             android:src="@drawable/ic_baseline_home_24dp_grey41"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_gravity="center"/>
+                            android:layout_gravity="center"
+                            android:contentDescription="@string/str_content_desc_number_of_rooms_icon"/>
                         <GridLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -347,19 +337,18 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Number of rooms"
+                                android:text="@string/str_details_number_of_rooms_sub_section_title"
                                 android:textStyle="bold"
                                 android:layout_row="0"
                                 android:layout_column="0"/>
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="8"
+                                android:text="@string/fake_number_of_rooms_value"
                                 android:layout_marginStart="10dp"
                                 android:layout_row="1"
                                 android:layout_column="0"/>
                         </GridLayout>
-                    </LinearLayout>
 
                 </LinearLayout>
 
@@ -371,16 +360,12 @@
                     android:layout_column="0"
                     android:layout_row="1">
 
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-
                         <ImageView
                             android:src="@drawable/ic_baseline_hotel_24dp_grey41"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_gravity="center"/>
+                            android:layout_gravity="center"
+                            android:contentDescription="@string/str_content_desc_number_of_bedrooms_icon"/>
                         <GridLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -390,19 +375,18 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Number of bedrooms"
+                                android:text="@string/str_details_number_of_bedrooms_sub_section_title"
                                 android:textStyle="bold"
                                 android:layout_row="0"
                                 android:layout_column="0"/>
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="4"
+                                android:text="@string/fake_number_of_bedrooms_value"
                                 android:layout_marginStart="10dp"
                                 android:layout_row="1"
                                 android:layout_column="0"/>
                         </GridLayout>
-                    </LinearLayout>
 
                 </LinearLayout>
 
@@ -414,16 +398,12 @@
                     android:layout_column="1"
                     android:layout_row="1">
 
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-
                         <ImageView
                             android:src="@drawable/ic_baseline_hot_tub_24dp_grey41"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_gravity="center"/>
+                            android:layout_gravity="center"
+                            android:contentDescription="@string/str_content_desc_number_of_bathrooms_icon" />
                         <GridLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -434,19 +414,18 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Number of bathrooms"
+                                android:text="@string/str_details_number_of_bathrooms_sub_section_title"
                                 android:textStyle="bold"
                                 android:layout_row="0"
                                 android:layout_column="0"/>
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="2"
+                                android:text="@string/fake_number_of_bathrooms_value"
                                 android:layout_marginStart="10dp"
                                 android:layout_row="1"
                                 android:layout_column="0"/>
                         </GridLayout>
-                    </LinearLayout>
 
                 </LinearLayout>
             </GridLayout>
@@ -455,49 +434,47 @@
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
+                android:layout_gravity="center"
                 android:layout_marginTop="10dp"
-                android:layout_gravity="center">
+                android:orientation="horizontal">
 
                 <androidx.appcompat.widget.AppCompatImageView
-                    android:src="@drawable/ic_baseline_location_on_24dp_grey41"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="top"/>
+                    android:layout_gravity="top"
+                    android:src="@drawable/ic_baseline_location_on_24dp_grey41" />
 
                 <GridLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:rowCount="2"
-                    android:columnCount="1"
                     android:layout_marginStart="15dp"
-                    android:layout_marginEnd="15dp">
+                    android:layout_marginEnd="15dp"
+                    android:columnCount="1"
+                    android:rowCount="2">
+
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Location"
-                        android:textStyle="bold"
                         android:layout_row="0"
-                        android:layout_column="0"/>
+                        android:layout_column="0"
+                        android:text="@string/str_details_location_sub_section_title"
+                        android:textStyle="bold" />
+
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="740 Park Avenue\nApt 6/7A\nNew York\nNY 10021\n United States"
-                        android:layout_marginStart="10dp"
                         android:layout_row="1"
-                        android:layout_column="0"/>
+                        android:layout_column="0"
+                        android:layout_marginStart="10dp"
+                        android:text="@string/fake_address_value" />
                 </GridLayout>
+
+                <!-- TODO: To replace with map -->
                 <View
                     android:layout_width="150dp"
                     android:layout_height="150dp"
-                    android:background="@color/grey41"/>
+                    android:background="@color/grey41" />
             </LinearLayout>
-            <!--<androidx.fragment.app.FragmentContainerView
-                android:id="@+id/google_map"
-                android:name="com.google.android.gms.maps.SupportMapFragment"
-                android:layout_width="200dp"
-                android:layout_height="150dp"
-                android:layout_gravity="center"/>-->
         </LinearLayout>
 
 
