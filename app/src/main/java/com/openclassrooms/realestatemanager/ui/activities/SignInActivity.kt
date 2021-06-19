@@ -5,6 +5,9 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.firebase.ui.auth.AuthMethodPickerLayout
 import com.firebase.ui.auth.AuthUI
+import com.firebase.ui.auth.ErrorCodes
+import com.firebase.ui.auth.IdpResponse
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.databinding.ActivitySignInBinding
@@ -28,11 +31,7 @@ class SignInActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         // Check if user is currently logged-in
-        if (FirebaseAuth.getInstance().currentUser != null) {
-            // Launch MainActivity
-            val intent: Intent = Intent(this, MainActivity::class.java)
-            startActivity(intent)
-        }
+        if (FirebaseAuth.getInstance().currentUser != null) startMainActivity()
 
         handleConnexionButtonsListeners()
     }
@@ -56,6 +55,43 @@ class SignInActivity : AppCompatActivity() {
                     .build(),
                 RC_SIGN_IN
             )
+        }
+    }
+
+    private fun startMainActivity() {
+        // Launch MainActivity
+        val intent: Intent = Intent(this, MainActivity::class.java)
+        startActivity(intent)
+    }
+
+    /**
+     * Handles results from Firebase auto-generated activity.
+     */
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == RC_SIGN_IN) {
+            val response: IdpResponse? = IdpResponse.fromResultIntent(data)
+
+            if (resultCode == RESULT_OK) startMainActivity()
+            else { // handle response
+                when {
+                    response == null -> {
+                        Snackbar.make(binding.signInActivityLayout,
+                                      R.string.snack_bar_auth_cancelled,
+                                      Snackbar.LENGTH_SHORT).show()
+                    }
+                    response.error?.errorCode == ErrorCodes.NO_NETWORK -> {
+                        Snackbar.make(binding.signInActivityLayout,
+                                      R.string.snack_bar_error_no_network,
+                                      Snackbar.LENGTH_SHORT).show()
+                    }
+                    response.error?.errorCode == ErrorCodes.UNKNOWN_ERROR -> {
+                        Snackbar.make(binding.signInActivityLayout,
+                                      R.string.snack_bar_error_unknown,
+                                      Snackbar.LENGTH_SHORT).show()
+                    }
+                }
+            }
         }
     }
 }

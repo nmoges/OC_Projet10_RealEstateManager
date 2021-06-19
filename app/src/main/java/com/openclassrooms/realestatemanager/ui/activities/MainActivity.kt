@@ -39,9 +39,9 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
     private fun initializeToolbar() {
         setSupportActionBar(binding.toolbar)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
-            binding.toolbar?.setTitleTextColor(resources.getColor(R.color.white, null))
+            binding.toolbar.setTitleTextColor(resources.getColor(R.color.white, null))
         else
-            binding.toolbar?.setTitleTextColor(resources.getColor(R.color.white))
+            binding.toolbar.setTitleTextColor(resources.getColor(R.color.white))
     }
 
     override fun setToolbarProperties(@StringRes title: Int, backIconDisplay: Boolean) {
@@ -54,13 +54,13 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
     }
 
     private fun handleFloatingActionButton() {
-        binding.fab?.setOnClickListener {
+        binding.fab.setOnClickListener {
             launchFragmentTransaction(FragmentNewEstate.newInstance(), FragmentNewEstate.TAG)
-            binding.fab?.hide()
+            binding.fab.hide()
         }
     }
 
-    fun launchFragmentTransaction(fragment: Fragment, tag: String) {
+   private fun launchFragmentTransaction(fragment: Fragment, tag: String) {
         supportFragmentManager.beginTransaction()
             .replace(R.id.fragment_container_view, fragment, tag)
             .commit()
@@ -72,15 +72,15 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
             // Restore list fragment
             launchFragmentTransaction(FragmentListEstate.newInstance(), FragmentListEstate.TAG)
             // Restore floating action button
-            binding.fab?.show()
+            binding.fab.show()
         }
-        else super.onBackPressed()
+        else finishAffinity() // Close app
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         // Save state
-        binding.fab?.let { outState.putInt(FAB_STATUS_KEY, it.visibility) }
+        binding.fab.let { outState.putInt(FAB_STATUS_KEY, it.visibility) }
     }
 
     /**

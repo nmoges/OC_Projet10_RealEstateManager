@@ -89,4 +89,7 @@
 
     <!-- activity_sign_in.xml -->
     <string name="str_sign_in_button">Sign in</string>
+    <string name="snack_bar_auth_cancelled">Authentication cancelled</string>
+    <string name="snack_bar_error_no_network">Authentication failed - no network</string>
+    <string name="snack_bar_error_unknown">Authentication failed - Unknown error</string>
 </resources>
