@@ -29,8 +29,8 @@
                         <option name="values">
                           <map>
                             <entry key="autoMirrored" value="true" />
-                            <entry key="color" value="808080" />
-                            <entry key="outputName" value="ic_baseline_insert_photo_50dp_grey50" />
+                            <entry key="color" value="9e9e9e" />
+                            <entry key="outputName" value="ic_baseline_insert_photo_50dp_grey62" />
                             <entry key="sourceFile" value="C:\Users\nicol\OneDrive\Documents\Formation\OpenClassrooms\Projet 9\App\RealEstateManager\RealEstateManager" />
                           </map>
                         </option>

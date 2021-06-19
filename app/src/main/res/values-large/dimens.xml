@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- main_activity.xml -->
+    <dimen name="fab_margin">20dp</dimen>
+    <dimen name="fab_size">56dp</dimen>
+
+    <!-- fragment-list_estate_item.xml -->
+    <dimen name="icon_item_size">200dp</dimen>
+    <dimen name="text_type_item_size">40sp</dimen>
+    <dimen name="text_city_item_size">35sp</dimen>
+    <dimen name="text_price_item_size">40sp</dimen>
+
+    <!-- fragment_new_estate.xml -->
+    <dimen name="margin_top_text_input_layout">40dp</dimen>
+    <dimen name="margin_start_text_input_layout">20dp</dimen>
+    <dimen name="margin_end_text_input_layout">20dp</dimen>
+    <dimen name="margin_bottom_text_input_layout">20dp</dimen>
+    <dimen name="text_input_edit_width_rooms">300dp</dimen>
+    <dimen name="text_input_edit_width_surface">200dp</dimen>
+    <dimen name="hint_text_input">20sp</dimen>
+    <dimen name="unit_text">20sp</dimen>
+    <dimen name="icon_photo_size">180dp</dimen>
+    <dimen name="text_photo_size">20sp</dimen>
+
+    <!-- fragment_estate_details.xml -->
+    <dimen name="text_description_size">20sp</dimen>
+    <dimen name="margin_start_description_material_text">20dp</dimen>
+    <dimen name="margin_start_description_material_grid">50dp</dimen>
+    <dimen name="text_description_grid">20sp</dimen>
+    <dimen name="size_map">200dp</dimen>
+    <dimen name="size_media">200dp</dimen>
+    <dimen name="height_banner">80dp</dimen>
+    <dimen name="size_text_banner">35sp</dimen>
+
+    <!-- activity_sign_in.xml -->
+    <dimen name="logo_size">200dp</dimen>
+    <dimen name="logo_margin_top">150dp</dimen>
+    <dimen name="name_app_size">45sp</dimen>
+    <dimen name="name_app_margin_top">40dp</dimen>
+
+    <!-- activity_sign_in.xml / custom_auth_layout.xml -->
+    <dimen name="material_button_margin">100dp</dimen>
+    <dimen name="material_button_padding">20dp</dimen>
+    <dimen name="material_button_text_size">20sp</dimen>
+
+    <!-- custom_auth_layout.xml -->
+    <dimen name="material_button_margin_top">30dp</dimen>
+    <dimen name="material_button_margin_bottom">50dp</dimen>
+
+
+</resources>

@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">Real Estate Manager</string>
+    <string name="facebook_application_id">1898055770358844</string>
+    <string name="fb_login_protocol_scheme">fb1898055770358844</string>
 
     <!-- activity_main.xml -->
     <string name="content_desc_img">Estate image</string>
@@ -20,12 +22,21 @@
     <string name="str_item_edit">Edit</string>
 
     <!-- fragment_new_estate.xml -->
+    <!--<string name="str_new_estate_name_section_title">Name</string>-->
+    <!--<string name="str_new_estate_location_section_title">Location</string>-->
+    <!--<string name="str_new_estate_description_section_title">Description</string>-->
+    <!--<string name="str_new_estate_surface_section_title">Surface</string>-->
+    <!--<string name="str_new_estate_media_section_title">Media</string>-->
+
     <string name="str_toolbar_fragment_new_estate_title">Create new estate</string>
-    <string name="str_new_estate_name_section_title">Name</string>
-    <string name="str_new_estate_location_section_title">Location</string>
-    <string name="str_new_estate_description_section_title">Description</string>
-    <string name="str_new_estate_media_section_title">Media</string>
-    <string name="str_new_estate_surface_section_title">Surface</string>
+    <string name="str_new_estate_name_hint_text_input">Name</string>
+    <string name="str_new_estate_location_hint_text_input">Location</string>
+    <string name="str_new_estate_description_hint_text_input">Description</string>
+    <string name="str_new_estate_surface_hint_text_input">Surface</string>
+    <string name="str_new_estate_rooms_hint_text_input">Rooms</string>
+    <string name="str_new_estate_bathrooms_hint_text_input">Bathrooms</string>
+    <string name="str_new_estate_bedrooms_hint_text_input">Bedrooms</string>
+
     <string name="str_new_estate_surface_section_area_unit">sq m</string>
     <string name="str_new_estate_surface_number_of_rooms_title">Number of rooms</string>
     <string name="str_new_estate_surface_rooms_hint">Rooms</string>
@@ -63,10 +74,19 @@
     <string name="fake_number_of_rooms_value">8</string>
     <string name="fake_number_of_bedrooms_value">4</string>
     <string name="fake_number_of_bathrooms_value">2</string>
-    <string name="fake_address_value">740 Park Avenue<br/>Apt 6/7A<br/>New York<br/>NY 10021<br/>United States</string>
+    <string name="fake_address_value">740 Park Avenue\nApt 6/7A\nNew York\nNY 10021\nUnited States</string>
 
     <!-- fragment_list_estate_item.xml -->
     <string name="fake_estate_name">House</string>
     <string name="fake_estate_district">Montauk</string>
     <string name="fake_estate_price">$21,130,000</string>
+
+    <!-- custom_auth_layout.xml -->
+    <string name="content_desc_logo_app">Logo application</string>
+    <string name="str_authentication_btn_facebook">Connect with Facebook</string>
+    <string name="str_authentication_btn_google">Connect with Google</string>
+    <string name="str_authentication_btn_twitter">Connect with Twitter</string>
+
+    <!-- activity_sign_in.xml -->
+    <string name="str_sign_in_button">Sign in</string>
 </resources>

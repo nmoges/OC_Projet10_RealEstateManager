@@ -1,19 +1,24 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
+apply plugin: 'com.google.gms.google-services'
 
 android {
     compileSdkVersion 30
+
     defaultConfig {
         applicationId "com.openclassrooms.realestatemanager"
         minSdkVersion 19
         targetSdkVersion 30
         versionCode 1
         versionName "1.0"
+        multiDexEnabled true
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
+
     buildFeatures {
         viewBinding = true
     }
+    
     buildTypes {
         release {
             minifyEnabled false
@@ -30,7 +35,7 @@ dependencies {
 
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
 
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:1.5.10"
 
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
 
@@ -39,8 +44,20 @@ dependencies {
     // CardView
     implementation 'androidx.cardview:cardview:1.0.0'
 
+    // Facebook Login
+    implementation 'com.facebook.android:facebook-android-sdk:4.42.0'
+
+    // Firebase BoM
+    implementation platform('com.google.firebase:firebase-bom:28.1.0')
+
+    // Firebase Analytics
+    implementation 'com.google.firebase:firebase-analytics-ktx'
+
+    // FirebaseUI
+    implementation 'com.firebaseui:firebase-ui-auth:7.2.0'
+
     // Maps SDK for Android Utility Library
-    //implementation 'com.google.maps.android:android-maps-utils:2.2.0'
+    // implementation 'com.google.maps.android:android-maps-utils:2.2.0'
 
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
