@@ -5,6 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:tag="layout"
     tools:context=".ui.activities.MainActivity">
 
     <androidx.appcompat.widget.Toolbar
@@ -27,9 +28,7 @@
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/fragment_container_view"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:tag="TAG_FRAGMENT_LIST_ESTATE"
-            android:name="com.openclassrooms.realestatemanager.ui.fragments.FragmentListEstate"/>
+            android:layout_height="match_parent"/>
     </FrameLayout>
 
     <!-- Floating Action Button -->
