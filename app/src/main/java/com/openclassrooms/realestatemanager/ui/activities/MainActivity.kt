@@ -130,11 +130,13 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
      * Handles toolbar update properties (title and back arrow) according to the displayed fragment.
      */
     override fun setToolbarProperties(@StringRes title: Int, backIconDisplay: Boolean) {
-        supportActionBar?.title = resources.getString(title)
-        supportActionBar?.setDisplayHomeAsUpEnabled(backIconDisplay)
-        if (backIconDisplay) supportActionBar
-           ?.setHomeAsUpIndicator(ResourcesCompat
-           .getDrawable(resources, R.drawable.ic_baseline_arrow_back_24dp_white, null))
+        supportActionBar?.apply {
+            setTitle(resources.getString(title))
+            setDisplayHomeAsUpEnabled(backIconDisplay)
+            if (backIconDisplay)
+                setHomeAsUpIndicator(ResourcesCompat
+                    .getDrawable(resources, R.drawable.ic_baseline_arrow_back_24dp_white, null))
+        }
     }
 
     /**
@@ -179,12 +181,15 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
      * activity_main.xml only
      */
     private fun handleBackgroundGridVisibility(visibility: Int) {
-        binding.imgBackground?.visibility = visibility
-        binding.txtBackground?.visibility = visibility
+        binding.apply {
+            imgBackground?.visibility = visibility
+            txtBackground?.visibility = visibility
+        }
     }
 
     /**
      * Cleans back stack before initializing fragment containers.
+     * @return : true if an existing fragment has been popped off the back stack, else false.
      */
     private fun cleanBackStack(): Boolean {
         if (supportFragmentManager.findFragmentByTag(FragmentNewEstate.TAG) != null ||

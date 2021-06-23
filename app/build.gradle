@@ -56,6 +56,19 @@ dependencies {
     // FirebaseUI
     implementation 'com.firebaseui:firebase-ui-auth:7.2.0'
 
+    // Navigation
+    implementation("androidx.navigation:navigation-fragment-ktx:2.3.5")
+    implementation("androidx.navigation:navigation-ui-ktx:2.3.5")
+
+    // Feature module Support
+    implementation("androidx.navigation:navigation-dynamic-features-fragment:2.3.5")
+
+    // Testing Navigation
+    androidTestImplementation("androidx.navigation:navigation-testing:2.3.5")
+
+    // Jetpack Compose Integration
+    //implementation("androidx.navigation:navigation-compose:1.0.0-alpha10")
+
     // Maps SDK for Android Utility Library
     // implementation 'com.google.maps.android:android-maps-utils:2.2.0'
 

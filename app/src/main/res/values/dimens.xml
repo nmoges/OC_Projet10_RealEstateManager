@@ -21,6 +21,7 @@
     <dimen name="unit_text">16sp</dimen>
     <dimen name="icon_photo_size">150dp</dimen>
     <dimen name="text_photo_size">16sp</dimen>
+
     <!-- fragment_estate_details.xml -->
     <dimen name="text_description_size">15sp</dimen>
     <dimen name="margin_start_description_material_text">20dp</dimen>

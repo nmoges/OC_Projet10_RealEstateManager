@@ -5,10 +5,10 @@
     <dimen name="fab_size">56dp</dimen>
 
     <!-- fragment-list_estate_item.xml -->
-    <dimen name="icon_item_size">200dp</dimen>
-    <dimen name="text_type_item_size">40sp</dimen>
-    <dimen name="text_city_item_size">35sp</dimen>
-    <dimen name="text_price_item_size">40sp</dimen>
+    <dimen name="icon_item_size">100dp</dimen>
+    <dimen name="text_type_item_size">18sp</dimen>
+    <dimen name="text_city_item_size">18sp</dimen>
+    <dimen name="text_price_item_size">20sp</dimen>
 
     <!-- fragment_new_estate.xml -->
     <dimen name="margin_top_text_input_layout">40dp</dimen>
