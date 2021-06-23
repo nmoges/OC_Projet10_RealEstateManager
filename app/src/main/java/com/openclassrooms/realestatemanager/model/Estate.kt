@@ -17,7 +17,7 @@ package com.openclassrooms.realestatemanager.model
 class Estate(
     var type: String,
     var district: String,
-    var price: Double,
+    var price: String,
     var numberRooms: Int,
     var numberBathrooms: Int,
     var numberBedrooms: Int,

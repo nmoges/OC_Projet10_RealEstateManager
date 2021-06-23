@@ -43,12 +43,18 @@ class ListEstatesAdapter : RecyclerView.Adapter<ListEstatesAdapter.ListEstateVie
 
         holder.district.text = listEstates[position].district
 
-        holder.price.text = listEstates[position].price.toBigDecimal().toPlainString()
+        //holder.price.text =
+        formatPrice(listEstates[position].price)
     }
 
     override fun getItemCount(): Int = listEstates.size
 
-  /*  interface OnItemClickListener {
-        fun onClick(position: Int)
-    }*/
+    /**
+     * Convert price to correct format before displaying on RecyclerView.
+     */
+    private fun formatPrice(price: String) : String {
+        //TODO() : To update to include "€"
+        val priceDecimal: Int = (price.toDouble()).toInt()
+        return  "$" + String.format("%,d", priceDecimal).replace(" ", ",")
+    }
 }

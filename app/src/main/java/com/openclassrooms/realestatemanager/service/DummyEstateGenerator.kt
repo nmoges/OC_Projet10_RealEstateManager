@@ -12,7 +12,7 @@ class DummyEstateGenerator {
             Estate(
                 type = "Penthouse",
                 district = "Upper East Side",
-                price = 29872000.0,
+                price = "29872000",
                 numberRooms = 8,
                 numberBathrooms = 2,
                 numberBedrooms = 2,
@@ -24,7 +24,7 @@ class DummyEstateGenerator {
             Estate(
                 type = "House",
                 district = "Southampton",
-                price = 41480000.0,
+                price = "41480000",
                 numberRooms = 10,
                 numberBathrooms = 2,
                 numberBedrooms = 3,
@@ -36,7 +36,7 @@ class DummyEstateGenerator {
             Estate(
                 type = "Duplex",
                 district = "Brooklyn",
-                price = 13990000.0,
+                price = "13990000",
                 numberRooms = 8,
                 numberBathrooms = 1,
                 numberBedrooms = 2,
