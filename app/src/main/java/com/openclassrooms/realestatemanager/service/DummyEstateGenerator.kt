@@ -20,7 +20,8 @@ class DummyEstateGenerator {
                 description = "Real Estate description Penthouse",
                 address = "740 Park Avenue\nApt 6/7A\nNew York\nNY 10021\nUnited States",
                 nameAgent = "Agent 1",
-                status = false),
+                status = false,
+                selected = false),
             Estate(
                 type = "House",
                 district = "Southampton",
@@ -32,7 +33,8 @@ class DummyEstateGenerator {
                 description = "Real Estate description House",
                 address = "748 Park Avenue\nApt 6/7A\nNew York\nNY 10021\nUnited States",
                 nameAgent = "Agent 2",
-                status = false),
+                status = false,
+                selected = false),
             Estate(
                 type = "Duplex",
                 district = "Brooklyn",
@@ -44,7 +46,8 @@ class DummyEstateGenerator {
                 description = "Real Estate description Duplex",
                 address = "800 Park Avenue\nApt 8\nNew York\nNY 10021\nUnited States",
                 nameAgent = "Agent 2",
-                status = false)
+                status = false,
+                selected = false)
         )
     }
 }

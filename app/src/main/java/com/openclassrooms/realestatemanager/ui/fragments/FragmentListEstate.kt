@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.openclassrooms.realestatemanager.ui.activities.MainActivity
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.databinding.FragmentListEstateBinding
+import com.openclassrooms.realestatemanager.model.Estate
 import com.openclassrooms.realestatemanager.ui.adapters.ListEstatesAdapter
 import com.openclassrooms.realestatemanager.viewmodels.ListEstatesViewModel
 
@@ -47,17 +48,27 @@ class FragmentListEstate : Fragment() {
 
         initializeRecyclerView()
         initializeViewModel()
-        handleClickOnEstateItem()
     }
 
 
-    private fun handleClickOnEstateItem() {
-        (binding.recyclerViewListEstates.adapter as ListEstatesAdapter)
-            .onItemClickListener = {
-            Log.i("ITEM_CLICK", "Type : ${it.type}")
-            Log.i("ITEM_CLICK", "Description : ${it.description}")
-            Log.i("ITEM_CLICK", "Address : ${it.address}" )
+    private fun handleClickOnEstateItem(position: Int) {
+        (binding.recyclerViewListEstates.adapter as ListEstatesAdapter).apply {
+            clearPreviousSelection(position)
+            val status: Boolean = updateItemSelectionStatus(position)
+            notifyDataSetChanged()
+
+             if (status) {
+                 (activity as MainActivity).handleFabVisibility(View.INVISIBLE)
+                 (activity as MainActivity).handleBackgroundGridVisibility(View.INVISIBLE)
+                 (activity as MainActivity).displayFragmentDetails()
+             }
+             else (activity as MainActivity).onBackPressed()
         }
+    }
+
+
+    fun clearCurrentSelection() {
+        (binding.recyclerViewListEstates.adapter as ListEstatesAdapter).clearCurrentSelection()
     }
 
 
@@ -78,12 +89,13 @@ class FragmentListEstate : Fragment() {
         listEstatesViewModel = ViewModelProvider(this).get(ListEstatesViewModel::class.java)
         listEstatesViewModel.getEstates().observe(viewLifecycleOwner, {
             (binding.recyclerViewListEstates.adapter as ListEstatesAdapter).apply {
+                resetSelection(it)
                 // Update list
                 listEstates.addAll(it)
                 notifyDataSetChanged()
                 // Update background text
-                val visibility: Int = if (listEstates.size > 0) View.INVISIBLE else View.INVISIBLE
-                handleBackgroundMaterialTextVisibility(visibility)
+                handleBackgroundMaterialTextVisibility(if (listEstates.size > 0) View.INVISIBLE
+                                                       else View.INVISIBLE)
             }
         })
     }
@@ -92,11 +104,25 @@ class FragmentListEstate : Fragment() {
         binding.recyclerViewListEstates.apply {
             setHasFixedSize(true)
             layoutManager = LinearLayoutManager(context)
-            adapter = ListEstatesAdapter()
+            adapter = ListEstatesAdapter { handleClickOnEstateItem(it) }
         }
     }
 
     private fun handleBackgroundMaterialTextVisibility(visibility: Int) {
         binding.txtBackgroundNoRealEstate.visibility = visibility
+    }
+
+    private fun resetSelection(listEstate: List<Estate>) {
+        val orientation: Boolean = (activity as MainActivity).typeOrientation
+        val itemSelected: Boolean = parentFragmentManager.findFragmentByTag(FragmentEstateDetails.TAG) == null
+
+        if ((activity as MainActivity).typeLayout) {
+            if (!orientation && !itemSelected) {
+                for (i in listEstate.indices) listEstate[i].selected = false
+            }
+        }
+        else {
+            for (i in listEstate.indices) { listEstate[i].selected = false }
+        }
     }
 }

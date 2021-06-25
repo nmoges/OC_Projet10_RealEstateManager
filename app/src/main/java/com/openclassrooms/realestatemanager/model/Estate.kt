@@ -13,6 +13,7 @@ package com.openclassrooms.realestatemanager.model
  * @param address : location address
  * @param nameAgent : name of the associated real estate agent
  * @param status : Real estate status (sold, or for sale)
+ * @param selected : Define if a estate is currently being consulted (true) or not (false)
  */
 class Estate(
     var type: String,
@@ -25,5 +26,6 @@ class Estate(
     var description: String,
     var address: String,
     var nameAgent: String,
-    var status: Boolean
+    var status: Boolean,
+    var selected: Boolean
 )
