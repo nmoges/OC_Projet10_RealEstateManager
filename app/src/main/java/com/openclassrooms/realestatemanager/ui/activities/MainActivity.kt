@@ -29,7 +29,6 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
     var typeOrientation: Boolean = false // true : Orientation landscape
                                          // false : Orientation portrait
 
-    private lateinit var fragmentListEstate: FragmentListEstate
     private var fragmentNewEstateStack : Fragment? = null
     private var fragmentEstateDetailsStack: Fragment? = null
 
@@ -41,16 +40,16 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
         checkScreenProperties()
         initializeFragmentListEstate()
-        restoreExistingFragments()
-
         if (savedInstanceState != null) {
             restoreViews(savedInstanceState)
-            fragmentNewEstateStack = supportFragmentManager.findFragmentByTag(FragmentNewEstate.TAG)
-            fragmentEstateDetailsStack = supportFragmentManager.findFragmentByTag(FragmentEstateDetails.TAG)
+            fragmentNewEstateStack = supportFragmentManager
+                                                    .findFragmentByTag(FragmentNewEstate.TAG)
+            fragmentEstateDetailsStack = supportFragmentManager
+                                                    .findFragmentByTag(FragmentEstateDetails.TAG)
             removeExistingFragments()
+            restoreExistingFragments()
         }
         initializeToolbar()
         handleFloatingActionButton()
@@ -62,11 +61,13 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
             fragmentNewEstateStack != null -> {
                 fragmentNewEstateStack?.let {
                     supportFragmentManager.beginTransaction().remove(it).commit()
+                    supportFragmentManager.executePendingTransactions()
                 }
             }
             fragmentEstateDetailsStack != null -> {
                 fragmentEstateDetailsStack?.let {
                     supportFragmentManager.beginTransaction().remove(it).commit()
+                    supportFragmentManager.executePendingTransactions()
                 }
             }
         }
@@ -80,14 +81,14 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
     private fun restoreFragment(@IdRes typeContainer: Int) {
         // Handle which fragment to display and in which fragment container
         when {
-            supportFragmentManager.findFragmentByTag(FragmentNewEstate.TAG) != null -> {
+            fragmentNewEstateStack != null -> {
                 launchTransaction(typeContainer,
-                    FragmentNewEstate.newInstance(),
+                    fragmentNewEstateStack as FragmentNewEstate,
                     FragmentNewEstate.TAG)
             }
-            supportFragmentManager.findFragmentByTag(FragmentEstateDetails.TAG) != null -> {
+            fragmentEstateDetailsStack != null -> {
                 launchTransaction(typeContainer,
-                    FragmentEstateDetails.newInstance(),
+                    fragmentEstateDetailsStack as FragmentEstateDetails,
                     FragmentEstateDetails.TAG)
             }
         }
@@ -122,7 +123,6 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
         // Define container
         val container: Int = if (typeOrientation && typeLayout) R.id.fragment_container_view_right
         else R.id.fragment_container_view
-
         restoreFragment(container)
     }
 
@@ -142,8 +142,8 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
     private fun initializeToolbar() {
         setSupportActionBar(binding.toolbar)
         val color: Int = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
-                            resources.getColor(R.color.white, null)
-                         else resources.getColor(R.color.white)
+            resources.getColor(R.color.white, null)
+        else resources.getColor(R.color.white)
         binding.toolbar.setTitleTextColor(color)
     }
 
@@ -169,7 +169,6 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
                 if (typeOrientation && typeLayout)
                     R.id.fragment_container_view_right
                 else R.id.fragment_container_view
-
             launchTransaction(containerId, FragmentNewEstate.newInstance(), FragmentNewEstate.TAG)
 
             handleFabVisibility(View.INVISIBLE)
@@ -221,7 +220,7 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
 
             // Reset item selection on list
             val fragmentListEstate = supportFragmentManager.findFragmentByTag(FragmentListEstate.TAG)
-            if (fragmentListEstate != null ) {
+            if (fragmentListEstate != null) {
                 (fragmentListEstate as FragmentListEstate).clearCurrentSelection()
             }
 

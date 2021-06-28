@@ -62,6 +62,10 @@
     <string name="str_content_desc_number_of_rooms_icon">Icon number of rooms</string>
     <string name="str_content_desc_surface_icon">Icon Surface</string>
 
+    <!-- ResetEstateDialog.kt -->
+    <string name="str_dialog_reset_title">Reset estate</string>
+    <string name="str_dialog_reset_button_yes">Yes</string>
+    <string name="str_dialog_reset_button_no">No</string>
     <!-- FOR LAYOUT TESTING -->
     <!-- fragment_estate_details.xml -->
     <string name="fake_description">Anchored by a vast marble gallery with sweeping staircase,

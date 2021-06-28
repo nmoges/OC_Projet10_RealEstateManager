@@ -55,7 +55,7 @@
 
         <!-- Section "Description" -->
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/new_estate_desc_section_text_input_edit"
+            android:id="@+id/new_estate_desc_section_text_input_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/margin_start_text_input_layout"
@@ -64,7 +64,7 @@
             style="@style/TextInputLayoutCustom">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/text_input_object_meeting"
+                android:id="@+id/new_estate_desc_section_text_input_edit"
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
                 android:gravity="top"

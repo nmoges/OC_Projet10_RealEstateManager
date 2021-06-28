@@ -26,6 +26,6 @@ class Estate(
     var description: String,
     var address: String,
     var nameAgent: String,
-    var status: Boolean,
-    var selected: Boolean
+    var status: Boolean = false,
+    var selected: Boolean = false
 )
