@@ -251,7 +251,7 @@
             style="@style/MaterialTextViewTitleCustom"/>
 
         <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/text_section_description"
+            android:id="@+id/description"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/margin_start_description_material_text"
@@ -305,6 +305,7 @@
                         android:layout_column="0"
                         android:textSize="@dimen/text_description_grid"/>
                     <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/surface_value"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/fake_surface_value"
@@ -352,6 +353,7 @@
                         android:layout_column="0"
                         android:textSize="@dimen/text_description_grid"/>
                     <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/number_of_rooms_value"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/fake_number_of_rooms_value"
@@ -400,6 +402,7 @@
                         android:layout_column="0"
                         android:textSize="@dimen/text_description_grid"/>
                     <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/number_of_bedrooms_value"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/fake_number_of_bedrooms_value"
@@ -448,6 +451,7 @@
                         android:layout_column="0"
                         android:textSize="@dimen/text_description_grid"/>
                     <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/number_of_bathrooms_value"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/fake_number_of_bathrooms_value"

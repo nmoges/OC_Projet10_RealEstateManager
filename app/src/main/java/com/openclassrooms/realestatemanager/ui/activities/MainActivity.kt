@@ -10,11 +10,13 @@ import androidx.annotation.IdRes
 import androidx.annotation.StringRes
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.databinding.ActivityMainBinding
 import com.openclassrooms.realestatemanager.ui.fragments.FragmentEstateDetails
 import com.openclassrooms.realestatemanager.ui.fragments.FragmentListEstate
 import com.openclassrooms.realestatemanager.ui.fragments.FragmentNewEstate
+import com.openclassrooms.realestatemanager.viewmodels.ListEstatesViewModel
 
 /**
  * [AppCompatActivity] subclass which defines the main activity of the application.
@@ -22,15 +24,21 @@ import com.openclassrooms.realestatemanager.ui.fragments.FragmentNewEstate
  */
 class MainActivity : AppCompatActivity(), MainActivityCallback {
 
+    // Binding
     private lateinit var binding: ActivityMainBinding
 
+    // Screen parameters
     var typeLayout: Boolean = false // true : activity_main.xml (large-land)
-                                    // false : activity_main.xml
+                                            // false : activity_main.xml
     var typeOrientation: Boolean = false // true : Orientation landscape
-                                         // false : Orientation portrait
+                                                // false : Orientation portrait
+    private var containerId: Int = 0
 
+    // Fragments
     private var fragmentNewEstateStack : Fragment? = null
     private var fragmentEstateDetailsStack: Fragment? = null
+
+    lateinit var listEstatesViewModel: ListEstatesViewModel
 
     companion object {
         const val FAB_STATUS_KEY = "FAB_STATUS_KEY"
@@ -41,6 +49,7 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         checkScreenProperties()
+
         initializeFragmentListEstate()
         if (savedInstanceState != null) {
             restoreViews(savedInstanceState)
@@ -49,14 +58,15 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
             fragmentEstateDetailsStack = supportFragmentManager
                                                     .findFragmentByTag(FragmentEstateDetails.TAG)
             removeExistingFragments()
-            restoreExistingFragments()
+            restoreFragments(containerId)
         }
         initializeToolbar()
         handleFloatingActionButton()
+
+        listEstatesViewModel = ViewModelProvider(this).get(ListEstatesViewModel::class.java)
     }
 
     private fun removeExistingFragments() {
-
         when {
             fragmentNewEstateStack != null -> {
                 fragmentNewEstateStack?.let {
@@ -76,9 +86,11 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
     private fun checkScreenProperties() {
         typeLayout = findViewById<View>(R.id.fragment_container_view) == null
         typeOrientation = resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+        containerId = if (typeOrientation && typeLayout) R.id.fragment_container_view_right
+                      else R.id.fragment_container_view
     }
 
-    private fun restoreFragment(@IdRes typeContainer: Int) {
+    private fun restoreFragments(@IdRes typeContainer: Int) {
         // Handle which fragment to display and in which fragment container
         when {
             fragmentNewEstateStack != null -> {
@@ -95,11 +107,13 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
     }
 
     fun displayFragmentDetails() {
-        val containerId =
-            if (typeOrientation && typeLayout)
-                R.id.fragment_container_view_right
-            else R.id.fragment_container_view
         launchTransaction(containerId, FragmentEstateDetails.newInstance(), FragmentEstateDetails.TAG)
+    }
+
+    fun displayFragmentNewEstate(updateEstate: Boolean) {
+        val fragment: FragmentNewEstate = FragmentNewEstate.newInstance()
+        fragment.updateEstate = updateEstate
+        launchTransaction(containerId, fragment, FragmentNewEstate.TAG)
     }
 
     private fun initializeFragmentListEstate() {
@@ -117,13 +131,6 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
 
         // Display new instance
         launchTransaction(container, FragmentListEstate.newInstance(), FragmentListEstate.TAG)
-    }
-
-    private fun restoreExistingFragments() {
-        // Define container
-        val container: Int = if (typeOrientation && typeLayout) R.id.fragment_container_view_right
-        else R.id.fragment_container_view
-        restoreFragment(container)
     }
 
     /**
@@ -165,10 +172,6 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
      */
     private fun handleFloatingActionButton() {
         binding.fab.setOnClickListener {
-            val containerId =
-                if (typeOrientation && typeLayout)
-                    R.id.fragment_container_view_right
-                else R.id.fragment_container_view
             launchTransaction(containerId, FragmentNewEstate.newInstance(), FragmentNewEstate.TAG)
 
             handleFabVisibility(View.INVISIBLE)
@@ -206,7 +209,7 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
      * @return : true if an existing fragment has been popped off the back stack, else false.
      */
     private fun cleanBackStack(): Boolean {
-        val container: Int = if (typeOrientation && typeLayout) R.id.fragment_container_view_left
+        val containerIdList: Int = if (typeOrientation && typeLayout) R.id.fragment_container_view_left
         else R.id.fragment_container_view
 
         fragmentNewEstateStack = supportFragmentManager.findFragmentByTag(FragmentNewEstate.TAG)
@@ -215,7 +218,7 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
         if (fragmentNewEstateStack != null || fragmentEstateDetailsStack != null) {
             // Display FragmentListEstate if needed
             if (!(typeOrientation && typeLayout)) {
-                launchTransaction(container, FragmentListEstate.newInstance(), FragmentListEstate.TAG)
+                launchTransaction(containerIdList, FragmentListEstate.newInstance(), FragmentListEstate.TAG)
             }
 
             // Reset item selection on list

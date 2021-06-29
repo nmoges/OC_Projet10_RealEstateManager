@@ -6,7 +6,6 @@ import android.util.Log
 import android.view.*
 import androidx.appcompat.view.menu.MenuBuilder
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.openclassrooms.realestatemanager.ui.activities.MainActivity
 import com.openclassrooms.realestatemanager.R
@@ -60,6 +59,9 @@ class FragmentListEstate : Fragment() {
              if (status) {
                  (activity as MainActivity).handleFabVisibility(View.INVISIBLE)
                  (activity as MainActivity).handleBackgroundGridVisibility(View.INVISIBLE)
+                 // Add current selected item to view model
+                 listEstatesViewModel.setSelectedEstate(position)
+                 // Display FragmentDetails with selected item
                  (activity as MainActivity).displayFragmentDetails()
              }
              else (activity as MainActivity).onBackPressed()
@@ -86,8 +88,8 @@ class FragmentListEstate : Fragment() {
 
     private fun initializeViewModel() {
         // Initialize viewModel
-        listEstatesViewModel = ViewModelProvider(this).get(ListEstatesViewModel::class.java)
-        listEstatesViewModel.getEstates().observe(viewLifecycleOwner, {
+        listEstatesViewModel = (activity as MainActivity).listEstatesViewModel
+        listEstatesViewModel.listEstates.observe(viewLifecycleOwner, {
             (binding.recyclerViewListEstates.adapter as ListEstatesAdapter).apply {
                 resetSelection(it)
                 // Update list

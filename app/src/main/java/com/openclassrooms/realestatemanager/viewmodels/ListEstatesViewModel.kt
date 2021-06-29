@@ -9,12 +9,22 @@ import com.openclassrooms.realestatemanager.service.DummyEstateGenerator
 
 class ListEstatesViewModel : ViewModel() {
 
-    private val listEstates: MutableLiveData<List<Estate>> = MutableLiveData()
+    /**
+     * Contains list of existing [Estate] objects.
+     */
+    val listEstates: MutableLiveData<List<Estate>> = MutableLiveData()
+
+    /**
+     * Contains selected [Estate].
+     */
+    var selectedEstate: MutableLiveData<Estate> = MutableLiveData()
 
     init {
         // TODO() : To update when Room database is implemented
         listEstates.value = DummyEstateGenerator.dummyListEstate
     }
 
-    fun getEstates(): LiveData<List<Estate>> = listEstates
+    fun setSelectedEstate(position: Int) {
+        selectedEstate.value = listEstates.value?.get(position)
+    }
 }

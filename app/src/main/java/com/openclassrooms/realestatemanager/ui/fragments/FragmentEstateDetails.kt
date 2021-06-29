@@ -6,6 +6,9 @@ import android.view.*
 import androidx.fragment.app.Fragment
 import com.openclassrooms.realestatemanager.ui.activities.MainActivity
 import com.openclassrooms.realestatemanager.R
+import com.openclassrooms.realestatemanager.databinding.FragmentEstateDetailsBinding
+import com.openclassrooms.realestatemanager.model.Estate
+import com.openclassrooms.realestatemanager.viewmodels.ListEstatesViewModel
 
 class FragmentEstateDetails : Fragment() {
 
@@ -14,7 +17,9 @@ class FragmentEstateDetails : Fragment() {
         fun newInstance(): FragmentEstateDetails = FragmentEstateDetails()
     }
 
-    lateinit var binding: FragmentEstateDetails
+    private lateinit var binding: FragmentEstateDetailsBinding
+    private lateinit var listEstatesViewModel: ListEstatesViewModel
+    private lateinit var selectedEstateToDisplay: Estate
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,15 +28,16 @@ class FragmentEstateDetails : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_estate_details, container, false)
+        binding = FragmentEstateDetailsBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         // Initialize toolbar
         (activity as MainActivity).setToolbarProperties(
-            R.string.str_toolbar_fragment_list_estate_title,
-                                       true)
+            R.string.str_toolbar_fragment_list_estate_title, true)
+        initializeViewModel()
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -43,8 +49,35 @@ class FragmentEstateDetails : Fragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId) {
             android.R.id.home -> { (activity as MainActivity).onBackPressed() }
-            R.id.edit -> { }
+            R.id.edit -> {
+                (activity as MainActivity).displayFragmentNewEstate(true)
+            }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    /**
+     * Initializes observer to [MainActivity] viewModel.
+     */
+    private fun initializeViewModel() {
+        listEstatesViewModel = (activity as MainActivity).listEstatesViewModel
+        listEstatesViewModel.selectedEstate.observe(viewLifecycleOwner, {
+            selectedEstateToDisplay = it
+            updateViewsWithEstateProperties()
+        })
+    }
+
+    /**
+     * Initializes views with selected [Estate] properties values.
+     */
+    private fun updateViewsWithEstateProperties() {
+        binding.description.text = selectedEstateToDisplay.description
+
+        val surface: String = selectedEstateToDisplay.surface.toString() + " sq m"
+        binding.surfaceValue.text = surface
+
+        binding.numberOfRoomsValue.text = selectedEstateToDisplay.numberRooms.toString()
+        binding.numberOfBathroomsValue.text = selectedEstateToDisplay.numberBathrooms.toString()
+        binding.numberOfBedroomsValue.text = selectedEstateToDisplay.numberBedrooms.toString()
     }
 }

@@ -1,14 +1,17 @@
 package com.openclassrooms.realestatemanager.ui.fragments
 
 import android.os.Bundle
+import android.text.Editable
 import android.util.Log
 import android.view.*
 import androidx.fragment.app.Fragment
 import com.openclassrooms.realestatemanager.ui.activities.MainActivity
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.databinding.FragmentNewEstateBinding
+import com.openclassrooms.realestatemanager.model.Estate
 import com.openclassrooms.realestatemanager.ui.dialogs.ResetEstateDialog
 import com.openclassrooms.realestatemanager.ui.dialogs.ResetEstateDialogCallback
+import com.openclassrooms.realestatemanager.viewmodels.ListEstatesViewModel
 
 /**
  * [Fragment] subclass used to display a view allowing user to create
@@ -19,17 +22,29 @@ class FragmentNewEstate : Fragment(), ResetEstateDialogCallback {
     companion object {
         const val TAG: String = "TAG_FRAGMENT_NEW_ESTATE"
         const val NAME_KEY: String = "NAME_KEY"
-        const val LOCATION_KEY: String = "LOCATION_KEY"
-        const val DESCRIPTION_KEY: String = "DESCRIPTION_KEY"
-        const val SURFACE_KEY: String = "SURFACE_KEY"
-        const val ROOMS_KEY: String = "ROOMS_KEY"
-        const val BATHROOMS_KEY: String = "BATHROOMS_KEY"
-        const val BEDROOMS_KEY: String = "BEDROOMS_KEY"
         fun newInstance(): FragmentNewEstate = FragmentNewEstate()
     }
 
+    /**
+     * View Binding parameter
+     */
     lateinit var binding: FragmentNewEstateBinding
 
+    /**
+     * Contains ViewModel reference
+     */
+    private lateinit var listEstatesViewModel: ListEstatesViewModel
+
+    /**
+     * Selected Estate to modify
+     */
+    private lateinit var selectedEstateToDisplay: Estate
+
+    /**
+     * Defines if current fragment is display for new estate creation (false) or to modify an
+     * existing one (true)
+     */
+    var updateEstate: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,17 +60,10 @@ class FragmentNewEstate : Fragment(), ResetEstateDialogCallback {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        if (savedInstanceState != null) {
-            restoreTextInputEditValues(savedInstanceState)
-            if (parentFragmentManager.findFragmentByTag(ResetEstateDialog.TAG) != null) {
-                val dialog: ResetEstateDialog = (parentFragmentManager
-                                     .findFragmentByTag(ResetEstateDialog.TAG)) as ResetEstateDialog
-                dialog.callback = this
-            }
-        }
-        // Initialize toolbar
-        (activity as MainActivity)
-            .setToolbarProperties(R.string.str_toolbar_fragment_new_estate_title, true)
+        if (savedInstanceState != null) restoreDialogCallback()
+        updateToolbarTitle()
+        updateMaterialButtonText()
+        if (updateEstate) initializeViewModel()
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -73,7 +81,18 @@ class FragmentNewEstate : Fragment(), ResetEstateDialogCallback {
     }
 
     /**
-     * Displays a [ResetEstateDialog] to user.
+     * Restores [ResetEstateDialog] dialog callback after a configuration change.
+     */
+    private fun restoreDialogCallback() {
+        if (parentFragmentManager.findFragmentByTag(ResetEstateDialog.TAG) != null) {
+            val dialog: ResetEstateDialog = (parentFragmentManager
+                .findFragmentByTag(ResetEstateDialog.TAG)) as ResetEstateDialog
+            dialog.callback = this
+        }
+    }
+
+    /**
+     * Displays a [ResetEstateDialog] dialog to user.
      */
     private fun displayResetDescriptionDialog() {
         val dialog = ResetEstateDialog(this)
@@ -93,18 +112,64 @@ class FragmentNewEstate : Fragment(), ResetEstateDialogCallback {
         binding.newEstateNbBedroomsSectionTextInputEdit.text?.clear()
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putString(NAME_KEY, binding.newEstateNameSectionTextInputEdit.text.toString())
-        outState.putString(LOCATION_KEY, binding.newEstateLocationSectionTextInputEdit.text.toString())
-        outState.putString(DESCRIPTION_KEY, binding.newEstateDescSectionTextInputEdit.text.toString())
-        outState.putString(SURFACE_KEY, binding.newEstateSurfaceSectionTextInputEdit.text.toString())
-        outState.putString(ROOMS_KEY, binding.newEstateNbRoomsSectionTextInputEdit.text.toString())
-        outState.putString(BATHROOMS_KEY, binding.newEstateNbBathroomsSectionTextInputEdit.text.toString())
-        outState.putString(BEDROOMS_KEY, binding.newEstateNbBedroomsSectionTextInputEdit.text.toString())
+    /**
+     * Initializes observer to [MainActivity] viewModel.
+     */
+    private fun initializeViewModel() {
+        listEstatesViewModel = (activity as MainActivity).listEstatesViewModel
+        listEstatesViewModel.selectedEstate.observe(viewLifecycleOwner, {
+            selectedEstateToDisplay = it
+            updateTextInputEditWithEstateProperties()
+        })
     }
 
-    private fun restoreTextInputEditValues(savedInstanceState: Bundle?) {
-        binding.newEstateNameSectionTextInputEdit.setText(savedInstanceState?.getString(NAME_KEY))
+    /**
+     * Initializes TextInputEdit fields with current [Estate] properties values to modify.
+     */
+    private fun updateTextInputEditWithEstateProperties() {
+        binding.newEstateNameSectionTextInputEdit.text =
+        Editable.Factory.getInstance().newEditable(selectedEstateToDisplay.type)
+
+        binding.newEstateLocationSectionTextInputEdit.text =
+        Editable.Factory.getInstance().newEditable(selectedEstateToDisplay.address)
+
+        binding.newEstateDescSectionTextInputEdit.text =
+        Editable.Factory.getInstance().newEditable(selectedEstateToDisplay.description)
+
+        binding.newEstateSurfaceSectionTextInputEdit.text =
+        Editable.Factory.getInstance().newEditable(selectedEstateToDisplay.surface.toString())
+
+        binding.newEstateNbRoomsSectionTextInputEdit.text =
+        Editable.Factory.getInstance().newEditable(selectedEstateToDisplay.numberRooms.toString())
+
+        binding.newEstateNbBathroomsSectionTextInputEdit.text =
+        Editable.Factory.getInstance().newEditable(selectedEstateToDisplay.numberBathrooms.toString())
+
+        binding.newEstateNbBedroomsSectionTextInputEdit.text =
+        Editable.Factory.getInstance().newEditable(selectedEstateToDisplay.numberBedrooms.toString())
+    }
+
+    /**
+     * Updates MaterialButton text according to [updateEstate] value.
+     */
+    private fun updateMaterialButtonText() {
+        if (updateEstate)
+            binding.confirmationButton.text =
+                resources.getString(R.string.str_button_confirmation_modification)
+        else
+            binding.confirmationButton.text =
+                resources.getString(R.string.str_button_confirmation_creation)
+    }
+
+    /**
+     * Updates [MainActivity] toolbar title according to [updateEstate] value.
+     */
+    private fun updateToolbarTitle() {
+        if (updateEstate)
+            (activity as MainActivity)
+            .setToolbarProperties(R.string.str_toolbar_fragment_modify_estate_title, true)
+        else
+            (activity as MainActivity)
+            .setToolbarProperties(R.string.str_toolbar_fragment_new_estate_title, true)
     }
 }
