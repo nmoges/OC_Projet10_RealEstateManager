@@ -12,19 +12,23 @@ class ListEstatesViewModel : ViewModel() {
     /**
      * Contains list of existing [Estate] objects.
      */
-    val listEstates: MutableLiveData<List<Estate>> = MutableLiveData()
+    private val _listEstates: MutableLiveData<List<Estate>> = MutableLiveData()
+    val listEstates: LiveData<List<Estate>>
+        get() = _listEstates
 
     /**
      * Contains selected [Estate].
      */
-    var selectedEstate: MutableLiveData<Estate> = MutableLiveData()
+    private val _selectedEstate: MutableLiveData<Estate> = MutableLiveData()
+    val selectedEstate: LiveData<Estate>
+        get() = _selectedEstate
 
     init {
         // TODO() : To update when Room database is implemented
-        listEstates.value = DummyEstateGenerator.dummyListEstate
+        _listEstates.value = DummyEstateGenerator.dummyListEstate
     }
 
     fun setSelectedEstate(position: Int) {
-        selectedEstate.value = listEstates.value?.get(position)
+        _selectedEstate.value = listEstates.value?.get(position)
     }
 }

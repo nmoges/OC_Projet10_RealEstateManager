@@ -4,7 +4,6 @@ import android.content.res.Configuration
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.annotation.IdRes
 import androidx.annotation.StringRes
@@ -234,12 +233,13 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
     }
 
     override fun onBackPressed() {
-        // Close application if no additional fragment to remove from back stack
-        if (!cleanBackStack()) finishAffinity()
-        else {
-            handleFabVisibility(View.VISIBLE)
-            handleBackgroundGridVisibility(View.VISIBLE)
-            setToolbarProperties(R.string.str_toolbar_fragment_list_estate_title, false)
+        if (!checkIfDialogIsDisplayed()) {
+            if (!cleanBackStack()) finishAffinity()
+            else {
+                handleFabVisibility(View.VISIBLE)
+                handleBackgroundGridVisibility(View.VISIBLE)
+                setToolbarProperties(R.string.str_toolbar_fragment_list_estate_title, false)
+            }
         }
     }
 
@@ -247,5 +247,14 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
         binding.fab.apply {
             if (visibility == View.VISIBLE) show() else hide()
         }
+    }
+
+    private fun checkIfDialogIsDisplayed(): Boolean {
+        if (supportFragmentManager.findFragmentByTag(FragmentNewEstate.TAG) != null) {
+            val fragment: FragmentNewEstate =
+                supportFragmentManager.findFragmentByTag(FragmentNewEstate.TAG) as FragmentNewEstate
+            if (fragment.dismissDialogOnBackPressed()) return true
+        }
+        return false
     }
 }

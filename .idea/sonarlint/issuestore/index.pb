@@ -11,7 +11,11 @@ Aapp/src/main/java/com/openclassrooms/realestatemanager/Utils.java,f\1\f1cdde1a
 Xapp/src/main/java/com/openclassrooms/realestatemanager/ui/adapters/ListEstatesAdapter.kt,d\0\d06173742ed2234766d9661946f87a9e6e2a544f
 P
  app/src/main/AndroidManifest.xml,8\c\8c55c3ccc257e5907959013f99656e4c8ec3903e
-†
-Vapp/src/main/java/com/openclassrooms/realestatemanager/ui/dialogs/ResetEstateDialog.kt,0\f\0fdaf8f61de4f93bef965c70f71955d80e1ce61e
+Œ
+\app/src/main/java/com/openclassrooms/realestatemanager/ui/fragments/FragmentEstateDetails.kt,b\9\b942265427bb7d6d6717bf6813fb573821668d1b
+v
+Fapp/src/main/java/com/openclassrooms/realestatemanager/model/Estate.kt,0\a\0a743a39517e287c226241bc41f3283269c20dae
 Ž
 ^app/src/main/java/com/openclassrooms/realestatemanager/ui/dialogs/ResetEstateDialogCallback.kt,e\f\ef3101396132e60cacc87b036d85c09a2106b0d0
+Œ
+\app/src/main/java/com/openclassrooms/realestatemanager/ui/activities/MainActivityCallback.kt,1\c\1cb48a5261bf2e9a2c1fe4e64e68b72dc736910c
