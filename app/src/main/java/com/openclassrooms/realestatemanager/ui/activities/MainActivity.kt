@@ -1,9 +1,12 @@
 package com.openclassrooms.realestatemanager.ui.activities
 
+import android.content.Intent
 import android.content.res.Configuration
+import android.net.Uri
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.annotation.IdRes
 import androidx.annotation.StringRes
@@ -121,7 +124,7 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
         else R.id.fragment_container_view
 
         // Check if existing instance
-        if (supportFragmentManager.findFragmentByTag(FragmentListEstate.TAG) != null) {
+        if (isFragmentDisplayed(FragmentListEstate.TAG)) {
             val oldFragmentListEstate: FragmentListEstate =
                 supportFragmentManager.findFragmentByTag(FragmentListEstate.TAG) as FragmentListEstate
             supportFragmentManager.beginTransaction().remove(oldFragmentListEstate).commit()
@@ -171,6 +174,7 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
      */
     private fun handleFloatingActionButton() {
         binding.fab.setOnClickListener {
+            listEstatesViewModel.createNewEstate()
             launchTransaction(containerId, FragmentNewEstate.newInstance(), FragmentNewEstate.TAG)
 
             handleFabVisibility(View.INVISIBLE)
@@ -250,11 +254,36 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
     }
 
     private fun checkIfDialogIsDisplayed(): Boolean {
-        if (supportFragmentManager.findFragmentByTag(FragmentNewEstate.TAG) != null) {
+        if (isFragmentDisplayed(FragmentNewEstate.TAG)) {
             val fragment: FragmentNewEstate =
                 supportFragmentManager.findFragmentByTag(FragmentNewEstate.TAG) as FragmentNewEstate
             if (fragment.dismissDialogOnBackPressed()) return true
         }
         return false
     }
+
+    fun openPhotosGallery() {
+        val PICK_IMAGE_REQUEST_CODE = 1;
+        val intent: Intent = Intent()
+        intent.apply {
+            type = "image/*"
+            action = Intent.ACTION_GET_CONTENT
+        }
+        startActivityForResult(intent, PICK_IMAGE_REQUEST_CODE)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == 1 && resultCode == RESULT_OK && data != null) {
+            if (data.data != null) {
+                val imageMediaUri: Uri? = data.data
+                if (isFragmentDisplayed(FragmentNewEstate.TAG))
+                (supportFragmentManager.findFragmentByTag(FragmentNewEstate.TAG)
+                        as? FragmentNewEstate)?.addNewPhoto(imageMediaUri)
+            }
+        }
+    }
+
+    private fun isFragmentDisplayed(tag: String): Boolean =
+        supportFragmentManager.findFragmentByTag(tag) != null
 }

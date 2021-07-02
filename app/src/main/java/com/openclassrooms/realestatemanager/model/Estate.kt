@@ -27,5 +27,6 @@ class Estate(
     var address: String,
     var nameAgent: String,
     var status: Boolean = false,
-    var selected: Boolean = false
+    var selected: Boolean = false,
+    var listPhoto: MutableList<Photo> = mutableListOf()
 )

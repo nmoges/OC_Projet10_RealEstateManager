@@ -50,4 +50,6 @@
     <!-- style.xml -->
     <dimen name="corner_radius_button">50dp</dimen>
 
+    <!-- dialog_media_confirmation -->
+    <dimen name="image_dialog_size">150dp</dimen>
 </resources>

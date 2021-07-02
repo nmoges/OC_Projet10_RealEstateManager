@@ -31,4 +31,19 @@ class ListEstatesViewModel : ViewModel() {
     fun setSelectedEstate(position: Int) {
         _selectedEstate.value = listEstates.value?.get(position)
     }
+
+    fun createNewEstate() {
+        _selectedEstate.value = Estate(type = "",
+                                       district = "",
+                                       price = "",
+                                       numberRooms = 0,
+                                       numberBathrooms = 0,
+                                       numberBedrooms = 0,
+                                       surface = 0.0,
+                                       description = "",
+                                       address = "",
+                                       nameAgent = "",
+                                       status = false,
+                                       selected = false)
+    }
 }

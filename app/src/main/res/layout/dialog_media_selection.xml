@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/take_picture_button"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:text="@string/str_dialog_add_media_option_take_picture"
+        app:layout_constraintLeft_toLeftOf="@id/import_gallery_button"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/import_gallery_button"
+        app:icon="@drawable/ic_baseline_photo_camera_24dp_grey62"
+        android:paddingTop="15dp"
+        android:paddingBottom="15dp"
+        style="@style/MaterialButtonDialog"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/import_gallery_button"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:text="@string/str_dialog_add_media_option_import_from_gallery"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/take_picture_button"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginTop="5dp"
+        app:icon="@drawable/ic_baseline_insert_photo_24dp_grey62"
+        android:paddingTop="15dp"
+        android:paddingBottom="15dp"
+        style="@style/MaterialButtonDialog"/>
+</androidx.constraintlayout.widget.ConstraintLayout>

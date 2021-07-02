@@ -47,5 +47,6 @@
     <dimen name="material_button_margin_top">30dp</dimen>
     <dimen name="material_button_margin_bottom">50dp</dimen>
 
-
+    <!-- dialog_media_confirmation -->
+    <dimen name="image_dialog_size">150dp</dimen>
 </resources>

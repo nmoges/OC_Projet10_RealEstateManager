@@ -64,19 +64,23 @@
     <string name="str_content_desc_number_of_rooms_icon">Icon number of rooms</string>
     <string name="str_content_desc_surface_icon">Icon Surface</string>
 
-    <!-- ResetEstateDialog.kt -->
+    <!-- FragmentNewEstate.kt -->
     <string name="str_dialog_reset_title">Reset estate</string>
     <string name="str_dialog_reset_message">All information will be erased. Confirm ?</string>
 
-    <!-- CancelDialog.kt -->
     <string name="str_dialog_cancel_creation_title">Cancel creation</string>
     <string name="str_dialog_cancel_modification_title">Cancel modifications</string>
     <string name="str_dialog_cancel_creation_message">All information will be lost. Confirm ?</string>
     <string name="str_dialog_cancel_modifications_message">All modifications will be lost. Confirm ?</string>
 
-    <!-- ResetEstateDialog.kt/CancelDialog.kt -->
     <string name="str_dialog_button_yes">Yes</string>
     <string name="str_dialog_button_no">No</string>
+
+    <string name="str_dialog_add_media_title">Import media</string>
+    <string name="str_dialog_add_media_option_take_picture">Take picture</string>
+    <string name="str_dialog_add_media_option_import_from_gallery">Import from gallery</string>
+
+    <string name="str_dialog_name_media_title">Name photo</string>
 
     <!-- FOR LAYOUT TESTING -->
     <!-- fragment_estate_details.xml -->
@@ -109,4 +113,8 @@
     <string name="snack_bar_auth_cancelled">Authentication cancelled</string>
     <string name="snack_bar_error_no_network">Authentication failed - no network</string>
     <string name="snack_bar_error_unknown">Authentication failed - Unknown error</string>
+
+    <!-- dialog_media_confirmation.xml -->
+    <string name="str_dialog_new_media_hint_text_input">Name</string>
+
 </resources>

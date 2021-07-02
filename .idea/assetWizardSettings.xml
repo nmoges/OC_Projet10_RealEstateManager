@@ -18,7 +18,7 @@
                                 <PersistentState>
                                   <option name="values">
                                     <map>
-                                      <entry key="url" value="file:/$USER_HOME$/AppData/Local/Android/Sdk/icons/material/materialicons/insert_photo/baseline_insert_photo_24.xml" />
+                                      <entry key="url" value="file:/$USER_HOME$/AppData/Local/Android/Sdk/icons/material/materialicons/photo_camera/baseline_photo_camera_24.xml" />
                                     </map>
                                   </option>
                                 </PersistentState>
@@ -30,7 +30,7 @@
                           <map>
                             <entry key="autoMirrored" value="true" />
                             <entry key="color" value="9e9e9e" />
-                            <entry key="outputName" value="ic_baseline_insert_photo_50dp_grey62" />
+                            <entry key="outputName" value="ic_baseline_photo_camera_24dp_grey62" />
                             <entry key="sourceFile" value="C:\Users\nicol\OneDrive\Documents\Formation\OpenClassrooms\Projet 9\App\RealEstateManager\RealEstateManager" />
                           </map>
                         </option>
