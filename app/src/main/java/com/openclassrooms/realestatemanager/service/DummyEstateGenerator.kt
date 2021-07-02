@@ -12,7 +12,7 @@ class DummyEstateGenerator {
             Estate(
                 type = "Penthouse",
                 district = "Upper East Side",
-                price = "29872000",
+                price = 29872000,
                 numberRooms = 8,
                 numberBathrooms = 2,
                 numberBedrooms = 2,
@@ -25,11 +25,11 @@ class DummyEstateGenerator {
             Estate(
                 type = "House",
                 district = "Southampton",
-                price = "41480000",
+                price = 41480000,
                 numberRooms = 10,
                 numberBathrooms = 2,
                 numberBedrooms = 3,
-                surface = 920.0,
+                surface = 900.0,
                 description = "Real Estate description House",
                 address = "748 Park Avenue\nApt 6/7A\nNew York\nNY 10021\nUnited States",
                 nameAgent = "Agent 2",
@@ -38,7 +38,7 @@ class DummyEstateGenerator {
             Estate(
                 type = "Duplex",
                 district = "Brooklyn",
-                price = "13990000",
+                price = 13990000,
                 numberRooms = 8,
                 numberBathrooms = 1,
                 numberBedrooms = 2,

@@ -13,12 +13,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
+        <!-- TEXT INPUT NAME -->
 
-        <!-- Section "Name" -->
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/new_estate_name_section_text_input_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_start_text_input_layout"
             android:layout_marginStart="@dimen/margin_start_text_input_layout"
             android:layout_marginEnd="@dimen/margin_end_text_input_layout"
             style="@style/TextInputLayoutCustom">
@@ -33,7 +34,7 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- Section "Location" -->
+        <!-- TEXT INPUT LOCATION -->
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/new_estate_location_section_text_input_layout"
             android:layout_width="match_parent"
@@ -53,7 +54,7 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- Section "Description" -->
+        <!-- TEXT INPUT DESCRIPTION -->
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/new_estate_desc_section_text_input_layout"
             android:layout_width="match_parent"
@@ -74,9 +75,7 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- Section "Media" -->
-
-
+        <!-- HORIZONTAL SCROLL VIEW PHOTOS -->
         <HorizontalScrollView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -119,7 +118,188 @@
             </LinearLayout>
         </HorizontalScrollView>
 
-        <!-- Section "Surface" -->
+        <!-- TITLE/VALUE SURFACE -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_top_text_input_layout">
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/slider_surface_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="20dp"
+                android:text="@string/str_slider_surface_title"
+                android:textSize="@dimen/hint_text_input"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/slider_surface_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:text="@string/str_slider_value_default_surface"
+                android:layout_marginEnd="20dp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <!-- SLIDER SURFACE -->
+        <com.google.android.material.slider.Slider
+            android:id="@+id/slider_surface"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="40dp"
+            android:layout_marginEnd="40dp"
+            android:stepSize="50"
+            android:valueFrom="200"
+            android:valueTo="5000"/>
+
+        <!-- TITLE/VALUE ROOMS -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_top_text_input_layout">
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/slider_rooms_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/str_slider_rooms_title"
+                android:textStyle="bold"
+                android:textSize="@dimen/hint_text_input"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="20dp"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"/>
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/slider_rooms_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/str_slider_value_default_rooms"
+                android:textStyle="bold"
+                android:layout_marginEnd="20dp"
+                android:layout_gravity="center_vertical"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"/>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <!-- SLIDER ROOMS -->
+        <com.google.android.material.slider.Slider
+            android:id="@+id/slider_rooms"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:valueFrom="5"
+            android:valueTo="20"
+            android:stepSize="1"
+            android:layout_marginStart="40dp"
+            android:layout_marginEnd="40dp"
+            app:layout_constraintLeft_toRightOf="@id/slider_rooms_title"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toLeftOf="@id/slider_rooms_value"/>
+
+        <!-- TITLE/VALUE BATHROOMS -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_top_text_input_layout">
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/slider_bathrooms_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/str_slider_bathrooms_title"
+                android:textStyle="bold"
+                android:textSize="@dimen/hint_text_input"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="20dp"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"/>
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/slider_bathrooms_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/str_slider_value_default_bathrooms"
+                android:textStyle="bold"
+                android:layout_marginEnd="20dp"
+                android:layout_gravity="center_vertical"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"/>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <!-- SLIDER BATHROOMS -->
+        <com.google.android.material.slider.Slider
+            android:id="@+id/slider_bathrooms"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:valueFrom="1"
+            android:valueTo="5"
+            android:stepSize="1"
+            android:layout_marginStart="40dp"
+            android:layout_marginEnd="40dp"
+            app:layout_constraintLeft_toRightOf="@id/slider_bathrooms_title"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toLeftOf="@id/slider_bathrooms_value"/>
+
+        <!-- TITLE/VALUE BEDROOMS -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_top_text_input_layout">
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/slider_bedrooms_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/str_slider_bedrooms_title"
+                android:textStyle="bold"
+                android:textSize="@dimen/hint_text_input"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="20dp"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"/>
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/slider_bedrooms_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/str_slider_value_default_bedrooms"
+                android:layout_gravity="center_vertical"
+                android:textStyle="bold"
+                android:layout_marginEnd="20dp"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"/>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <!-- SLIDER BEDROOMS -->
+        <com.google.android.material.slider.Slider
+            android:id="@+id/slider_bedrooms"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:valueFrom="1"
+            android:valueTo="10"
+            android:stepSize="1"
+            android:layout_marginStart="40dp"
+            android:layout_marginEnd="40dp"
+            app:layout_constraintLeft_toRightOf="@id/slider_bedrooms_title"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toLeftOf="@id/slider_bedrooms_value"/>
+
+        <!-- TEXT INPUT PRICE -->
         <GridLayout
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
@@ -129,119 +309,68 @@
             android:columnCount="2">
 
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/new_estate_surface_section_text_input_layout"
-                android:layout_width="wrap_content"
+                android:id="@+id/new_estate_price_section_text_input_layout"
+                android:layout_width="200dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/margin_start_text_input_layout"
                 android:layout_marginEnd="@dimen/margin_end_text_input_layout"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintRight_toLeftOf="@id/new_estate_surface_section_unit"
+                app:layout_constraintRight_toLeftOf="@id/new_estate_price_section_text_input_edit"
                 android:layout_row="0"
                 android:layout_column="0"
                 style="@style/TextInputLayoutCustom">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/new_estate_surface_section_text_input_edit"
-                    android:layout_width="@dimen/text_input_edit_width_surface"
+                    android:id="@+id/new_estate_price_section_text_input_edit"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textSize="@dimen/hint_text_input"
-                    android:hint="@string/str_new_estate_surface_hint_text_input"
+                    android:hint="@string/str_new_estate_price_hint_text_input"
                     android:inputType="number"/>
 
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/new_estate_surface_section_unit"
-                android:text="@string/str_new_estate_surface_section_area_unit"
+                android:id="@+id/new_estate_price_section_unit"
+                android:text="@string/str_new_estate_surface_section_price_unit"
                 android:textSize="@dimen/unit_text"
                 android:textColor="@color/grey50"
-                android:layout_marginStart="15dp"
+                android:layout_marginStart="5dp"
                 android:layout_marginTop="5dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_row="0"
                 android:layout_column="1"
-                app:layout_constraintLeft_toRightOf="@id/new_estate_surface_section_text_input_layout"
+                android:layout_gravity="center_vertical"
+                android:textStyle="bold"
+                app:layout_constraintLeft_toRightOf="@id/new_estate_price_section_text_input_layout"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"/>
 
         </GridLayout>
 
-        <!-- Section "Number of Rooms -->
-        <!-- Rooms -->
+        <!-- TEXT INPUT NAME AGENT -->
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/new_estate_nb_rooms_section_text_input_layout"
-            android:layout_width="wrap_content"
+            android:id="@+id/new_estate_agent_section_text_input_layout"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/margin_start_text_input_layout"
-            android:layout_marginTop="@dimen/margin_top_text_input_layout"
             android:layout_marginEnd="@dimen/margin_end_text_input_layout"
-            android:layout_gravity="center"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintRight_toLeftOf="@id/new_estate_surface_section_unit"
+            android:layout_marginTop="@dimen/margin_top_text_input_layout"
             style="@style/TextInputLayoutCustom">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/new_estate_nb_rooms_section_text_input_edit"
-                android:layout_width="@dimen/text_input_edit_width_rooms"
+                android:id="@+id/new_estate_agent_section_text_input_edit"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="@dimen/hint_text_input"
-                android:hint="@string/str_new_estate_rooms_hint_text_input"
-                android:inputType="number"/>
+                android:hint="@string/str_new_estate_agent_hint_text_input"
+                android:inputType="text" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- Bathrooms -->
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/new_estate_nb_bathrooms_section_text_input_layout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/margin_start_text_input_layout"
-            android:layout_marginTop="@dimen/margin_top_text_input_layout"
-            android:layout_marginEnd="@dimen/margin_end_text_input_layout"
-            android:layout_gravity="center"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintRight_toLeftOf="@id/new_estate_surface_section_unit"
-            style="@style/TextInputLayoutCustom">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/new_estate_nb_bathrooms_section_text_input_edit"
-                android:layout_width="@dimen/text_input_edit_width_rooms"
-                android:layout_height="wrap_content"
-                android:textSize="@dimen/hint_text_input"
-                android:hint="@string/str_new_estate_surface_bathrooms_hint"
-                android:inputType="number"/>
-
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <!-- Bedrooms -->
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/new_estate_nb_bedrooms_section_text_input_layout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/margin_start_text_input_layout"
-            android:layout_marginTop="@dimen/margin_top_text_input_layout"
-            android:layout_marginEnd="@dimen/margin_end_text_input_layout"
-            android:layout_marginBottom="@dimen/margin_bottom_text_input_layout"
-            android:hint="@string/str_new_estate_surface_bedrooms_hint"
-            android:layout_gravity="center"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintRight_toLeftOf="@id/new_estate_surface_section_unit"
-            style="@style/TextInputLayoutCustom">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/new_estate_nb_bedrooms_section_text_input_edit"
-                android:layout_width="@dimen/text_input_edit_width_rooms"
-                android:layout_height="wrap_content"
-                android:textSize="@dimen/hint_text_input"
-                android:hint="@string/str_new_estate_bedrooms_hint_text_input"
-                android:inputType="number"/>
-        </com.google.android.material.textfield.TextInputLayout>
-
+        <!-- MATERIAL BUTTON CONFIRMATION -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/confirmation_button"
             android:text="@string/str_button_confirmation_creation"

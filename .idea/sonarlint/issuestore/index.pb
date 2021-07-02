@@ -10,8 +10,4 @@ Aapp/src/main/java/com/openclassrooms/realestatemanager/Utils.java,f\1\f1cdde1a
 P
  app/src/main/AndroidManifest.xml,8\c\8c55c3ccc257e5907959013f99656e4c8ec3903e
 Œ
-\app/src/main/java/com/openclassrooms/realestatemanager/ui/fragments/FragmentEstateDetails.kt,b\9\b942265427bb7d6d6717bf6813fb573821668d1b
-Œ
 \app/src/main/java/com/openclassrooms/realestatemanager/ui/activities/MainActivityCallback.kt,1\c\1cb48a5261bf2e9a2c1fe4e64e68b72dc736910c
-ˆ
-Xapp/src/main/java/com/openclassrooms/realestatemanager/ui/adapters/ListEstatesAdapter.kt,d\0\d06173742ed2234766d9661946f87a9e6e2a544f

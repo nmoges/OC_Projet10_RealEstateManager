@@ -9,6 +9,7 @@ import android.text.TextWatcher
 import android.view.*
 import android.widget.*
 import androidx.annotation.LayoutRes
+import androidx.annotation.StringRes
 import androidx.fragment.app.Fragment
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
@@ -19,6 +20,7 @@ import com.openclassrooms.realestatemanager.model.Estate
 import com.openclassrooms.realestatemanager.model.Photo
 import com.openclassrooms.realestatemanager.ui.MediaDisplayHandler
 import com.openclassrooms.realestatemanager.viewmodels.ListEstatesViewModel
+import java.text.NumberFormat
 
 /**
  * [Fragment] subclass used to display a view allowing user to create
@@ -52,11 +54,6 @@ class FragmentNewEstate : Fragment() {
      * Selected Estate to modify
      */
     private lateinit var currentEstate: Estate
-
-    /**
-     * Contains the list of convert media [Uri]
-     */
-    private var listPhotosUri: MutableList<String> = mutableListOf()
 
     /**
      * Defines if current fragment is display for new estate creation (false) or to modify an
@@ -135,6 +132,7 @@ class FragmentNewEstate : Fragment() {
         updateMaterialButtonText()
         initializeViewModel()
         handleAddPhotoButton()
+        handleSlidersListeners()
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -190,10 +188,8 @@ class FragmentNewEstate : Fragment() {
         builderResetEstateDialog =  AlertDialog.Builder(activity)
             .setTitle(resources.getString(R.string.str_dialog_reset_title))
             .setMessage(resources.getString(R.string.str_dialog_reset_message))
-            .setPositiveButton(resources.getString(R.string.str_dialog_button_yes))
-            { _, _ -> confirmReset() }
-            .setNegativeButton(resources.getString(R.string.str_dialog_button_no))
-            { _, _ -> }
+            .setPositiveButton(resources.getString(R.string.str_dialog_button_yes)) { _, _ -> confirmReset() }
+            .setNegativeButton(resources.getString(R.string.str_dialog_button_no)) { _, _ -> }
             .create()
     }
 
@@ -249,11 +245,9 @@ class FragmentNewEstate : Fragment() {
                 // Add new Photo object to the Estate list of photos
                 currentEstate.listPhoto.add(0, Photo(uriPhoto, namePhoto))
                 addNewFrameLayoutToBinding(currentEstate.listPhoto[0])
-                textInputEditText?.text?.clear()
-            }
-            .setNegativeButton(resources.getString(R.string.str_dialog_button_no)) {_, _ ->
-                textInputEditText?.text?.clear()
-            }
+                textInputEditText?.text?.clear() }
+            .setNegativeButton(resources.getString(R.string.str_dialog_button_cancel)) {_, _ ->
+                textInputEditText?.text?.clear() }
             .create()
     }
 
@@ -275,13 +269,11 @@ class FragmentNewEstate : Fragment() {
     private fun handleAddMediaDialogButtons(view: View?) {
         // Item "Take picture"
         view?.findViewById<MaterialButton>(R.id.take_picture_button)?.setOnClickListener {
-            builderAddMediaDialog.dismiss()
-        }
+            builderAddMediaDialog.dismiss() }
         // Item "Import from gallery"
         view?.findViewById<MaterialButton>(R.id.import_gallery_button)?.setOnClickListener {
             (activity as? MainActivity)?.openPhotosGallery()
-            builderAddMediaDialog.dismiss()
-        }
+            builderAddMediaDialog.dismiss() }
     }
 
     /**
@@ -292,7 +284,7 @@ class FragmentNewEstate : Fragment() {
         listEstatesViewModel.selectedEstate.observe(viewLifecycleOwner, {
             currentEstate = it
             // Restore data for an existing Estate
-            if (updateEstate) updateTextInputEditWithEstateProperties()
+            if (updateEstate) updateFragmentViewsWithEstateProperties()
             restoreListPhoto()
         })
     }
@@ -300,7 +292,7 @@ class FragmentNewEstate : Fragment() {
     /**
      * Initializes TextInputEdit fields with current [Estate] properties values to modify.
      */
-    private fun updateTextInputEditWithEstateProperties() {
+    private fun updateFragmentViewsWithEstateProperties() {
         fun convertStringToEditable(text: String): Editable =
             Editable.Factory.getInstance().newEditable(text)
 
@@ -310,52 +302,51 @@ class FragmentNewEstate : Fragment() {
             convertStringToEditable(currentEstate.address)
         binding.newEstateDescSectionTextInputEdit.text =
             convertStringToEditable(currentEstate.description)
-        binding.newEstateSurfaceSectionTextInputEdit.text =
-            convertStringToEditable(currentEstate.surface.toString())
-        binding.newEstateNbRoomsSectionTextInputEdit.text =
-            convertStringToEditable(currentEstate.numberRooms.toString())
-        binding.newEstateNbBathroomsSectionTextInputEdit.text =
-            convertStringToEditable(currentEstate.numberBathrooms.toString())
-        binding.newEstateNbBedroomsSectionTextInputEdit.text =
-            convertStringToEditable(currentEstate.numberBedrooms.toString())
+        binding.newEstateAgentSectionTextInputEdit.text =
+            convertStringToEditable(currentEstate.nameAgent)
+        binding.newEstatePriceSectionTextInputEdit.text =
+            convertStringToEditable(currentEstate.price.toString())
+        binding.sliderSurface.value = currentEstate.surface.toFloat()
+        binding.sliderRooms.value = currentEstate.numberRooms.toFloat()
+        binding.sliderBathrooms.value = currentEstate.numberBathrooms.toFloat()
+        binding.sliderBedrooms.value = currentEstate.numberBedrooms.toFloat()
     }
 
     /**
      * Updates MaterialButton text according to [updateEstate] value.
      */
     private fun updateMaterialButtonText() {
-        if (updateEstate)
-            binding.confirmationButton.text =
-                resources.getString(R.string.str_button_confirmation_modification)
-        else
-            binding.confirmationButton.text =
-                resources.getString(R.string.str_button_confirmation_creation)
+        if (updateEstate) binding.confirmationButton.text =
+             resources.getString(R.string.str_button_confirmation_modification)
+        else binding.confirmationButton.text =
+             resources.getString(R.string.str_button_confirmation_creation)
     }
 
     /**
      * Updates [MainActivity] toolbar title according to [updateEstate] value.
      */
     private fun updateToolbarTitle() {
-        if (updateEstate)
-            (activity as MainActivity)
-            .setToolbarProperties(R.string.str_toolbar_fragment_modify_estate_title, true)
-        else
-            (activity as MainActivity)
-            .setToolbarProperties(R.string.str_toolbar_fragment_new_estate_title, true)
+        if (updateEstate) (activity as MainActivity)
+        .setToolbarProperties(R.string.str_toolbar_fragment_modify_estate_title, true)
+        else (activity as MainActivity)
+        .setToolbarProperties(R.string.str_toolbar_fragment_new_estate_title, true)
     }
 
     /**
-     * [ResetEstateDialogCallback] interface implementation
-     * Clears all TextInputEdit fields.
+     * Clears all views in fragment.
      */
     private fun confirmReset() {
         binding.newEstateNameSectionTextInputEdit.text?.clear()
         binding.newEstateLocationSectionTextInputEdit.text?.clear()
         binding.newEstateDescSectionTextInputEdit.text?.clear()
-        binding.newEstateSurfaceSectionTextInputEdit.text?.clear()
-        binding.newEstateNbRoomsSectionTextInputEdit.text?.clear()
-        binding.newEstateNbBathroomsSectionTextInputEdit.text?.clear()
-        binding.newEstateNbBedroomsSectionTextInputEdit.text?.clear()
+        binding.newEstateAgentSectionTextInputEdit.text?.clear()
+        binding.newEstatePriceSectionTextInputEdit.text?.clear()
+        binding.sliderSurface.value = 200.0F
+        binding.sliderRooms.value = 5.0F
+        binding.sliderBathrooms.value = 1.0F
+        binding.sliderBedrooms.value = 1.0F
+        binding.linearLayoutMedia.removeViews(0, currentEstate.listPhoto.size)
+        currentEstate.listPhoto.clear()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -403,5 +394,36 @@ class FragmentNewEstate : Fragment() {
                 addNewFrameLayoutToBinding(currentEstate.listPhoto[i])
             }
         }
+    }
+
+    private fun handleSlidersListeners() {
+        fun getSliderString(maxValue: Int, currentValue: Int, @StringRes resMaxValue: Int,
+                            @StringRes resValue: Int?, type: Boolean): String {
+            return if (currentValue == maxValue) { resources.getString(resMaxValue, currentValue) }
+            else {
+                if (type && resValue != null) resources.getString(resValue, currentValue)
+                else currentValue.toString() }
+        }
+
+        binding.sliderSurface.addOnChangeListener { _, _, _ ->
+            val text = getSliderString(5000, binding.sliderSurface.value.toInt(),
+                R.string.str_sqm_unit_greater_than_or_equal, R.string.str_sqm_unit, true)
+            binding.sliderSurfaceValue.text = text }
+
+        binding.sliderRooms.addOnChangeListener { _, _, _ ->
+            val text = getSliderString(20, binding.sliderRooms.value.toInt(),
+                R.string.str_greater_than_or_equal, null, false)
+            binding.sliderRoomsValue.text = text }
+
+        binding.sliderBathrooms.addOnChangeListener { _, _, _ ->
+            val text = getSliderString(5, binding.sliderBathrooms.value.toInt(),
+                R.string.str_greater_than_or_equal, null, false)
+            binding.sliderBathroomsValue.text = text }
+
+        binding.sliderBedrooms.addOnChangeListener { _, _, _ ->
+            val text = getSliderString(10, binding.sliderBedrooms.value.toInt(),
+                R.string.str_greater_than_or_equal, null, false)
+            binding.sliderBedroomsValue.text = text }
+
     }
 }

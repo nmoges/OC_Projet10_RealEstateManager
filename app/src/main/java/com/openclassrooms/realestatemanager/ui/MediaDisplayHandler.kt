@@ -3,6 +3,7 @@ package com.openclassrooms.realestatemanager.ui
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.ImageDecoder
+import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
@@ -14,6 +15,7 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.net.toUri
+import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.model.Photo
 import com.openclassrooms.realestatemanager.ui.activities.MainActivity
 
@@ -112,7 +114,6 @@ class MediaDisplayHandler {
             frameLayout.addView(imageView)
             frameLayout.addView(view)
             frameLayout.addView(text)
-
             return frameLayout
         }
     }

@@ -56,7 +56,7 @@ class ListEstatesAdapter(private val onItemClicked: (Int) -> Unit) :
     override fun getItemCount(): Int = listEstates.size
 
     private fun displayPrice(holder: ListEstateViewHolder, position: Int) {
-        val priceFormat: String = formatPrice(listEstates[position].price)
+        val priceFormat: String = formatPrice(listEstates[position].price.toString())
         holder.price.text = priceFormat
         if (listEstates[position].selected)
             holder.price.apply {

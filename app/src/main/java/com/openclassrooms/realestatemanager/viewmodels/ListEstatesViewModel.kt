@@ -35,7 +35,7 @@ class ListEstatesViewModel : ViewModel() {
     fun createNewEstate() {
         _selectedEstate.value = Estate(type = "",
                                        district = "",
-                                       price = "",
+                                       price = 0,
                                        numberRooms = 0,
                                        numberBathrooms = 0,
                                        numberBedrooms = 0,
