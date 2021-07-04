@@ -3,11 +3,13 @@ package com.openclassrooms.realestatemanager.ui.fragments
 import android.os.Bundle
 import android.util.Log
 import android.view.*
+import android.widget.FrameLayout
 import androidx.fragment.app.Fragment
 import com.openclassrooms.realestatemanager.ui.activities.MainActivity
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.databinding.FragmentEstateDetailsBinding
 import com.openclassrooms.realestatemanager.model.Estate
+import com.openclassrooms.realestatemanager.ui.MediaDisplayHandler
 import com.openclassrooms.realestatemanager.viewmodels.ListEstatesViewModel
 
 class FragmentEstateDetails : Fragment() {
@@ -64,6 +66,7 @@ class FragmentEstateDetails : Fragment() {
         listEstatesViewModel.selectedEstate.observe(viewLifecycleOwner, {
             selectedEstateToDisplay = it
             updateViewsWithEstateProperties()
+            updateHorizontalScrollViewWithPhotos()
         })
     }
 
@@ -79,5 +82,14 @@ class FragmentEstateDetails : Fragment() {
         binding.numberOfRoomsValue.text = selectedEstateToDisplay.interior.numberRooms.toString()
         binding.numberOfBathroomsValue.text = selectedEstateToDisplay.interior.numberBathrooms.toString()
         binding.numberOfBedroomsValue.text = selectedEstateToDisplay.interior.numberBedrooms.toString()
+    }
+
+    private fun updateHorizontalScrollViewWithPhotos() {
+        for (i in 0 until selectedEstateToDisplay.listPhoto.size) {
+            val frameLayout: FrameLayout = MediaDisplayHandler.createNewFrameLayout(
+                                   selectedEstateToDisplay.listPhoto[i], (activity as MainActivity))
+
+            binding.linearLayout.addView(frameLayout)
+        }
     }
 }

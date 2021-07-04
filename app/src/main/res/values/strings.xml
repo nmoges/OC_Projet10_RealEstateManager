@@ -116,7 +116,7 @@
     <string name="fake_number_of_rooms_value">8</string>
     <string name="fake_number_of_bedrooms_value">4</string>
     <string name="fake_number_of_bathrooms_value">2</string>
-    <string name="fake_address_value">740 Park Avenue\nApt 6/7A\nNew York\nNY 10021\nUnited States</string>
+    <string name="fake_address_value">740 Park Avenue Apt 6/7A New York NY 10021 United States</string>
 
     <!-- fragment_list_estate_item.xml -->
     <string name="fake_estate_name">House</string>

@@ -13,5 +13,3 @@ P
 \app/src/main/java/com/openclassrooms/realestatemanager/ui/activities/MainActivityCallback.kt,1\c\1cb48a5261bf2e9a2c1fe4e64e68b72dc736910c
 u
 Eapp/src/main/java/com/openclassrooms/realestatemanager/model/Photo.kt,4\3\437dfe79f7d63ca172d7e0ea9e83e76a44a7af57
-€
-Papp/src/main/java/com/openclassrooms/realestatemanager/ui/MediaDisplayHandler.kt,2\1\21461e103fec08f9b04298694b22ef577055dd66
