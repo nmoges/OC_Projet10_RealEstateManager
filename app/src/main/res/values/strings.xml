@@ -99,6 +99,10 @@
 
     <string name="str_dialog_name_media_title">Name photo</string>
 
+    <string name="str_toast_missing_information">Can\'t create Estate, missing information</string>
+    <string name="str_toast_new_estate_created">New estate created</string>
+    <string name="str_toast_estate_modified">Modifications saved</string>
+
     <!-- FOR LAYOUT TESTING -->
     <!-- fragment_estate_details.xml -->
     <string name="fake_description">Anchored by a vast marble gallery with sweeping staircase,

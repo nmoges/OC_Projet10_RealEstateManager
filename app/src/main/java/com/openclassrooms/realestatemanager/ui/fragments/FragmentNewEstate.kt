@@ -358,9 +358,8 @@ class FragmentNewEstate : Fragment() {
      */
     private fun restoreListPhoto() {
         if (currentEstate.listPhoto.size > 0) {
-            for (i in currentEstate.listPhoto.size-1 downTo  0) {
+            for (i in currentEstate.listPhoto.size-1 downTo  0)
                 addNewFrameLayoutToBinding(currentEstate.listPhoto[i])
-            }
         }
     }
 
@@ -407,8 +406,24 @@ class FragmentNewEstate : Fragment() {
             if (name.isNotEmpty() && location.isNotEmpty()
                 && description.isNotEmpty()  && price.isNotEmpty()
                 && nameAgent.isNotEmpty() && size != 0) {
+                displayToastEstate(false)
                 createEstate(name, location, description, nameAgent, price)
             }
+            else displayToastEstate(true)
+        }
+    }
+
+    private fun displayToastEstate(error: Boolean) {
+        if (error) // Error creating/modifying Estate
+            Toast.makeText(context, resources.getString(R.string.str_toast_missing_information),
+                           Toast.LENGTH_LONG).show()
+        else {
+            if (updateEstate) // Modifications saved
+                Toast.makeText(context, resources.getString(R.string.str_toast_estate_modified),
+                               Toast.LENGTH_LONG).show()
+            else // New estate created
+                Toast.makeText(context, resources.getString(R.string.str_toast_new_estate_created),
+                               Toast.LENGTH_LONG).show()
         }
     }
 
