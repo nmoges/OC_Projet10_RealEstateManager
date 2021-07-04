@@ -93,6 +93,7 @@ class FragmentListEstate : Fragment() {
             (binding.recyclerViewListEstates.adapter as ListEstatesAdapter).apply {
                 resetSelection(it)
                 // Update list
+                listEstates.clear()
                 listEstates.addAll(it)
                 notifyDataSetChanged()
                 // Update background text

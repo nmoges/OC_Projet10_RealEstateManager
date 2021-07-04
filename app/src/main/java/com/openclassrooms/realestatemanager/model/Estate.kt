@@ -2,6 +2,7 @@ package com.openclassrooms.realestatemanager.model
 
 /**
  * Defines a real estate.
+ * @param id : Id of the estate
  * @param type : Type of real estate (apartment, loft, etc.)
  * @param district : District of the real estate
  * @param price : Price ($)
@@ -16,13 +17,11 @@ package com.openclassrooms.realestatemanager.model
  * @param selected : Define if a estate is currently being consulted (true) or not (false)
  */
 class Estate(
+    var id: Int,
     var type: String,
     var district: String,
     var price: Int,
-    var numberRooms: Int,
-    var numberBathrooms: Int,
-    var numberBedrooms: Int,
-    var surface: Double,
+    var interior: Interior,
     var description: String,
     var address: String,
     var nameAgent: String,

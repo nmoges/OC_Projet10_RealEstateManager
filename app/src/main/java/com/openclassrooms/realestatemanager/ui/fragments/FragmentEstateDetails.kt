@@ -73,11 +73,11 @@ class FragmentEstateDetails : Fragment() {
     private fun updateViewsWithEstateProperties() {
         binding.description.text = selectedEstateToDisplay.description
 
-        val surface: String = selectedEstateToDisplay.surface.toString() + " sq m"
+        val surface: String = selectedEstateToDisplay.interior.surface.toString() + " sq m"
         binding.surfaceValue.text = surface
 
-        binding.numberOfRoomsValue.text = selectedEstateToDisplay.numberRooms.toString()
-        binding.numberOfBathroomsValue.text = selectedEstateToDisplay.numberBathrooms.toString()
-        binding.numberOfBedroomsValue.text = selectedEstateToDisplay.numberBedrooms.toString()
+        binding.numberOfRoomsValue.text = selectedEstateToDisplay.interior.numberRooms.toString()
+        binding.numberOfBathroomsValue.text = selectedEstateToDisplay.interior.numberBathrooms.toString()
+        binding.numberOfBedroomsValue.text = selectedEstateToDisplay.interior.numberBedrooms.toString()
     }
 }

@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.openclassrooms.realestatemanager.model.Estate
+import com.openclassrooms.realestatemanager.model.Interior
 import com.openclassrooms.realestatemanager.service.DummyEstateGenerator
 
 class ListEstatesViewModel : ViewModel() {
@@ -28,22 +29,37 @@ class ListEstatesViewModel : ViewModel() {
         _listEstates.value = DummyEstateGenerator.dummyListEstate
     }
 
+    /**
+     * Set a selected [Estate] by user (click on item) to [_selectedEstate]
+     */
     fun setSelectedEstate(position: Int) {
         _selectedEstate.value = listEstates.value?.get(position)
     }
 
     fun createNewEstate() {
-        _selectedEstate.value = Estate(type = "",
-                                       district = "",
-                                       price = 0,
-                                       numberRooms = 0,
-                                       numberBathrooms = 0,
-                                       numberBedrooms = 0,
-                                       surface = 0.0,
-                                       description = "",
-                                       address = "",
-                                       nameAgent = "",
-                                       status = false,
-                                       selected = false)
+        _selectedEstate.value = _listEstates.value?.size?.let {
+            Estate(
+                id = it,
+                type = "",
+                district = "",
+                price = 0,
+                Interior(numberRooms = 0, numberBathrooms = 0,
+                    numberBedrooms = 0, surface = 0),
+                description = "",
+                address = "",
+                nameAgent = "",
+                status = false,
+                selected = false)
+        }
+    }
+
+    fun updateViewModel(estate: Estate, typeUpdate: Boolean) {
+        if (typeUpdate) { // Existing Estate
+            DummyEstateGenerator.dummyListEstate[estate.id] = estate
+        }
+        else { // New Estate
+            DummyEstateGenerator.dummyListEstate.add(estate)
+        }
+        _listEstates.postValue(DummyEstateGenerator.dummyListEstate)
     }
 }
