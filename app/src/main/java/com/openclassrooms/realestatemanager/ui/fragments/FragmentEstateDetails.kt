@@ -82,6 +82,7 @@ class FragmentEstateDetails : Fragment() {
         binding.numberOfRoomsValue.text = selectedEstateToDisplay.interior.numberRooms.toString()
         binding.numberOfBathroomsValue.text = selectedEstateToDisplay.interior.numberBathrooms.toString()
         binding.numberOfBedroomsValue.text = selectedEstateToDisplay.interior.numberBedrooms.toString()
+        binding.addressLocationText.text = selectedEstateToDisplay.address
     }
 
     private fun updateHorizontalScrollViewWithPhotos() {

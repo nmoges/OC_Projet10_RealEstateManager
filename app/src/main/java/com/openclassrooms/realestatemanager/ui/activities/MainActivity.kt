@@ -127,7 +127,7 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
         if (isFragmentDisplayed(FragmentListEstate.TAG)) {
             val oldFragmentListEstate: FragmentListEstate =
                 supportFragmentManager.findFragmentByTag(FragmentListEstate.TAG) as FragmentListEstate
-            supportFragmentManager.beginTransaction().remove(oldFragmentListEstate).commit()
+            supportFragmentManager.beginTransaction().remove(oldFragmentListEstate).commitNow()
             supportFragmentManager.popBackStack()
         }
 

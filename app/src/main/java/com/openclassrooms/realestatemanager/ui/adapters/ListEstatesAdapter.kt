@@ -1,16 +1,30 @@
 package com.openclassrooms.realestatemanager.ui.adapters
 
+import android.graphics.Bitmap
+import android.graphics.ImageDecoder
+import android.media.Image
+import android.net.Uri
 import android.os.Build
+import android.provider.MediaStore
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
+import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.net.toUri
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.google.android.material.textview.MaterialTextView
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.model.Estate
+import com.openclassrooms.realestatemanager.ui.MediaDisplayHandler
+import com.openclassrooms.realestatemanager.ui.activities.MainActivity
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 /**
  * Adapter class for [com.openclassrooms.realestatemanager.ui.fragments.FragmentListEstate]
@@ -19,13 +33,14 @@ class ListEstatesAdapter(private val onItemClicked: (Int) -> Unit) :
     RecyclerView.Adapter<ListEstatesAdapter.ListEstateViewHolder>(){
 
     var listEstates: MutableList<Estate> = mutableListOf()
+    lateinit var activity: MainActivity
 
     inner class ListEstateViewHolder(view: View, val onItemClicked: (Int) -> Unit) :
         RecyclerView.ViewHolder(view) {
         var type: MaterialTextView = view.findViewById(R.id.list_estate_item_text_type)
         var district: MaterialTextView = view.findViewById(R.id.list_estate_item_text_district)
         var price : MaterialTextView = view.findViewById(R.id.list_estate_item_text_price)
-        var photo: AppCompatImageView = view.findViewById(R.id.list_estate_item_image)
+        var photo: ImageView = view.findViewById(R.id.list_estate_item_image)
         var item: ConstraintLayout = view.findViewById(R.id.constraint_layout_item)
 
         init {
@@ -51,6 +66,8 @@ class ListEstatesAdapter(private val onItemClicked: (Int) -> Unit) :
         displayPrice(holder, position)
 
         displayBackgroundColor(holder, position)
+
+        displayPhoto(holder, position)
     }
 
     override fun getItemCount(): Int = listEstates.size
@@ -68,6 +85,20 @@ class ListEstatesAdapter(private val onItemClicked: (Int) -> Unit) :
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
                     setTextColor(resources.getColor(R.color.pink, null))
                 else setTextColor(resources.getColor(R.color.pink))
+        }
+    }
+
+
+    private fun displayPhoto(holder: ListEstateViewHolder, position: Int) {
+        if (listEstates[position].listPhoto.size > 0) {
+            val bitmap = MediaDisplayHandler.stringToBitmap(listEstates[position].listPhoto[0].photoConverted)
+          //  holder.photo.setImageBitmap(bitmap)
+
+            Glide.with(activity)
+                .load(bitmap)
+                .centerCrop()
+                .override(holder.photo.width, holder.photo.height)
+                .into(holder.photo)
         }
     }
 

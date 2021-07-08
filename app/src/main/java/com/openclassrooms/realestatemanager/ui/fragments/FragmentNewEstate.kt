@@ -11,6 +11,7 @@ import android.view.*
 import android.widget.*
 import androidx.annotation.LayoutRes
 import androidx.annotation.StringRes
+import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
@@ -68,8 +69,8 @@ class FragmentNewEstate : Fragment() {
     /**  Name of a selected photo */
     private var namePhoto: String = ""
 
-    /** Converted [Uri] of a selected photo */
-    private var uriPhoto: String = ""
+    /** [Uri] of a selected photo */
+    private var uriPhoto : String = ""
 
     /** Defines a [TextWatcher] for [builderNameMediaDialog] */
     private val textWatcher: TextWatcher = object : TextWatcher {
@@ -214,13 +215,21 @@ class FragmentNewEstate : Fragment() {
             .setPositiveButton(resources.getString(R.string.str_dialog_button_yes)) {_, _ ->
                 namePhoto = textInputEditText?.text.toString()
                 // Add new Photo object to the Estate list of photos
-                currentEstate.listPhoto.add(0, Photo(uriPhoto, namePhoto))
+                currentEstate.listPhoto.add(0, createNewPhoto())
                 addNewFrameLayoutToBinding(currentEstate.listPhoto[0])
                 textInputEditText?.text?.clear() }
             .setNegativeButton(resources.getString(R.string.str_dialog_button_cancel)) {_, _ ->
                 textInputEditText?.text?.clear() }
             .create()
     }
+
+
+    private fun createNewPhoto(): Photo {
+        val bitmap = MediaDisplayHandler.createBitmap(uriPhoto.toUri(), activity as MainActivity)
+        val convertedPhoto = MediaDisplayHandler.bitmapToString(bitmap)
+        return Photo(convertedPhoto, namePhoto)
+    }
+
 
     private fun addNewFrameLayoutToBinding(photo: Photo) {
         val frameLayout: FrameLayout = MediaDisplayHandler
@@ -347,8 +356,8 @@ class FragmentNewEstate : Fragment() {
      * Adds a new converted [Uri] to the property [listPhotosUri] of [currentEstate].
      */
     fun addNewPhoto(uri: Uri?) {
-        uriPhoto = uri.toString()
         if (uri != null) {
+            uriPhoto = uri.toString()
             builderNameMediaDialog.show()
             builderNameMediaDialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled = false }
     }

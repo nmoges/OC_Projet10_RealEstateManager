@@ -2,7 +2,6 @@ package com.openclassrooms.realestatemanager.ui.fragments
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import androidx.appcompat.view.menu.MenuBuilder
 import androidx.fragment.app.Fragment
@@ -56,15 +55,15 @@ class FragmentListEstate : Fragment() {
             val status: Boolean = updateItemSelectionStatus(position)
             notifyDataSetChanged()
 
-             if (status) {
-                 (activity as MainActivity).handleFabVisibility(View.INVISIBLE)
-                 (activity as MainActivity).handleBackgroundGridVisibility(View.INVISIBLE)
-                 // Add current selected item to view model
-                 listEstatesViewModel.setSelectedEstate(position)
-                 // Display FragmentDetails with selected item
-                 (activity as MainActivity).displayFragmentDetails()
-             }
-             else (activity as MainActivity).onBackPressed()
+            if (status) {
+                activity.handleFabVisibility(View.INVISIBLE)
+                activity.handleBackgroundGridVisibility(View.INVISIBLE)
+                // Add current selected item to view model
+                listEstatesViewModel.setSelectedEstate(position)
+                // Display FragmentDetails with selected item
+                activity.displayFragmentDetails()
+            }
+            else (activity as MainActivity).onBackPressed()
         }
     }
 
@@ -86,6 +85,15 @@ class FragmentListEstate : Fragment() {
         }
     }
 
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when(item.itemId) {
+            R.id.search -> { }
+            R.id.settings -> { }
+            R.id.logout -> { }
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
     private fun initializeViewModel() {
         // Initialize viewModel
         listEstatesViewModel = (activity as MainActivity).listEstatesViewModel
@@ -98,7 +106,7 @@ class FragmentListEstate : Fragment() {
                 notifyDataSetChanged()
                 // Update background text
                 handleBackgroundMaterialTextVisibility(if (listEstates.size > 0) View.INVISIBLE
-                                                       else View.INVISIBLE)
+                else View.INVISIBLE)
             }
         })
     }
@@ -108,6 +116,7 @@ class FragmentListEstate : Fragment() {
             setHasFixedSize(true)
             layoutManager = LinearLayoutManager(context)
             adapter = ListEstatesAdapter { handleClickOnEstateItem(it) }
+            (adapter as ListEstatesAdapter).activity = (activity as MainActivity)
         }
     }
 
@@ -128,4 +137,5 @@ class FragmentListEstate : Fragment() {
             for (i in listEstate.indices) { listEstate[i].selected = false }
         }
     }
+
 }
