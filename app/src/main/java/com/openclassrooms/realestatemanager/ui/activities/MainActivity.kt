@@ -1,18 +1,23 @@
 package com.openclassrooms.realestatemanager.ui.activities
 
+import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
+import android.content.pm.PackageManager
 import android.content.res.Configuration
+import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.annotation.IdRes
 import androidx.annotation.StringRes
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.openclassrooms.realestatemanager.AppInfo
+import com.openclassrooms.realestatemanager.MediaAccessHandler
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.databinding.ActivityMainBinding
 import com.openclassrooms.realestatemanager.ui.fragments.FragmentEstateDetails
@@ -26,20 +31,25 @@ import com.openclassrooms.realestatemanager.viewmodels.ListEstatesViewModel
  */
 class MainActivity : AppCompatActivity(), MainActivityCallback {
 
-    // Binding
+    /** View Binding parameter */
     private lateinit var binding: ActivityMainBinding
 
-    // Screen parameters
-    var typeLayout: Boolean = false // true : activity_main.xml (large-land)
-                                            // false : activity_main.xml
-    var typeOrientation: Boolean = false // true : Orientation landscape
-                                                // false : Orientation portrait
+    /** Defines type of layout displayed : */
+    var typeLayout: Boolean = false // true: activity_main.xml (large-land)/false: activity_main.xml
+
+    /** Defines type of orientation  */
+    var typeOrientation: Boolean = false // true: Orientation landscape/false: Orientation portrait
+
+    /** Id of the container used to display fragments */
     private var containerId: Int = 0
 
-    // Fragments
+    /** Contains a reference to a [FragmentNewEstate] object */
     private var fragmentNewEstateStack : Fragment? = null
+
+    /** Contains a reference to a [FragmentEstateDetails] object */
     private var fragmentEstateDetailsStack: Fragment? = null
 
+    /** Contains ViewModel reference */
     lateinit var listEstatesViewModel: ListEstatesViewModel
 
     companion object {
@@ -51,23 +61,24 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         checkScreenProperties()
-
         initializeFragmentListEstate()
         if (savedInstanceState != null) {
             restoreViews(savedInstanceState)
-            fragmentNewEstateStack = supportFragmentManager
-                                                    .findFragmentByTag(FragmentNewEstate.TAG)
+            fragmentNewEstateStack = supportFragmentManager.findFragmentByTag(FragmentNewEstate.TAG)
             fragmentEstateDetailsStack = supportFragmentManager
-                                                    .findFragmentByTag(FragmentEstateDetails.TAG)
+                                                       .findFragmentByTag(FragmentEstateDetails.TAG)
             removeExistingFragments()
             restoreFragments(containerId)
         }
         initializeToolbar()
         handleFloatingActionButton()
-
         listEstatesViewModel = ViewModelProvider(this).get(ListEstatesViewModel::class.java)
+        MediaAccessHandler.initializeNbPermissionRequests(this)
     }
 
+    /**
+     * Handles fragment removal operations.
+     */
     private fun removeExistingFragments() {
         when {
             fragmentNewEstateStack != null -> {
@@ -85,6 +96,9 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
         }
     }
 
+    /**
+     * Checks the size and orientation screen properties to define the fragment container.
+     */
     private fun checkScreenProperties() {
         typeLayout = findViewById<View>(R.id.fragment_container_view) == null
         typeOrientation = resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
@@ -92,37 +106,48 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
                       else R.id.fragment_container_view
     }
 
+    /**
+     * Restores fragments display after a configuration change.
+     * @param typeContainer : type of container.
+     */
     private fun restoreFragments(@IdRes typeContainer: Int) {
-        // Handle which fragment to display and in which fragment container
         when {
             fragmentNewEstateStack != null -> {
-                launchTransaction(typeContainer,
-                    fragmentNewEstateStack as FragmentNewEstate,
-                    FragmentNewEstate.TAG)
+                launchTransaction(typeContainer, fragmentNewEstateStack as FragmentNewEstate,
+                                                                              FragmentNewEstate.TAG)
             }
             fragmentEstateDetailsStack != null -> {
-                launchTransaction(typeContainer,
-                    fragmentEstateDetailsStack as FragmentEstateDetails,
-                    FragmentEstateDetails.TAG)
+                launchTransaction(typeContainer, fragmentEstateDetailsStack as FragmentEstateDetails,
+                                                                          FragmentEstateDetails.TAG)
             }
         }
     }
 
+    /**
+     * Displays [FragmentEstateDetails].
+     */
     fun displayFragmentDetails() {
         launchTransaction(containerId, FragmentEstateDetails.newInstance(), FragmentEstateDetails.TAG)
     }
 
+    /**
+     * Displays [FragmentNewEstate].
+     * @param updateEstate : defines type of operation will be performed using [FragmentNewEstate] UI
+     * (Update of an existing estate, or creation of a new estate)
+     */
     fun displayFragmentNewEstate(updateEstate: Boolean) {
         val fragment: FragmentNewEstate = FragmentNewEstate.newInstance()
         fragment.updateEstate = updateEstate
         launchTransaction(containerId, fragment, FragmentNewEstate.TAG)
     }
 
+    /**
+     * Initializes [FragmentListEstate] display with the corresponding container.
+     */
     private fun initializeFragmentListEstate() {
         // Define container
         val container: Int = if (typeOrientation && typeLayout) R.id.fragment_container_view_left
         else R.id.fragment_container_view
-
         // Check if existing instance
         if (isFragmentDisplayed(FragmentListEstate.TAG)) {
             val oldFragmentListEstate: FragmentListEstate =
@@ -130,14 +155,16 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
             supportFragmentManager.beginTransaction().remove(oldFragmentListEstate).commitNow()
             supportFragmentManager.popBackStack()
         }
-
         // Display new instance
         launchTransaction(container, FragmentListEstate.newInstance(), FragmentListEstate.TAG)
     }
 
     /**
      * Performs fragment transaction by replace current content in [containerId] by
-     * given [fragment]
+     * given [fragment].
+     * @param containerId : id of the fragment container
+     * @param fragment : fragment to display
+     * @param tag : tag of the associated fragment to display
      */
     private fun launchTransaction(@IdRes containerId: Int, fragment: Fragment, tag: String) {
         supportFragmentManager.beginTransaction()
@@ -146,7 +173,7 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
     }
 
     /**
-     * Handles toolbar initialization (support action bar and theme color)
+     * Handles toolbar initialization (support action bar and theme color).
      */
     private fun initializeToolbar() {
         setSupportActionBar(binding.toolbar)
@@ -158,6 +185,8 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
 
     /**
      * Handles toolbar update properties (title and back arrow) according to the displayed fragment.
+     * @param title : toolbar title
+     * @param backIconDisplay : display status of the back icon
      */
     override fun setToolbarProperties(@StringRes title: Int, backIconDisplay: Boolean) {
         supportActionBar?.apply {
@@ -214,22 +243,19 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
     private fun cleanBackStack(): Boolean {
         val containerIdList: Int = if (typeOrientation && typeLayout) R.id.fragment_container_view_left
         else R.id.fragment_container_view
-
         fragmentNewEstateStack = supportFragmentManager.findFragmentByTag(FragmentNewEstate.TAG)
         fragmentEstateDetailsStack = supportFragmentManager.findFragmentByTag(FragmentEstateDetails.TAG)
-
         if (fragmentNewEstateStack != null || fragmentEstateDetailsStack != null) {
             // Display FragmentListEstate if needed
             if (!(typeOrientation && typeLayout)) {
-                launchTransaction(containerIdList, FragmentListEstate.newInstance(), FragmentListEstate.TAG)
+                launchTransaction(containerIdList,
+                                  FragmentListEstate.newInstance(), FragmentListEstate.TAG)
             }
-
             // Reset item selection on list
             val fragmentListEstate = supportFragmentManager.findFragmentByTag(FragmentListEstate.TAG)
             if (fragmentListEstate != null) {
                 (fragmentListEstate as FragmentListEstate).clearCurrentSelection()
             }
-
             removeExistingFragments()
             return true
         }
@@ -247,12 +273,19 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
         }
     }
 
+    /**
+     * Handle floating action button visibility.
+     */
     fun handleFabVisibility(visibility: Int) {
         binding.fab.apply {
             if (visibility == View.VISIBLE) show() else hide()
         }
     }
 
+    /**
+     * Check if a dialog is currently displayed in
+     * [com.openclassrooms.realestatemanager.ui.fragments.FragmentNewEstate].
+     */
     private fun checkIfDialogIsDisplayed(): Boolean {
         if (isFragmentDisplayed(FragmentNewEstate.TAG)) {
             val fragment: FragmentNewEstate =
@@ -262,28 +295,43 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
         return false
     }
 
-    fun openPhotosGallery() {
-        val PICK_IMAGE_REQUEST_CODE = 1;
-        val intent: Intent = Intent()
-        intent.apply {
-            type = "image/*"
-            action = Intent.ACTION_GET_CONTENT
-        }
-        startActivityForResult(intent, PICK_IMAGE_REQUEST_CODE)
-    }
-
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == 1 && resultCode == RESULT_OK && data != null) {
-            if (data.data != null) {
-                val imageMediaUri: Uri? = data.data
-                if (isFragmentDisplayed(FragmentNewEstate.TAG))
-                (supportFragmentManager.findFragmentByTag(FragmentNewEstate.TAG)
-                        as? FragmentNewEstate)?.addNewPhoto(imageMediaUri)
+        if (resultCode == RESULT_OK && data != null) {
+
+            val imageMediaUri: Uri? = data.data
+            if (isFragmentDisplayed(FragmentNewEstate.TAG)) {
+                    val fragment = supportFragmentManager.findFragmentByTag(FragmentNewEstate.TAG)
+                            as FragmentNewEstate
+
+                if (imageMediaUri != null) // From Gallery (uri already exists)
+                    fragment.addNewPhotoFromGallery(imageMediaUri)
+                else { // From Camera (uri does not exist yet)
+                    val bitmap: Bitmap = data.extras?.get("data") as Bitmap
+                    fragment.addNewPhotoFromCamera(bitmap)
+                }
             }
         }
     }
 
     private fun isFragmentDisplayed(tag: String): Boolean =
         supportFragmentManager.findFragmentByTag(tag) != null
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>,
+        grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        // Check if permissions are all granted
+        if (permissions[0] == android.Manifest.permission.READ_EXTERNAL_STORAGE
+            && grantResults[0] == PackageManager.PERMISSION_GRANTED
+            && permissions[1] == android.Manifest.permission.WRITE_EXTERNAL_STORAGE
+            && grantResults[1] == PackageManager.PERMISSION_GRANTED
+            && permissions[2] == android.Manifest.permission.CAMERA
+            && grantResults[2] == PackageManager.PERMISSION_GRANTED) {
+            val nbRequestsSaved : SharedPreferences = getSharedPreferences(AppInfo.FILE_SHARED_PREF,
+                Context.MODE_PRIVATE)
+            val editor: SharedPreferences.Editor = nbRequestsSaved.edit()
+            // Reset number of permission requests
+            editor.putInt(AppInfo.PREF_PERMISSIONS, 0).apply()
+        }
+    }
 }

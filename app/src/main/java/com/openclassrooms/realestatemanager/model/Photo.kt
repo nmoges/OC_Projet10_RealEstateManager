@@ -5,4 +5,4 @@ package com.openclassrooms.realestatemanager.model
  * @param photoUri : Converted [Uri] value associated with a photo.
  * @param name : name associated with a photo.
  */
-class Photo(var photoConverted: String, var name: String)
+class Photo(var uriConverted: String, var name: String)

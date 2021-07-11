@@ -1,18 +1,10 @@
 package com.openclassrooms.realestatemanager.ui.adapters
 
-import android.graphics.Bitmap
-import android.graphics.ImageDecoder
-import android.media.Image
-import android.net.Uri
 import android.os.Build
-import android.provider.MediaStore
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import androidx.annotation.RequiresApi
-import androidx.appcompat.widget.AppCompatImageView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.net.toUri
 import androidx.recyclerview.widget.RecyclerView
@@ -20,11 +12,7 @@ import com.bumptech.glide.Glide
 import com.google.android.material.textview.MaterialTextView
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.model.Estate
-import com.openclassrooms.realestatemanager.ui.MediaDisplayHandler
 import com.openclassrooms.realestatemanager.ui.activities.MainActivity
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 
 /**
  * Adapter class for [com.openclassrooms.realestatemanager.ui.fragments.FragmentListEstate]
@@ -72,6 +60,11 @@ class ListEstatesAdapter(private val onItemClicked: (Int) -> Unit) :
 
     override fun getItemCount(): Int = listEstates.size
 
+    /**
+     * Handles price display for each recycler view item.
+     * @param holder : view holder
+     * @param position : position in [listEstates] list
+     */
     private fun displayPrice(holder: ListEstateViewHolder, position: Int) {
         val priceFormat: String = formatPrice(listEstates[position].price.toString())
         holder.price.text = priceFormat
@@ -88,20 +81,27 @@ class ListEstatesAdapter(private val onItemClicked: (Int) -> Unit) :
         }
     }
 
-
+    /**
+     * Handles photo display for each recycler view item.
+     * @param holder : view holder
+     * @param position : position in [listEstates] list
+     */
     private fun displayPhoto(holder: ListEstateViewHolder, position: Int) {
         if (listEstates[position].listPhoto.size > 0) {
-            val bitmap = MediaDisplayHandler.stringToBitmap(listEstates[position].listPhoto[0].photoConverted)
-          //  holder.photo.setImageBitmap(bitmap)
-
             Glide.with(activity)
-                .load(bitmap)
-                .centerCrop()
-                .override(holder.photo.width, holder.photo.height)
-                .into(holder.photo)
+                 .load(listEstates[position].listPhoto[0].uriConverted.toUri())
+                 .centerCrop()
+                 .override(holder.photo.width, holder.photo.height)
+                 .into(holder.photo)
+
         }
     }
 
+    /**
+     * Handles background color display for each recycler view item.
+     * @param holder : view holder
+     * @param position : position in [listEstates] list
+     */
     private fun displayBackgroundColor(holder: ListEstateViewHolder, position: Int) {
         if (listEstates[position].selected)
             holder.item.apply {
@@ -129,8 +129,8 @@ class ListEstatesAdapter(private val onItemClicked: (Int) -> Unit) :
      * Deselect previous selected item (only one item at a time can be selected)
      */
     fun clearPreviousSelection(position: Int) {
-        var found: Boolean = false
-        var index: Int = 0
+        var found = false
+        var index = 0
         while ( index < listEstates.size && !found) {
             if (listEstates[index].selected && index != position) {
                 listEstates[index].selected = false
@@ -141,8 +141,8 @@ class ListEstatesAdapter(private val onItemClicked: (Int) -> Unit) :
     }
 
     fun clearCurrentSelection() {
-        var found: Boolean = false
-        var index: Int = 0
+        var found = false
+        var index = 0
         while ( index < listEstates.size && !found) {
             if (listEstates[index].selected) {
                 listEstates[index].selected = false

@@ -4,6 +4,8 @@
     package="com.openclassrooms.realestatemanager">
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
 
@@ -36,7 +38,8 @@
         <provider
             android:authorities="com.facebook.app.FacebookContentProvider1898055770358844"
             android:name="com.facebook.FacebookContentProvider"
-            android:exported="true" />
+            android:exported="true"
+            tools:ignore="ExportedContentProvider" />
 
         <activity
             android:name="com.facebook.FacebookActivity"
