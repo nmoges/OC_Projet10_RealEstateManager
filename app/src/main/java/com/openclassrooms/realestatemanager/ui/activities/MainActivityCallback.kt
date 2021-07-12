@@ -7,4 +7,5 @@ import androidx.annotation.StringRes
  */
 interface MainActivityCallback {
     fun setToolbarProperties(@StringRes title: Int, backIconDisplay: Boolean)
+    fun updateConnectivityBarNetworkDisplay(status: Boolean)
 }

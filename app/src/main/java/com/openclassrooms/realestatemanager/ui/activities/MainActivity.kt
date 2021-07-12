@@ -2,6 +2,7 @@ package com.openclassrooms.realestatemanager.ui.activities
 
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.content.res.Configuration
@@ -10,16 +11,21 @@ import android.net.Uri
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
+import android.view.ViewPropertyAnimator
 import androidx.annotation.IdRes
 import androidx.annotation.StringRes
 import androidx.core.content.res.ResourcesCompat
+import androidx.core.view.ViewCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.google.android.material.snackbar.Snackbar
 import com.openclassrooms.realestatemanager.AppInfo
 import com.openclassrooms.realestatemanager.MediaAccessHandler
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.databinding.ActivityMainBinding
+import com.openclassrooms.realestatemanager.receiver.NetworkBroadcastReceiver
 import com.openclassrooms.realestatemanager.ui.fragments.FragmentEstateDetails
 import com.openclassrooms.realestatemanager.ui.fragments.FragmentListEstate
 import com.openclassrooms.realestatemanager.ui.fragments.FragmentNewEstate
@@ -52,6 +58,8 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
     /** Contains ViewModel reference */
     lateinit var listEstatesViewModel: ListEstatesViewModel
 
+    private val networkBroadcastReceiver: NetworkBroadcastReceiver = NetworkBroadcastReceiver(this)
+
     companion object {
         const val FAB_STATUS_KEY = "FAB_STATUS_KEY"
     }
@@ -72,8 +80,20 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
         }
         initializeToolbar()
         handleFloatingActionButton()
+        handleConnectivityBarBtnListener()
         listEstatesViewModel = ViewModelProvider(this).get(ListEstatesViewModel::class.java)
         MediaAccessHandler.initializeNbPermissionRequests(this)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        registerReceiver(networkBroadcastReceiver,
+                         IntentFilter("android.net.conn.CONNECTIVITY_CHANGE"))
+    }
+
+    override fun onPause() {
+        super.onPause()
+        unregisterReceiver(networkBroadcastReceiver)
     }
 
     /**
@@ -83,6 +103,7 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
         when {
             fragmentNewEstateStack != null -> {
                 fragmentNewEstateStack?.let {
+                    // TODO : Clear list here
                     supportFragmentManager.beginTransaction().remove(it).commit()
                     supportFragmentManager.executePendingTransactions()
                 }
@@ -195,6 +216,36 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
             if (backIconDisplay)
                 setHomeAsUpIndicator(ResourcesCompat
                     .getDrawable(resources, R.drawable.ic_baseline_arrow_back_24dp_white, null))
+        }
+    }
+
+    /**
+     * Updates connectivity bar display according to network status.
+     * @param status : Defines if a network is available or not.
+     */
+    override fun updateConnectivityBarNetworkDisplay(status: Boolean) {
+        if (status) { // Hide bar - - Wifi/Data network active
+            val fadeOutAnim: ViewPropertyAnimator = binding.barConnectivityInfo.animate()
+                .alpha(0.0f)
+                .setDuration(200)
+            fadeOutAnim.withEndAction { binding.barConnectivityInfo.visibility = View.GONE}
+        }
+        else { // Display bar No network active
+            binding.barConnectivityInfo.visibility = View.VISIBLE
+            ViewCompat.setElevation(binding.barConnectivityInfo, 10F)
+            val fadeInAnim: ViewPropertyAnimator = binding.barConnectivityInfo.animate()
+                .alpha(1.0f)
+                .setDuration(200)
+            fadeInAnim.start()
+        }
+    }
+
+    /**
+     * Handles connectivity bar button.
+     */
+    private fun handleConnectivityBarBtnListener() {
+        binding.barConnectivityInfoBtnClose.setOnClickListener {
+            updateConnectivityBarNetworkDisplay(true)
         }
     }
 
