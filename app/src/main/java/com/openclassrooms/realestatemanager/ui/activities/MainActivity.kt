@@ -6,7 +6,6 @@ import android.content.IntentFilter
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.content.res.Configuration
-import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
@@ -17,16 +16,17 @@ import android.view.ViewPropertyAnimator
 import androidx.annotation.IdRes
 import androidx.annotation.StringRes
 import androidx.core.content.res.ResourcesCompat
+import androidx.core.net.toUri
 import androidx.core.view.ViewCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import com.google.android.material.snackbar.Snackbar
 import com.openclassrooms.realestatemanager.AppInfo
 import com.openclassrooms.realestatemanager.MediaAccessHandler
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.databinding.ActivityMainBinding
 import com.openclassrooms.realestatemanager.receiver.NetworkBroadcastReceiver
 import com.openclassrooms.realestatemanager.ui.fragments.FragmentEstateDetails
+import com.openclassrooms.realestatemanager.ui.fragments.FragmentSettings
 import com.openclassrooms.realestatemanager.ui.fragments.FragmentListEstate
 import com.openclassrooms.realestatemanager.ui.fragments.FragmentNewEstate
 import com.openclassrooms.realestatemanager.viewmodels.ListEstatesViewModel
@@ -50,10 +50,13 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
     private var containerId: Int = 0
 
     /** Contains a reference to a [FragmentNewEstate] object */
-    private var fragmentNewEstateStack : Fragment? = null
+    private var fragmentNewEstate : Fragment? = null
 
     /** Contains a reference to a [FragmentEstateDetails] object */
-    private var fragmentEstateDetailsStack: Fragment? = null
+    private var fragmentEstateDetails: Fragment? = null
+
+    /** Contains a reference to a [FragmentSettings] object */
+    private var fragmentSettings: Fragment? = null
 
     /** Contains ViewModel reference */
     lateinit var listEstatesViewModel: ListEstatesViewModel
@@ -72,9 +75,10 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
         initializeFragmentListEstate()
         if (savedInstanceState != null) {
             restoreViews(savedInstanceState)
-            fragmentNewEstateStack = supportFragmentManager.findFragmentByTag(FragmentNewEstate.TAG)
-            fragmentEstateDetailsStack = supportFragmentManager
+            fragmentNewEstate = supportFragmentManager.findFragmentByTag(FragmentNewEstate.TAG)
+            fragmentEstateDetails = supportFragmentManager
                                                        .findFragmentByTag(FragmentEstateDetails.TAG)
+            fragmentSettings = supportFragmentManager.findFragmentByTag(FragmentSettings.TAG)
             removeExistingFragments()
             restoreFragments(containerId)
         }
@@ -101,19 +105,24 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
      */
     private fun removeExistingFragments() {
         when {
-            fragmentNewEstateStack != null -> {
-                fragmentNewEstateStack?.let {
+            fragmentNewEstate != null -> {
+                fragmentNewEstate?.let {
                     // TODO : Clear list here
                     supportFragmentManager.beginTransaction().remove(it).commit()
                     supportFragmentManager.executePendingTransactions()
                 }
             }
-            fragmentEstateDetailsStack != null -> {
-                fragmentEstateDetailsStack?.let {
+            fragmentEstateDetails != null -> {
+                fragmentEstateDetails?.let {
                     supportFragmentManager.beginTransaction().remove(it).commit()
                     supportFragmentManager.executePendingTransactions()
                 }
             }
+            fragmentSettings != null ->
+                fragmentSettings?.let {
+                    supportFragmentManager.beginTransaction().remove(it).commit()
+                    supportFragmentManager.executePendingTransactions()
+                }
         }
     }
 
@@ -133,13 +142,17 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
      */
     private fun restoreFragments(@IdRes typeContainer: Int) {
         when {
-            fragmentNewEstateStack != null -> {
-                launchTransaction(typeContainer, fragmentNewEstateStack as FragmentNewEstate,
+            fragmentNewEstate != null -> {
+                launchTransaction(typeContainer, fragmentNewEstate as FragmentNewEstate,
                                                                               FragmentNewEstate.TAG)
             }
-            fragmentEstateDetailsStack != null -> {
-                launchTransaction(typeContainer, fragmentEstateDetailsStack as FragmentEstateDetails,
+            fragmentEstateDetails != null -> {
+                launchTransaction(typeContainer, fragmentEstateDetails as FragmentEstateDetails,
                                                                           FragmentEstateDetails.TAG)
+            }
+            fragmentSettings != null -> {
+                launchTransaction(typeContainer, fragmentSettings as FragmentSettings,
+                                                                               FragmentSettings.TAG)
             }
         }
     }
@@ -149,6 +162,13 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
      */
     fun displayFragmentDetails() {
         launchTransaction(containerId, FragmentEstateDetails.newInstance(), FragmentEstateDetails.TAG)
+    }
+
+    /**
+     * Displays [FragmentSettings]
+     */
+    fun displayFragmentSettings() {
+        launchTransaction(containerId, FragmentSettings.newInstance(), FragmentSettings.TAG)
     }
 
     /**
@@ -256,7 +276,6 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
         binding.fab.setOnClickListener {
             listEstatesViewModel.createNewEstate()
             launchTransaction(containerId, FragmentNewEstate.newInstance(), FragmentNewEstate.TAG)
-
             handleFabVisibility(View.INVISIBLE)
             handleBackgroundGridVisibility(View.INVISIBLE)
         }
@@ -279,6 +298,7 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
     /**
      * Handles visibility of background MaterialText and ImageView for "large-land"
      * activity_main.xml only
+     * @param visibility : Visibility status value
      */
     fun handleBackgroundGridVisibility(visibility: Int) {
         binding.apply {
@@ -294,19 +314,18 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
     private fun cleanBackStack(): Boolean {
         val containerIdList: Int = if (typeOrientation && typeLayout) R.id.fragment_container_view_left
         else R.id.fragment_container_view
-        fragmentNewEstateStack = supportFragmentManager.findFragmentByTag(FragmentNewEstate.TAG)
-        fragmentEstateDetailsStack = supportFragmentManager.findFragmentByTag(FragmentEstateDetails.TAG)
-        if (fragmentNewEstateStack != null || fragmentEstateDetailsStack != null) {
+        fragmentNewEstate = supportFragmentManager.findFragmentByTag(FragmentNewEstate.TAG)
+        fragmentEstateDetails = supportFragmentManager.findFragmentByTag(FragmentEstateDetails.TAG)
+        fragmentSettings = supportFragmentManager.findFragmentByTag(FragmentSettings.TAG)
+        if (fragmentNewEstate != null || fragmentEstateDetails != null || fragmentSettings != null) {
             // Display FragmentListEstate if needed
-            if (!(typeOrientation && typeLayout)) {
+            if (!(typeOrientation && typeLayout))
                 launchTransaction(containerIdList,
                                   FragmentListEstate.newInstance(), FragmentListEstate.TAG)
-            }
             // Reset item selection on list
             val fragmentListEstate = supportFragmentManager.findFragmentByTag(FragmentListEstate.TAG)
-            if (fragmentListEstate != null) {
+            if (fragmentListEstate != null)
                 (fragmentListEstate as FragmentListEstate).clearCurrentSelection()
-            }
             removeExistingFragments()
             return true
         }
@@ -327,15 +346,12 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
     /**
      * Handle floating action button visibility.
      */
-    fun handleFabVisibility(visibility: Int) {
-        binding.fab.apply {
-            if (visibility == View.VISIBLE) show() else hide()
-        }
-    }
+    fun handleFabVisibility(visibility: Int) =
+        binding.fab.apply { if (visibility == View.VISIBLE) show() else hide() }
+
 
     /**
-     * Check if a dialog is currently displayed in
-     * [com.openclassrooms.realestatemanager.ui.fragments.FragmentNewEstate].
+     * Check if a dialog is currently displayed in [FragmentNewEstate].
      */
     private fun checkIfDialogIsDisplayed(): Boolean {
         if (isFragmentDisplayed(FragmentNewEstate.TAG)) {
@@ -348,23 +364,33 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode == RESULT_OK && data != null) {
 
+        // From camera : Get Uri from saved value in SharedPreferences
+        if (resultCode == RESULT_OK && requestCode == AppInfo.REQUEST_IMAGE_CAPTURE) {
+            val sharedPreferences: SharedPreferences =
+                                getSharedPreferences(AppInfo.FILE_SHARED_PREF, Context.MODE_PRIVATE)
+            val uriString: String? = sharedPreferences.getString(AppInfo.PREF_CURRENT_URI, "")
+            if (uriString != null) {
+                val fragment = supportFragmentManager.findFragmentByTag(FragmentNewEstate.TAG)
+                               as FragmentNewEstate
+                fragment.addNewPhotoUri(uriString.toUri())
+            }
+        }
+
+        // From Gallery : get Uri from data Intent
+        if (resultCode == RESULT_OK && data != null) {
             val imageMediaUri: Uri? = data.data
             if (isFragmentDisplayed(FragmentNewEstate.TAG)) {
-                    val fragment = supportFragmentManager.findFragmentByTag(FragmentNewEstate.TAG)
-                            as FragmentNewEstate
-
-                if (imageMediaUri != null) // From Gallery (uri already exists)
-                    fragment.addNewPhotoFromGallery(imageMediaUri)
-                else { // From Camera (uri does not exist yet)
-                    val bitmap: Bitmap = data.extras?.get("data") as Bitmap
-                    fragment.addNewPhotoFromCamera(bitmap)
-                }
+                val fragment = supportFragmentManager.findFragmentByTag(FragmentNewEstate.TAG)
+                               as FragmentNewEstate
+                if (imageMediaUri != null) fragment.addNewPhotoUri(imageMediaUri)
             }
         }
     }
 
+    /**
+     * Check if main activity child fragment associated with specified [tag] is displayed.
+     */
     private fun isFragmentDisplayed(tag: String): Boolean =
         supportFragmentManager.findFragmentByTag(tag) != null
 

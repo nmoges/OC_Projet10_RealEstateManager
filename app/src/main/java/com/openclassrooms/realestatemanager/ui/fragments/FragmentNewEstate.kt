@@ -1,20 +1,19 @@
 package com.openclassrooms.realestatemanager.ui.fragments
 
-import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.Context
-import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
-import android.provider.MediaStore
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.*
 import android.widget.*
 import androidx.annotation.LayoutRes
 import androidx.annotation.StringRes
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
-import com.google.android.material.button.MaterialButton
+import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.textfield.TextInputEditText
 import com.openclassrooms.realestatemanager.MediaAccessHandler
 import com.openclassrooms.realestatemanager.ui.activities.MainActivity
@@ -24,9 +23,6 @@ import com.openclassrooms.realestatemanager.model.Estate
 import com.openclassrooms.realestatemanager.model.Photo
 import com.openclassrooms.realestatemanager.ui.MediaDisplayHandler
 import com.openclassrooms.realestatemanager.viewmodels.ListEstatesViewModel
-import java.io.ByteArrayOutputStream
-import java.text.SimpleDateFormat
-import java.util.*
 
 /**
  * [Fragment] subclass used to display a view allowing user to create
@@ -41,8 +37,7 @@ class FragmentNewEstate : Fragment() {
         const val DIALOG_ADD_MEDIA_KEY = "DIALOG_ADD_MEDIA_KEY"
         const val DIALOG_CONFIRM_MEDIA_KEY = "DIALOG_CONFIRM_MEDIA_KEY"
         const val UPDATE_ESTATE_KEY = "UPDATE_ESTATE_KEY"
-        const val NAME_PHOTO_KEY: String = "NAME_PHOTO_KEY"
-        const val URI_PHOTO_KEY: String = "URI_PHOTO_KEY"
+        const val TEXT_DIALOG_CONFIRM_MEDIA_KEY = "TEXT_DIALOG_CONFIRM_MEDIA_KEY"
         fun newInstance(): FragmentNewEstate = FragmentNewEstate()
     }
 
@@ -51,9 +46,6 @@ class FragmentNewEstate : Fragment() {
 
     /** Contains ViewModel reference */
     private lateinit var listEstatesViewModel: ListEstatesViewModel
-
-    /**  Selected [Estate] to modify */
-    private lateinit var currentEstate: Estate
 
     /** Defines if current fragment is display for new estate creation (false) or to modify an
      * existing one (true). */
@@ -71,11 +63,7 @@ class FragmentNewEstate : Fragment() {
     /** Defines an [AlertDialog] allowing user to confirm photo addition. */
     private lateinit var builderNameMediaDialog: AlertDialog
 
-    /**  Name of a selected photo */
-    private var namePhoto: String = ""
-
-    /** [Uri] of a selected photo */
-    private var uriPhoto : String = ""
+    private var textNameMediaDialog: String = ""
 
     /** Defines a [TextWatcher] for [builderNameMediaDialog] */
     private val textWatcher: TextWatcher = object : TextWatcher {
@@ -84,7 +72,8 @@ class FragmentNewEstate : Fragment() {
         override fun onTextChanged(name: CharSequence?, start: Int, before: Int, count: Int) { }
 
         override fun afterTextChanged(name: Editable?) {
-            if (name != null && builderNameMediaDialog != null) {
+            if (name != null) {
+                textNameMediaDialog = name.toString()
                 builderNameMediaDialog.getButton(AlertDialog.BUTTON_POSITIVE)
                                       .isEnabled = name.isNotEmpty() }
         }
@@ -93,6 +82,7 @@ class FragmentNewEstate : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
+        listEstatesViewModel = ViewModelProvider(requireActivity()).get(ListEstatesViewModel::class.java)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -105,14 +95,14 @@ class FragmentNewEstate : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         initializeDialogs()
         if (savedInstanceState != null) {
+            textNameMediaDialog = savedInstanceState.getString(TEXT_DIALOG_CONFIRM_MEDIA_KEY).toString()
             restoreDialogs(savedInstanceState)
             updateEstate = savedInstanceState.getBoolean(UPDATE_ESTATE_KEY)
-            namePhoto = savedInstanceState.getString(NAME_PHOTO_KEY) ?: ""
-            uriPhoto = savedInstanceState.getString(URI_PHOTO_KEY) ?: ""
         }
         updateToolbarTitle()
         updateMaterialButtonText()
-        initializeViewModel()
+        if (updateEstate) updateFragmentViewsWithEstateProperties()
+        updateHorizontalScrollViewWithPhotos()
         handleAddPhotoButton()
         handleSlidersListeners()
         handleConfirmationButtonListener()
@@ -134,6 +124,7 @@ class FragmentNewEstate : Fragment() {
 
     /**
      * Restores displayed dialog after a configuration change.
+     * @param savedInstanceState : Bundle
      */
     private fun restoreDialogs(savedInstanceState: Bundle?) {
         when {
@@ -145,7 +136,21 @@ class FragmentNewEstate : Fragment() {
                 builderAddMediaDialog.show() }
             savedInstanceState?.getBoolean(DIALOG_CONFIRM_MEDIA_KEY) == true -> {
                 builderNameMediaDialog.show()
-                builderNameMediaDialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled = false }
+                restoreBuildNameMediaDialogProperties()
+            }
+        }
+    }
+
+
+    /**
+     * Handles edit text and button status restoration after configuration change.
+     */
+    private fun restoreBuildNameMediaDialogProperties() {
+        builderNameMediaDialog.apply {
+            val editText = this.findViewById<TextInputEditText>(R.id.new_media_text_input_edit)
+            editText.text = Editable.Factory.getInstance().newEditable(textNameMediaDialog)
+            getButton(AlertDialog.BUTTON_POSITIVE)
+                                  .isEnabled = textNameMediaDialog.isNotEmpty()
         }
     }
 
@@ -181,8 +186,7 @@ class FragmentNewEstate : Fragment() {
         val message = if (updateEstate) resources.getString(R.string.str_dialog_cancel_modifications_message)
                       else resources.getString(R.string.str_dialog_cancel_creation_message)
         builderCancelEstateDialog = AlertDialog.Builder(activity)
-            .setTitle(title)
-            .setMessage(message)
+            .setTitle(title).setMessage(message)
             .setPositiveButton(resources.getString(R.string.str_dialog_button_yes)) {_, _ ->
                 builderCancelEstateDialog.dismiss()
                 (activity as MainActivity).onBackPressed() }
@@ -197,8 +201,7 @@ class FragmentNewEstate : Fragment() {
         val viewAddMediaDialog: View? = getViewFromLayoutInflater(R.layout.dialog_media_selection)
         builderAddMediaDialog = AlertDialog.Builder(activity)
             .setTitle(resources.getString(R.string.str_dialog_add_media_title))
-            .setView(viewAddMediaDialog)
-            .create()
+            .setView(viewAddMediaDialog).create()
         handleAddMediaDialogButtons(viewAddMediaDialog)
     }
 
@@ -216,18 +219,26 @@ class FragmentNewEstate : Fragment() {
             .setTitle(resources.getString(R.string.str_dialog_name_media_title))
             .setView(viewNameMediaDialog)
             .setPositiveButton(resources.getString(R.string.str_dialog_button_yes)) {_, _ ->
-                namePhoto = textInputEditText?.text.toString()
-                // Add new Photo object to the Estate list of photos
-                currentEstate.listPhoto.add(0, createNewPhoto())
-                addNewFrameLayoutToBinding(currentEstate.listPhoto[0])
+               // textNameMediaDialog = textInputEditText?.text.toString()
+                //updateObserverToViewModelStatus(true)
+                addNewPhoto()
                 textInputEditText?.text?.clear() }
             .setNegativeButton(resources.getString(R.string.str_dialog_button_cancel)) {_, _ ->
                 textInputEditText?.text?.clear() }
             .create()
     }
 
-
-    private fun createNewPhoto(): Photo =  Photo(uriPhoto, namePhoto)
+    private fun addNewPhoto() {
+        listEstatesViewModel.selectedEstate?.run {
+            val newPhoto: Photo? = listEstatesViewModel.createNewPhoto(textNameMediaDialog)
+           // updateObserverToViewModelStatus(false)
+            listEstatesViewModel.clearTempPhotoUri()
+            if (newPhoto != null) {
+                listPhoto.add(0, newPhoto)
+                addNewFrameLayoutToBinding(listPhoto.first())
+            }
+        }
+    }
 
     private fun addNewFrameLayoutToBinding(photo: Photo) {
         val frameLayout: FrameLayout = MediaDisplayHandler
@@ -246,7 +257,7 @@ class FragmentNewEstate : Fragment() {
      */
     private fun handleAddMediaDialogButtons(view: View?) {
         // Item "Take picture"
-        view?.findViewById<MaterialButton>(R.id.take_picture_button)?.setOnClickListener {
+        view?.findViewById<ConstraintLayout>(R.id.take_picture_button)?.setOnClickListener {
             if (MediaAccessHandler.checkPermissions(activity as MainActivity)) {
                 MediaAccessHandler.openCamera(activity as MainActivity)
             }
@@ -254,7 +265,7 @@ class FragmentNewEstate : Fragment() {
             builderAddMediaDialog.dismiss() }
 
         // Item "Import from gallery"
-        view?.findViewById<MaterialButton>(R.id.import_gallery_button)?.setOnClickListener {
+        view?.findViewById<ConstraintLayout>(R.id.import_from_gallery_button)?.setOnClickListener {
             if (MediaAccessHandler.checkPermissions(activity as MainActivity)) {
                 MediaAccessHandler.openPhotosGallery(activity as MainActivity)
             }
@@ -262,18 +273,6 @@ class FragmentNewEstate : Fragment() {
             builderAddMediaDialog.dismiss() }
     }
 
-    /**
-     * Initializes observer to [MainActivity] viewModel.
-     */
-    private fun initializeViewModel() {
-        listEstatesViewModel = (activity as MainActivity).listEstatesViewModel
-        listEstatesViewModel.selectedEstate.observe(viewLifecycleOwner, {
-            currentEstate = it
-            // Restore data for an existing Estate
-            if (updateEstate) updateFragmentViewsWithEstateProperties()
-            restoreListPhoto()
-        })
-    }
 
     /**
      * Initializes TextInputEdit fields with current [Estate] properties values to modify.
@@ -282,20 +281,22 @@ class FragmentNewEstate : Fragment() {
         fun convertStringToEditable(text: String): Editable =
             Editable.Factory.getInstance().newEditable(text)
 
-        binding.newEstateNameSectionTextInputEdit.text =
-            convertStringToEditable(currentEstate.type)
-        binding.newEstateLocationSectionTextInputEdit.text =
-            convertStringToEditable(currentEstate.address)
-        binding.newEstateDescSectionTextInputEdit.text =
-            convertStringToEditable(currentEstate.description)
-        binding.newEstateAgentSectionTextInputEdit.text =
-            convertStringToEditable(currentEstate.nameAgent)
-        binding.newEstatePriceSectionTextInputEdit.text =
-            convertStringToEditable(currentEstate.price.toString())
-        binding.sliderSurface.value = currentEstate.interior.surface.toFloat()
-        binding.sliderRooms.value = currentEstate.interior.numberRooms.toFloat()
-        binding.sliderBathrooms.value = currentEstate.interior.numberBathrooms.toFloat()
-        binding.sliderBedrooms.value = currentEstate.interior.numberBedrooms.toFloat()
+        with(binding) {
+            val currentEstate = listEstatesViewModel.selectedEstate ?: return
+            newEstateNameSectionTextInputEdit.text = convertStringToEditable(currentEstate.type)
+            newEstateLocationSectionTextInputEdit.text =
+                                                      convertStringToEditable(currentEstate.address)
+            newEstateDescSectionTextInputEdit.text =
+                                                  convertStringToEditable(currentEstate.description)
+            newEstateAgentSectionTextInputEdit.text =
+                                                    convertStringToEditable(currentEstate.nameAgent)
+            newEstatePriceSectionTextInputEdit.text =
+                                             convertStringToEditable(currentEstate.price.toString())
+            sliderSurface.value = currentEstate.interior.surface.toFloat()
+            sliderRooms.value = currentEstate.interior.numberRooms.toFloat()
+            sliderBathrooms.value = currentEstate.interior.numberBathrooms.toFloat()
+            sliderBedrooms.value = currentEstate.interior.numberBedrooms.toFloat()
+        }
     }
 
     /**
@@ -322,28 +323,32 @@ class FragmentNewEstate : Fragment() {
      * Clears all views in fragment.
      */
     private fun confirmReset() {
-        binding.newEstateNameSectionTextInputEdit.text?.clear()
-        binding.newEstateLocationSectionTextInputEdit.text?.clear()
-        binding.newEstateDescSectionTextInputEdit.text?.clear()
-        binding.newEstateAgentSectionTextInputEdit.text?.clear()
-        binding.newEstatePriceSectionTextInputEdit.text?.clear()
-        binding.sliderSurface.value = 200.0F
-        binding.sliderRooms.value = 5.0F
-        binding.sliderBathrooms.value = 1.0F
-        binding.sliderBedrooms.value = 1.0F
-        binding.linearLayoutMedia.removeViews(0, currentEstate.listPhoto.size)
+        val currentEstate = listEstatesViewModel.selectedEstate ?: return
+        with(binding) {
+            newEstateNameSectionTextInputEdit.text?.clear()
+            newEstateLocationSectionTextInputEdit.text?.clear()
+            newEstateDescSectionTextInputEdit.text?.clear()
+            newEstateAgentSectionTextInputEdit.text?.clear()
+            newEstatePriceSectionTextInputEdit.text?.clear()
+            sliderSurface.value = 200.0F
+            sliderRooms.value = 5.0F
+            sliderBathrooms.value = 1.0F
+            sliderBedrooms.value = 1.0F
+            linearLayoutMedia.removeViews(0, currentEstate.listPhoto.size)
+        }
         currentEstate.listPhoto.clear()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putBoolean(DIALOG_RESET_KEY, builderResetEstateDialog.isShowing)
-        outState.putBoolean(DIALOG_CANCEL_KEY, builderCancelEstateDialog.isShowing)
-        outState.putBoolean(DIALOG_ADD_MEDIA_KEY, builderAddMediaDialog.isShowing)
-        outState.putBoolean(UPDATE_ESTATE_KEY, updateEstate)
-        outState.putBoolean(DIALOG_CONFIRM_MEDIA_KEY, builderNameMediaDialog.isShowing)
-        outState.putString(NAME_PHOTO_KEY, namePhoto)
-        outState.putString(URI_PHOTO_KEY, uriPhoto)
+        outState.apply {
+            putBoolean(DIALOG_RESET_KEY, builderResetEstateDialog.isShowing)
+            putBoolean(DIALOG_CANCEL_KEY, builderCancelEstateDialog.isShowing)
+            putBoolean(DIALOG_ADD_MEDIA_KEY, builderAddMediaDialog.isShowing)
+            putBoolean(DIALOG_CONFIRM_MEDIA_KEY, builderNameMediaDialog.isShowing)
+            putBoolean(UPDATE_ESTATE_KEY, updateEstate)
+            putString(TEXT_DIALOG_CONFIRM_MEDIA_KEY, textNameMediaDialog)
+        }
     }
 
     fun dismissDialogOnBackPressed(): Boolean {
@@ -359,32 +364,18 @@ class FragmentNewEstate : Fragment() {
     }
 
     /**
-     * Gets a [Uri] photo value from Gallery.
+     * Gets a [Uri] photo value from Gallery or Camera.
      */
-    fun addNewPhotoFromGallery(uri: Uri?) {
+    fun addNewPhotoUri(uri: Uri?) {
         if (uri != null) {
-            uriPhoto = uri.toString()
+            listEstatesViewModel.updatePhotoUri(uri.toString())
             displayNameMediaDialog()
         }
     }
 
-
     /**
-     * Gets a new [Bitmap] from Camera.
+     * Displays an [AlertDialog] for name photo entry.
      */
-    @SuppressLint("SimpleDateFormat")
-    fun addNewPhotoFromCamera(bitmap: Bitmap) {
-        val bytes = ByteArrayOutputStream()
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes)
-        val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
-        val nameFile = "IMG_${timeStamp}"
-        val path: String =
-            MediaStore.Images.Media.insertImage((activity as MainActivity).contentResolver, bitmap,
-                                                                            nameFile, null)
-        uriPhoto = Uri.parse(path).toString()
-        displayNameMediaDialog()
-    }
-
     private fun displayNameMediaDialog() {
         builderNameMediaDialog.show()
         builderNameMediaDialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled = false
@@ -393,10 +384,9 @@ class FragmentNewEstate : Fragment() {
     /**
      * Restores the list of photo of an [Estate].
      */
-    private fun restoreListPhoto() {
-        if (currentEstate.listPhoto.size > 0) {
-            for (i in currentEstate.listPhoto.size-1 downTo  0)
-                addNewFrameLayoutToBinding(currentEstate.listPhoto[i])
+    private fun updateHorizontalScrollViewWithPhotos() {
+        listEstatesViewModel.selectedEstate?.let {
+            it.listPhoto.asReversed().forEach {  photo -> addNewFrameLayoutToBinding(photo) }
         }
     }
 
@@ -435,15 +425,13 @@ class FragmentNewEstate : Fragment() {
             val name: String = binding.newEstateNameSectionTextInputEdit.text.toString()
             val location: String = binding.newEstateLocationSectionTextInputEdit.text.toString()
             val description: String = binding.newEstateDescSectionTextInputEdit.text.toString()
-
             val price: String = binding.newEstatePriceSectionTextInputEdit.text.toString()
             val nameAgent: String = binding.newEstateAgentSectionTextInputEdit.text.toString()
-            val size: Int = currentEstate.listPhoto.size
 
             //TODO() : Déplacer dans ViewModel
-            if (name.isNotEmpty() && location.isNotEmpty()
-                && description.isNotEmpty()  && price.isNotEmpty()
-                && nameAgent.isNotEmpty() && size != 0) { //
+            if (name.isNotEmpty() && location.isNotEmpty() && description.isNotEmpty()
+                && price.isNotEmpty() && nameAgent.isNotEmpty()
+                && listEstatesViewModel.selectedEstate?.listPhoto?.isNotEmpty() == true) {
                 displayToastEstate(false)
                 createEstate(name, location, description, nameAgent, price)
             }
@@ -471,16 +459,18 @@ class FragmentNewEstate : Fragment() {
         val rooms: Int = binding.sliderRoomsValue.text.toString().toInt()
         val bathrooms: Int = binding.sliderBathroomsValue.text.toString().toInt()
         val bedrooms: Int = binding.sliderBedroomsValue.text.toString().toInt()
-        currentEstate.type = name
-        currentEstate.address = location
-        currentEstate.description = description
-        currentEstate.nameAgent = nameAgent
-        currentEstate.interior.numberRooms = rooms
-        currentEstate.interior.numberBathrooms = bathrooms
-        currentEstate.interior.numberBedrooms = bedrooms
-        currentEstate.interior.surface = surface
-        currentEstate.price = price.toInt()
-        listEstatesViewModel.updateViewModel(currentEstate, updateEstate)
+        listEstatesViewModel.selectedEstate?.apply {
+            type = name
+            address = location
+            this.description = description
+            this.nameAgent = nameAgent
+            interior.numberRooms = rooms
+            interior.numberBathrooms = bathrooms
+            interior.numberBedrooms = bedrooms
+            interior.surface = surface
+            this.price = price.toInt()
+        }
+        listEstatesViewModel.updateViewModel(updateEstate)
         (activity as MainActivity).onBackPressed()
     }
 }

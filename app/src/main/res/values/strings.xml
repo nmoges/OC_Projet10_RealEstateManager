@@ -112,4 +112,9 @@
         to allow application to work correctly</string>
     <string name="str_dialog_permission_access_button_settings">Settings</string>
     <string name="uri_string_package">package:com.openclassrooms.realestatemanager</string>
+
+    <!-- fragment_settings.xml -->
+    <string name="str_title_currency">Currency</string>
+    <string name="str_text_symbol_currency">USD</string> <!-- TODO : FOR TESTING LAYOUT VISUALIZATION ONLY -->
+    <string name="str_text_currency">Set your preferred local currency</string>
 </resources>

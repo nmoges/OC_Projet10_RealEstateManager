@@ -63,7 +63,7 @@ class FragmentListEstate : Fragment() {
                 // Display FragmentDetails with selected item
                 activity.displayFragmentDetails()
             }
-            else (activity as MainActivity).onBackPressed()
+            else activity.onBackPressed()
         }
     }
 
@@ -88,7 +88,9 @@ class FragmentListEstate : Fragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId) {
             R.id.search -> { }
-            R.id.settings -> { }
+            R.id.settings -> {
+                (activity as MainActivity).handleFabVisibility(View.INVISIBLE)
+                (activity as MainActivity).displayFragmentSettings() }
             R.id.logout -> { }
         }
         return super.onOptionsItemSelected(item)
@@ -133,9 +135,7 @@ class FragmentListEstate : Fragment() {
                 for (i in listEstate.indices) listEstate[i].selected = false
             }
         }
-        else {
-            for (i in listEstate.indices) { listEstate[i].selected = false }
-        }
+        else { for (i in listEstate.indices) { listEstate[i].selected = false } }
     }
 
 }
