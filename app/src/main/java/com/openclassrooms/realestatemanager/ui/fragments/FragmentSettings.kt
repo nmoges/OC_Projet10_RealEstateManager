@@ -1,15 +1,13 @@
 package com.openclassrooms.realestatemanager.ui.fragments
 
+import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
+import android.view.*
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.MenuItem
-import android.view.View
-import android.view.ViewGroup
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.lifecycle.ViewModelProvider
 import com.openclassrooms.realestatemanager.AppInfo
@@ -17,13 +15,13 @@ import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.databinding.FragmentSettingsBinding
 import com.openclassrooms.realestatemanager.ui.activities.MainActivity
 import com.openclassrooms.realestatemanager.viewmodels.CurrencyViewModel
-import java.util.*
 
 class FragmentSettings : Fragment() {
 
     companion object {
         const val TAG = "TAG_FRAGMENT_SETTINGS"
         const val DIALOG_CURRENCY_SELECT_KEY = "DIALOG_CURRENCY_SELECT_KEY"
+        const val DIALOG_DELETE_ACCOUNT_KEY = "DIALOG_DELETE_ACCOUNT_KEY"
         fun newInstance(): FragmentSettings = FragmentSettings()
     }
 
@@ -31,6 +29,7 @@ class FragmentSettings : Fragment() {
     lateinit var binding: FragmentSettingsBinding
 
     private lateinit var builderCurrencySelectionDialog: AlertDialog
+    private lateinit var builderDeleteAccountDialog: AlertDialog
     private lateinit var currencyViewModel: CurrencyViewModel
     private lateinit var filePreferences: SharedPreferences
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -52,10 +51,12 @@ class FragmentSettings : Fragment() {
             R.string.str_item_settings, true)
         filePreferences = (activity as MainActivity).getSharedPreferences(AppInfo.FILE_SHARED_PREF,
                                                                                Context.MODE_PRIVATE)
+        initializeCardViewsDisplay()
         initializeCurrencySelectionDialog()
+        initializeDeleteAccountDialog()
         initCurrencyCardView()
         handleClickCurrencyCardListener()
-
+        handleClicksDeleteAccountCardListener()
         if (savedInstanceState != null) restoreDialog(savedInstanceState)
     }
 
@@ -64,15 +65,52 @@ class FragmentSettings : Fragment() {
         return super.onOptionsItemSelected(item)
     }
 
-    /**
-     * Handles click of currency selection option card.
-     */
-    private fun handleClickCurrencyCardListener() {
-        binding.cardViewCurrency.setOnClickListener {
-            builderCurrencySelectionDialog.show()
+    private fun initializeCardViewsDisplay() {
+        binding.apply {
+            cardViewCurrency.setBackgroundResource(R.drawable.background_card_view_unclicked)
+            cardViewDeleteAccount.setBackgroundResource(R.drawable.background_card_view_unclicked)
         }
     }
 
+    /**
+     * Handles click of currency selection option card.
+     */
+    @SuppressLint("ClickableViewAccessibility")
+    private fun handleClickCurrencyCardListener() {
+        binding.cardViewCurrency.setOnTouchListener { _, event ->
+            when(event.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    binding.cardViewCurrency.setBackgroundResource(R.drawable.background_card_view_clicked)
+                    true }
+                MotionEvent.ACTION_UP -> {
+                    binding.cardViewCurrency.setBackgroundResource(R.drawable.background_card_view_unclicked)
+                    builderCurrencySelectionDialog.show()
+                    true
+                }
+                else -> { true }
+            }
+        }
+    }
+
+    /**
+     * Handles click of delete account option card.
+     */
+    @SuppressLint("ClickableViewAccessibility")
+    private fun handleClicksDeleteAccountCardListener() {
+        binding.cardViewDeleteAccount.setOnTouchListener { _, event ->
+            when(event.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    binding.cardViewDeleteAccount.setBackgroundResource(R.drawable.background_card_view_clicked)
+                    true }
+                MotionEvent.ACTION_UP -> {
+                    binding.cardViewDeleteAccount.setBackgroundResource(R.drawable.background_card_view_unclicked)
+                    builderDeleteAccountDialog.show()
+                    true
+                }
+                else -> { true }
+            }
+        }
+    }
     /**
      * Initializes currency symbol displayed.
      */
@@ -91,11 +129,20 @@ class FragmentSettings : Fragment() {
         val viewCurrencySelection: View? = inflater?.inflate(R.layout.dialog_currency_selection, null)
 
         builderCurrencySelectionDialog = AlertDialog.Builder(activity)
-            .setTitle("Select currency")
+            .setTitle(resources.getString(R.string.str_title_select_currency_dialog))
             .setView(viewCurrencySelection)
             .create()
 
         handleCurrencySelectionDialogButtons(viewCurrencySelection)
+    }
+
+    private fun initializeDeleteAccountDialog() {
+        builderDeleteAccountDialog = AlertDialog.Builder(activity)
+            .setTitle(resources.getString(R.string.str_title_delete_account_dialog))
+            .setMessage(resources.getString(R.string.str_text_delete_account_dialog))
+            .setPositiveButton(resources.getString(R.string.str_title_button_confirm)) { _, _ ->  }
+            .setNegativeButton(resources.getString(R.string.str_dialog_button_cancel)) { _, _ ->  }
+            .create()
     }
 
     /**
@@ -129,13 +176,20 @@ class FragmentSettings : Fragment() {
     }
 
     private fun restoreDialog(savedInstanceState: Bundle?) {
-        if (savedInstanceState?.getBoolean(DIALOG_CURRENCY_SELECT_KEY) == true)
+        if (savedInstanceState?.getBoolean(DIALOG_CURRENCY_SELECT_KEY) == true) {
             builderCurrencySelectionDialog.show()
+        }
+        if (savedInstanceState?.getBoolean(DIALOG_DELETE_ACCOUNT_KEY) == true) {
+            builderDeleteAccountDialog.show()
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putBoolean(DIALOG_CURRENCY_SELECT_KEY, builderCurrencySelectionDialog.isShowing)
+        outState.apply {
+            putBoolean(DIALOG_CURRENCY_SELECT_KEY, builderCurrencySelectionDialog.isShowing)
+            putBoolean(DIALOG_DELETE_ACCOUNT_KEY, builderDeleteAccountDialog.isShowing)
+        }
     }
 
     private fun updateDisplayedCurrencyInCardView(selectedCurrency: String) {

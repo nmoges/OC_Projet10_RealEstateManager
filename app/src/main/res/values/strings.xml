@@ -114,7 +114,17 @@
     <string name="uri_string_package">package:com.openclassrooms.realestatemanager</string>
 
     <!-- fragment_settings.xml -->
+    <string name="str_title_select_currency_dialog">Select currency</string>
+    <string name="str_text_usd_dialog">United States Dollar</string>
+    <string name="str_text_eur_dialog">Euro</string>
+    <string name="str_symbol_usd_dialog">USD</string>
+    <string name="str_symbol_eur_dialog">EUR</string>
+    <string name="str_title_delete_account_dialog">Delete account</string>
+    <string name="str_text_delete_account_dialog">Delete account</string>
+    <string name="str_title_button_confirm">Delete account</string>
     <string name="str_title_currency">Currency</string>
-    <string name="str_text_symbol_currency">USD</string> <!-- TODO : FOR TESTING LAYOUT VISUALIZATION ONLY -->
     <string name="str_text_currency">Set your preferred local currency</string>
+    <string name="str_text_symbol_currency">USD</string>
+    <string name="str_title_delete_account">Delete Account</string>
+    <string name="str_text_delete_account">Delete your Real Estate Manager account</string>
 </resources>

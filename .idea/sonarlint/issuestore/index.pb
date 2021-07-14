@@ -33,5 +33,19 @@ q
 Aapp/src/main/java/com/openclassrooms/realestatemanager/AppInfo.kt,f\8\f8e7cae62fac8f3581a3f05de0e89e15f032b39e
 @
 app/build.gradle,f\4\f4a01d6a4fcb971362ec00a83903fd3902f52164
+|
+Lapp/src/main/java/com/openclassrooms/realestatemanager/MediaAccessHandler.kt,8\f\8f8d436b210b624bdded9a75584209f523ce6056
+‰
+Yapp/src/main/java/com/openclassrooms/realestatemanager/viewmodels/ListEstatesViewModel.kt,8\d\8d3506763d1ff2b95ae40f6e3100f51b8a61dcf4
+P
+ app/src/main/AndroidManifest.xml,8\c\8c55c3ccc257e5907959013f99656e4c8ec3903e
+q
+Aapp/src/main/java/com/openclassrooms/realestatemanager/Utils.java,f\1\f1cdde1ae10dbcb7e4502dc957ce7854a5461cbb
+†
+Vapp/src/main/java/com/openclassrooms/realestatemanager/viewmodels/CurrencyViewModel.kt,9\f\9f5d4c4bfebe1401af8e5b89bf7cfb755963efc3
+‰
+Yapp/src/main/java/com/openclassrooms/realestatemanager/ui/fragments/FragmentListEstate.kt,0\b\0b357c8f4a12d1fd6b84157cb7f44cffd452c782
 ˆ
-Xapp/src/main/java/com/openclassrooms/realestatemanager/ui/fragments/FragmentNewEstate.kt,1\0\10e9fd407e603b8e87eac8081b920670bdebfc8a
+Xapp/src/main/java/com/openclassrooms/realestatemanager/ui/adapters/ListEstatesAdapter.kt,d\0\d06173742ed2234766d9661946f87a9e6e2a544f
+„
+Tapp/src/main/java/com/openclassrooms/realestatemanager/ui/activities/MainActivity.kt,c\b\cbf2ccaf6756210c5c05ca63a07eba971bc8b792

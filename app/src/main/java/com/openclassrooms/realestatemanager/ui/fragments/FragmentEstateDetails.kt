@@ -20,8 +20,13 @@ class FragmentEstateDetails : Fragment() {
         fun newInstance(): FragmentEstateDetails = FragmentEstateDetails()
     }
 
+    /** binding parameter */
     private lateinit var binding: FragmentEstateDetailsBinding
+
+    /** Contains a reference to a [ListEstatesViewModel]  */
     private lateinit var listEstatesViewModel: ListEstatesViewModel
+
+    /** Contains a reference an [Estate] selected by user to be displayed */
     private var selectedEstateToDisplay: Estate? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -67,17 +72,21 @@ class FragmentEstateDetails : Fragment() {
      * Initializes views with selected [Estate] properties values.
      */
     private fun updateViewsWithEstateProperties() {
-        binding.description.text = selectedEstateToDisplay?.description
-
-        val surface: String = selectedEstateToDisplay?.interior?.surface.toString() + " sq m"
-        binding.surfaceValue.text = surface
-
-        binding.numberOfRoomsValue.text = selectedEstateToDisplay?.interior?.numberRooms.toString()
-        binding.numberOfBathroomsValue.text = selectedEstateToDisplay?.interior?.numberBathrooms.toString()
-        binding.numberOfBedroomsValue.text = selectedEstateToDisplay?.interior?.numberBedrooms.toString()
-        binding.addressLocationText.text = selectedEstateToDisplay?.address
+        binding.apply {
+            val surface: String = selectedEstateToDisplay?.interior?.surface.toString() + " sq m"
+            surfaceValue.text = surface
+            description.text = selectedEstateToDisplay?.description
+            numberOfRoomsValue.text = selectedEstateToDisplay?.interior?.numberRooms.toString()
+            numberOfBathroomsValue.text = selectedEstateToDisplay?.interior?.numberBathrooms.toString()
+            numberOfBedroomsValue.text = selectedEstateToDisplay?.interior?.numberBedrooms.toString()
+            addressLocationText.text = selectedEstateToDisplay?.address
+        }
     }
 
+    /**
+     * Updates the horizontal scrollview with the list of photos associated to the selected
+     * [Estate].
+     */
     private fun updateHorizontalScrollViewWithPhotos() {
         selectedEstateToDisplay?.listPhoto?.forEach {
             val frameLayout: FrameLayout = MediaDisplayHandler.createNewFrameLayout(
