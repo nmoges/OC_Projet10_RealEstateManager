@@ -23,12 +23,14 @@ import androidx.lifecycle.ViewModelProvider
 import com.openclassrooms.realestatemanager.AppInfo
 import com.openclassrooms.realestatemanager.MediaAccessHandler
 import com.openclassrooms.realestatemanager.R
+import com.openclassrooms.realestatemanager.Utils
 import com.openclassrooms.realestatemanager.databinding.ActivityMainBinding
 import com.openclassrooms.realestatemanager.receiver.NetworkBroadcastReceiver
 import com.openclassrooms.realestatemanager.ui.fragments.FragmentEstateDetails
 import com.openclassrooms.realestatemanager.ui.fragments.FragmentSettings
 import com.openclassrooms.realestatemanager.ui.fragments.FragmentListEstate
 import com.openclassrooms.realestatemanager.ui.fragments.FragmentNewEstate
+import com.openclassrooms.realestatemanager.viewmodels.CurrencyViewModel
 import com.openclassrooms.realestatemanager.viewmodels.ListEstatesViewModel
 
 /**
@@ -60,7 +62,7 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
 
     /** Contains ViewModel reference */
     lateinit var listEstatesViewModel: ListEstatesViewModel
-
+    lateinit var currencyViewModel: CurrencyViewModel
     private val networkBroadcastReceiver: NetworkBroadcastReceiver = NetworkBroadcastReceiver(this)
 
     companion object {
@@ -85,7 +87,7 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
         initializeToolbar()
         handleFloatingActionButton()
         handleConnectivityBarBtnListener()
-        listEstatesViewModel = ViewModelProvider(this).get(ListEstatesViewModel::class.java)
+        initializeViewModels()
         MediaAccessHandler.initializeNbPermissionRequests(this)
     }
 
@@ -100,6 +102,11 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
         unregisterReceiver(networkBroadcastReceiver)
     }
 
+    private fun initializeViewModels() {
+        listEstatesViewModel = ViewModelProvider(this).get(ListEstatesViewModel::class.java)
+        currencyViewModel = ViewModelProvider(this).get(CurrencyViewModel::class.java)
+
+    }
     /**
      * Handles fragment removal operations.
      */

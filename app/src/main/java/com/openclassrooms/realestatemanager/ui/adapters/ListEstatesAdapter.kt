@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.android.material.textview.MaterialTextView
 import com.openclassrooms.realestatemanager.R
+import com.openclassrooms.realestatemanager.Utils
 import com.openclassrooms.realestatemanager.model.Estate
 import com.openclassrooms.realestatemanager.ui.activities.MainActivity
 
@@ -21,6 +22,7 @@ class ListEstatesAdapter(private val onItemClicked: (Int) -> Unit) :
     RecyclerView.Adapter<ListEstatesAdapter.ListEstateViewHolder>(){
 
     var listEstates: MutableList<Estate> = mutableListOf()
+    var currency: String = "USD"
     lateinit var activity: MainActivity
 
     inner class ListEstateViewHolder(view: View, val onItemClicked: (Int) -> Unit) :
@@ -66,8 +68,13 @@ class ListEstatesAdapter(private val onItemClicked: (Int) -> Unit) :
      * @param position : position in [listEstates] list
      */
     private fun displayPrice(holder: ListEstateViewHolder, position: Int) {
-        val priceFormat: String = formatPrice(listEstates[position].price.toString())
+        // Handle conversion USD -> EUR if needed
+        var price: Int = if (currency == "USD") listEstates[position].price
+                         else Utils.convertDollarToEuro(listEstates[position].price)
+        // Display price
+        val priceFormat: String = formatPrice(price.toString())
         holder.price.text = priceFormat
+        // Handle style
         if (listEstates[position].selected)
             holder.price.apply {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
@@ -120,9 +127,9 @@ class ListEstatesAdapter(private val onItemClicked: (Int) -> Unit) :
      * Convert price to correct format before displaying on RecyclerView.
      */
     private fun formatPrice(price: String) : String {
-        //TODO() : To update to include "€"
         val priceDecimal: Int = (price.toDouble()).toInt()
-        return  "$" + String.format("%,d", priceDecimal).replace(" ", ",")
+        val symbol: String = if (currency == "USD") "$" else "€"
+        return symbol + String.format("%,d", priceDecimal).replace(" ", ",")
     }
 
     /**

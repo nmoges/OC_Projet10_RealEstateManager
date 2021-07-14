@@ -13,8 +13,6 @@ X
 build.gradle,f\0\f07866736216be0ee2aba49e392191aeae700a35
 @
 local.properties,0\7\0712df971a99ac4d2fccb8e0fb19f377f3374cca
-ˆ
-Xapp/src/main/java/com/openclassrooms/realestatemanager/ui/adapters/ListEstatesAdapter.kt,d\0\d06173742ed2234766d9661946f87a9e6e2a544f
 u
 Eapp/src/main/java/com/openclassrooms/realestatemanager/model/Photo.kt,4\3\437dfe79f7d63ca172d7e0ea9e83e76a44a7af57
 x
@@ -31,15 +29,9 @@ Fapp/src/main/java/com/openclassrooms/realestatemanager/model/Estate.kt,0\a\0a7
 Papp/src/main/java/com/openclassrooms/realestatemanager/ui/MediaDisplayHandler.kt,2\1\21461e103fec08f9b04298694b22ef577055dd66
 †
 Vapp/src/main/java/com/openclassrooms/realestatemanager/service/DummyEstateGenerator.kt,9\e\9e52006bd00c3dd308e8bdbafed05d67749eb3c3
-P
- app/src/main/AndroidManifest.xml,8\c\8c55c3ccc257e5907959013f99656e4c8ec3903e
 q
 Aapp/src/main/java/com/openclassrooms/realestatemanager/AppInfo.kt,f\8\f8e7cae62fac8f3581a3f05de0e89e15f032b39e
 @
 app/build.gradle,f\4\f4a01d6a4fcb971362ec00a83903fd3902f52164
-Œ
-\app/src/main/java/com/openclassrooms/realestatemanager/ui/fragments/FragmentEstateDetails.kt,b\9\b942265427bb7d6d6717bf6813fb573821668d1b
-‡
-Wapp/src/main/java/com/openclassrooms/realestatemanager/ui/fragments/FragmentSettings.kt,b\1\b193deea59c9970fe6b0d46e03ea191e71f7b375
-|
-Lapp/src/main/java/com/openclassrooms/realestatemanager/MediaAccessHandler.kt,8\f\8f8d436b210b624bdded9a75584209f523ce6056
+ˆ
+Xapp/src/main/java/com/openclassrooms/realestatemanager/ui/fragments/FragmentNewEstate.kt,1\0\10e9fd407e603b8e87eac8081b920670bdebfc8a

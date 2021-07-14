@@ -28,7 +28,7 @@ class FragmentEstateDetails : Fragment() {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
         listEstatesViewModel = ViewModelProvider(requireActivity())
-            .get(ListEstatesViewModel::class.java)
+                                                .get(ListEstatesViewModel::class.java)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
