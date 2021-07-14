@@ -107,9 +107,8 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
         when {
             fragmentNewEstate != null -> {
                 fragmentNewEstate?.let {
-                    // TODO : Clear list here
-                    supportFragmentManager.beginTransaction().remove(it).commit()
-                    supportFragmentManager.executePendingTransactions()
+                        supportFragmentManager.beginTransaction().remove(it).commit()
+                        supportFragmentManager.executePendingTransactions()
                 }
             }
             fragmentEstateDetails != null -> {
@@ -333,34 +332,45 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
     }
 
     override fun onBackPressed() {
-        if (!checkIfDialogIsDisplayed()) {
-            if (!cleanBackStack()) finishAffinity()
-            else {
-                handleFabVisibility(View.VISIBLE)
-                handleBackgroundGridVisibility(View.VISIBLE)
-                setToolbarProperties(R.string.str_toolbar_fragment_list_estate_title, false)
+        var status: Boolean
+        // Check if FragmentNewEstate is currently displayed
+        if (isFragmentDisplayed(FragmentNewEstate.TAG)) {
+            val fragment = supportFragmentManager.findFragmentByTag(FragmentNewEstate.TAG)
+                           as FragmentNewEstate
+            status = fragment.confirmExit
+            // If true, user has confirmed cancellation or creation/update
+            if (status) {
+                cleanBackStack()
+                restoreViewsInFragmentListEstate()
+            }
+            // If false, a "confirm cancellation" dialog must be displayed
+            else { fragment.builderCancelEstateDialog.show()
+                //handleDialogCancellationConfirmation()
             }
         }
+        else {
+            // If no fragment has been removed from stack, close app
+            if (!cleanBackStack()) finishAffinity()
+            // If a fragment has been removed, restore FragmentListEstate views
+            else restoreViewsInFragmentListEstate()
+        }
+    }
+
+    /**
+     * Restores all views in [FragmentNewEstate] when another fragment has been removed from stack.
+     */
+    private fun restoreViewsInFragmentListEstate() {
+        handleFabVisibility(View.VISIBLE)
+        handleBackgroundGridVisibility(View.VISIBLE)
+        setToolbarProperties(R.string.str_toolbar_fragment_list_estate_title, false)
     }
 
     /**
      * Handle floating action button visibility.
+     * @param visibility : Visibiity status of the floating action button
      */
     fun handleFabVisibility(visibility: Int) =
         binding.fab.apply { if (visibility == View.VISIBLE) show() else hide() }
-
-
-    /**
-     * Check if a dialog is currently displayed in [FragmentNewEstate].
-     */
-    private fun checkIfDialogIsDisplayed(): Boolean {
-        if (isFragmentDisplayed(FragmentNewEstate.TAG)) {
-            val fragment: FragmentNewEstate =
-                supportFragmentManager.findFragmentByTag(FragmentNewEstate.TAG) as FragmentNewEstate
-            if (fragment.dismissDialogOnBackPressed()) return true
-        }
-        return false
-    }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
@@ -390,6 +400,7 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
 
     /**
      * Check if main activity child fragment associated with specified [tag] is displayed.
+     * @param tag : Tag fragment
      */
     private fun isFragmentDisplayed(tag: String): Boolean =
         supportFragmentManager.findFragmentByTag(tag) != null

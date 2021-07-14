@@ -1,24 +1,12 @@
 package com.openclassrooms.realestatemanager.viewmodels
 
-import android.annotation.SuppressLint
-import android.content.Context
-import android.graphics.Bitmap
-import android.net.Uri
-import android.provider.MediaStore
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.openclassrooms.realestatemanager.model.Estate
 import com.openclassrooms.realestatemanager.model.Interior
 import com.openclassrooms.realestatemanager.model.Photo
 import com.openclassrooms.realestatemanager.service.DummyEstateGenerator
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import java.io.ByteArrayOutputStream
-import java.text.SimpleDateFormat
-import java.util.*
 
 class ListEstatesViewModel : ViewModel() {
 
@@ -84,5 +72,17 @@ class ListEstatesViewModel : ViewModel() {
 
     fun clearTempPhotoUri() {
         _photoUriEstate.postValue(null)
+    }
+
+    /**
+     * Removes photos added to an [Estate] if user cancelled its modifications.
+     * @param numberPhotosAdded : Number of photos added since the beginning of the modifications.
+     */
+    fun removePhotosIfEstateCreationCancelled(numberPhotosAdded: Int) {
+       var indice = numberPhotosAdded
+        while (indice > 0) {
+            selectedEstate?.listPhoto?.removeFirst()
+            indice--
+        }
     }
 }

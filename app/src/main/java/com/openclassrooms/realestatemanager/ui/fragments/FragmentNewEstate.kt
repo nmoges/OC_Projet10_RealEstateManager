@@ -38,6 +38,8 @@ class FragmentNewEstate : Fragment() {
         const val DIALOG_CONFIRM_MEDIA_KEY = "DIALOG_CONFIRM_MEDIA_KEY"
         const val UPDATE_ESTATE_KEY = "UPDATE_ESTATE_KEY"
         const val TEXT_DIALOG_CONFIRM_MEDIA_KEY = "TEXT_DIALOG_CONFIRM_MEDIA_KEY"
+        const val NUMBER_PHOTO_KEY = "NUMBER_PHOTO_KEY"
+        const val CONFIRM_EXIT_KEY = "CONFIRM_EXIT_KEY"
         fun newInstance(): FragmentNewEstate = FragmentNewEstate()
     }
 
@@ -58,12 +60,16 @@ class FragmentNewEstate : Fragment() {
     private lateinit var builderAddMediaDialog: AlertDialog
 
     /** Defines an [AlertDialog] allowing user to cancel creation or modification of an [Estate]. */
-    private lateinit var builderCancelEstateDialog: AlertDialog
+    lateinit var builderCancelEstateDialog: AlertDialog
 
     /** Defines an [AlertDialog] allowing user to confirm photo addition. */
     private lateinit var builderNameMediaDialog: AlertDialog
 
     private var textNameMediaDialog: String = ""
+
+    var numberPhotosAdded = 0
+
+    var confirmExit: Boolean = false
 
     /** Defines a [TextWatcher] for [builderNameMediaDialog] */
     private val textWatcher: TextWatcher = object : TextWatcher {
@@ -95,9 +101,11 @@ class FragmentNewEstate : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         initializeDialogs()
         if (savedInstanceState != null) {
-            textNameMediaDialog = savedInstanceState.getString(TEXT_DIALOG_CONFIRM_MEDIA_KEY).toString()
+            confirmExit = savedInstanceState.getBoolean(CONFIRM_EXIT_KEY, false)
+            numberPhotosAdded = savedInstanceState.getInt(NUMBER_PHOTO_KEY, 0)
+            textNameMediaDialog = savedInstanceState.getString(TEXT_DIALOG_CONFIRM_MEDIA_KEY, "")
             restoreDialogs(savedInstanceState)
-            updateEstate = savedInstanceState.getBoolean(UPDATE_ESTATE_KEY)
+            updateEstate = savedInstanceState.getBoolean(UPDATE_ESTATE_KEY, false)
         }
         updateToolbarTitle()
         updateMaterialButtonText()
@@ -189,7 +197,10 @@ class FragmentNewEstate : Fragment() {
             .setTitle(title).setMessage(message)
             .setPositiveButton(resources.getString(R.string.str_dialog_button_yes)) {_, _ ->
                 builderCancelEstateDialog.dismiss()
-                (activity as MainActivity).onBackPressed() }
+                listEstatesViewModel.removePhotosIfEstateCreationCancelled(numberPhotosAdded)
+                confirmExit = true
+                (activity as MainActivity).onBackPressed()
+            }
             .setNegativeButton(resources.getString(R.string.str_dialog_button_no)) {_, _ -> }
             .create()
     }
@@ -235,6 +246,7 @@ class FragmentNewEstate : Fragment() {
             listEstatesViewModel.clearTempPhotoUri()
             if (newPhoto != null) {
                 listPhoto.add(0, newPhoto)
+                numberPhotosAdded++
                 addNewFrameLayoutToBinding(listPhoto.first())
             }
         }
@@ -348,6 +360,8 @@ class FragmentNewEstate : Fragment() {
             putBoolean(DIALOG_CONFIRM_MEDIA_KEY, builderNameMediaDialog.isShowing)
             putBoolean(UPDATE_ESTATE_KEY, updateEstate)
             putString(TEXT_DIALOG_CONFIRM_MEDIA_KEY, textNameMediaDialog)
+            putInt(NUMBER_PHOTO_KEY, numberPhotosAdded)
+            putBoolean(CONFIRM_EXIT_KEY, confirmExit)
         }
     }
 
@@ -471,6 +485,8 @@ class FragmentNewEstate : Fragment() {
             this.price = price.toInt()
         }
         listEstatesViewModel.updateViewModel(updateEstate)
+        confirmExit = true
         (activity as MainActivity).onBackPressed()
     }
+
 }
