@@ -32,6 +32,7 @@ class ListEstatesAdapter(private val onItemClicked: (Int) -> Unit) :
         var price : MaterialTextView = view.findViewById(R.id.list_estate_item_text_price)
         var photo: ImageView = view.findViewById(R.id.list_estate_item_image)
         var item: ConstraintLayout = view.findViewById(R.id.constraint_layout_item)
+        var status: MaterialTextView = view.findViewById(R.id.status)
 
         init {
              item.setOnClickListener {
@@ -58,6 +59,8 @@ class ListEstatesAdapter(private val onItemClicked: (Int) -> Unit) :
         displayBackgroundColor(holder, position)
 
         displayPhoto(holder, position)
+
+        displaySaleStatus(holder, position)
     }
 
     override fun getItemCount(): Int = listEstates.size
@@ -163,5 +166,15 @@ class ListEstatesAdapter(private val onItemClicked: (Int) -> Unit) :
     fun updateItemSelectionStatus(position: Int): Boolean {
         listEstates[position].selected = !listEstates[position].selected
         return listEstates[position].selected
+    }
+
+    /**
+     * Handles visibility value of the "sale status" displayed.
+     * @param holder : view holder
+     * @param position : item position in the list of estates
+     */
+    private fun displaySaleStatus(holder: ListEstateViewHolder, position: Int) {
+        holder.status.visibility = if (listEstates[position].status) View.VISIBLE
+                                   else View.INVISIBLE
     }
 }

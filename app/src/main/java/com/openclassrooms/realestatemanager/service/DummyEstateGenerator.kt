@@ -19,7 +19,7 @@ class DummyEstateGenerator {
                 description = "Real Estate description Penthouse",
                 address = "740 Park Avenue\nApt 6/7A\nNew York\nNY 10021\nUnited States",
                 nameAgent = "Agent 1",
-                status = false,
+                status = true,
                 selected = false),
             Estate(
                 id = 1,

@@ -127,4 +127,7 @@
     <string name="str_text_symbol_currency">USD</string>
     <string name="str_title_delete_account">Delete Account</string>
     <string name="str_text_delete_account">Delete your Real Estate Manager account</string>
+
+    <!-- fragment_list_estate_item.xml -->
+    <string name="str_sold_status">SOLD</string>
 </resources>
