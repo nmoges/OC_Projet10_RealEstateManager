@@ -2,7 +2,6 @@ package com.openclassrooms.realestatemanager.ui.fragments
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import androidx.appcompat.view.menu.MenuBuilder
 import androidx.fragment.app.Fragment
@@ -22,7 +21,7 @@ import com.openclassrooms.realestatemanager.viewmodels.ListEstatesViewModel
 class FragmentListEstate : Fragment() {
 
     companion object {
-        const val TAG: String = "TAG_FRAGMENT_LIST_ESTATE"
+        const val TAG = "TAG_FRAGMENT_LIST_ESTATE"
         fun newInstance(): FragmentListEstate = FragmentListEstate()
     }
 
@@ -57,7 +56,6 @@ class FragmentListEstate : Fragment() {
         initializeRecyclerView()
         addObserversToViewModels()
     }
-
 
     /**
      * Initializes both view model instances.
@@ -122,7 +120,7 @@ class FragmentListEstate : Fragment() {
                     displayFragmentSettings()
                 }
             }
-            R.id.logout -> { }
+            R.id.logout -> {  }
         }
         return super.onOptionsItemSelected(item)
     }
@@ -175,5 +173,4 @@ class FragmentListEstate : Fragment() {
         }
         else { for (i in listEstate.indices) { listEstate[i].selected = false } }
     }
-
 }

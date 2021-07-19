@@ -13,10 +13,6 @@ X
 build.gradle,f\0\f07866736216be0ee2aba49e392191aeae700a35
 @
 local.properties,0\7\0712df971a99ac4d2fccb8e0fb19f377f3374cca
-u
-Eapp/src/main/java/com/openclassrooms/realestatemanager/model/Photo.kt,4\3\437dfe79f7d63ca172d7e0ea9e83e76a44a7af57
-x
-Happ/src/main/java/com/openclassrooms/realestatemanager/model/Interior.kt,8\d\8d7d1fdb55250b177529a60cc29040bfcac15299
 ‹
 [app/src/main/java/com/openclassrooms/realestatemanager/receiver/NetworkBroadcastReceiver.kt,f\1\f117ec76d658633e3629a8628f6a9bf4340324de
 Œ
@@ -27,8 +23,6 @@ Vapp/src/main/java/com/openclassrooms/realestatemanager/ui/activities/SignInActi
 Papp/src/main/java/com/openclassrooms/realestatemanager/ui/MediaDisplayHandler.kt,2\1\21461e103fec08f9b04298694b22ef577055dd66
 q
 Aapp/src/main/java/com/openclassrooms/realestatemanager/AppInfo.kt,f\8\f8e7cae62fac8f3581a3f05de0e89e15f032b39e
-@
-app/build.gradle,f\4\f4a01d6a4fcb971362ec00a83903fd3902f52164
 |
 Lapp/src/main/java/com/openclassrooms/realestatemanager/MediaAccessHandler.kt,8\f\8f8d436b210b624bdded9a75584209f523ce6056
 ‰
@@ -39,3 +33,13 @@ q
 Aapp/src/main/java/com/openclassrooms/realestatemanager/Utils.java,f\1\f1cdde1ae10dbcb7e4502dc957ce7854a5461cbb
 †
 Vapp/src/main/java/com/openclassrooms/realestatemanager/viewmodels/CurrencyViewModel.kt,9\f\9f5d4c4bfebe1401af8e5b89bf7cfb755963efc3
+Œ
+\app/src/main/java/com/openclassrooms/realestatemanager/ui/fragments/FragmentEstateDetails.kt,b\9\b942265427bb7d6d6717bf6813fb573821668d1b
+‡
+Wapp/src/main/java/com/openclassrooms/realestatemanager/ui/fragments/FragmentSettings.kt,b\1\b193deea59c9970fe6b0d46e03ea191e71f7b375
+„
+Tapp/src/main/java/com/openclassrooms/realestatemanager/ui/activities/MainActivity.kt,c\b\cbf2ccaf6756210c5c05ca63a07eba971bc8b792
+†
+Vapp/src/main/java/com/openclassrooms/realestatemanager/service/DummyEstateGenerator.kt,9\e\9e52006bd00c3dd308e8bdbafed05d67749eb3c3
+ˆ
+Xapp/src/main/java/com/openclassrooms/realestatemanager/ui/adapters/ListEstatesAdapter.kt,d\0\d06173742ed2234766d9661946f87a9e6e2a544f

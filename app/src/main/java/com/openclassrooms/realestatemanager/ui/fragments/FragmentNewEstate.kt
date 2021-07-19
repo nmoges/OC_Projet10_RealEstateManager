@@ -365,13 +365,6 @@ class FragmentNewEstate : Fragment() {
         }
     }
 
-    fun dismissDialogOnBackPressed(): Boolean {
-        if (builderCancelEstateDialog.isShowing) {
-            builderCancelEstateDialog.dismiss()
-            return true }
-        return false
-    }
-
     private fun handleAddPhotoButton() {
         binding.buttonAddPhoto.setOnClickListener {
             if (!builderAddMediaDialog.isShowing) builderAddMediaDialog.show() }
@@ -488,5 +481,4 @@ class FragmentNewEstate : Fragment() {
         confirmExit = true
         (activity as MainActivity).onBackPressed()
     }
-
 }

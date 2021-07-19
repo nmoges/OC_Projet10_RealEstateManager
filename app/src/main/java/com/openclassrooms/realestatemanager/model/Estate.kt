@@ -1,5 +1,9 @@
 package com.openclassrooms.realestatemanager.model
 
+import androidx.room.ColumnInfo
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
 /**
  * Defines a real estate.
  * @param id : Id of the estate
@@ -16,8 +20,8 @@ package com.openclassrooms.realestatemanager.model
  * @param status : Real estate status (sold, or for sale)
  * @param selected : Define if a estate is currently being consulted (true) or not (false)
  */
-class Estate(
-    var id: Int,
+data class Estate(
+    val id: Int,
     var type: String,
     var district: String,
     var price: Int,
