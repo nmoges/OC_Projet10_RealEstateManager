@@ -1,4 +1,4 @@
-package com.openclassrooms.realestatemanager.database
+package com.openclassrooms.data.entities
 
 import androidx.room.Embedded
 import androidx.room.Relation

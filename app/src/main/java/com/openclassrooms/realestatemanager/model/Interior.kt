@@ -8,6 +8,7 @@ package com.openclassrooms.realestatemanager.model
  * @param surface : surface (sq m)
  */
 class Interior(
+    val id: Long,
     var numberRooms: Int,
     var numberBathrooms: Int,
     var numberBedrooms : Int,

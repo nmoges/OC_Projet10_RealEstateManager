@@ -1,4 +1,4 @@
-package com.openclassrooms.realestatemanager.database
+package com.openclassrooms.data.entities
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
@@ -8,7 +8,7 @@ import androidx.room.PrimaryKey
 data class PhotoData(
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "id_photo")
-    val idPhoto: Int,
+    var idPhoto: Int = 0,
 
     @ColumnInfo(name = "converted_uri")
     var uriConverted: String,
@@ -16,5 +16,5 @@ data class PhotoData(
     var name: String,
 
     @ColumnInfo(name = "id_associated_estate")
-    val idAssociatedEstate: Int
+    var associatedId: Long
 )

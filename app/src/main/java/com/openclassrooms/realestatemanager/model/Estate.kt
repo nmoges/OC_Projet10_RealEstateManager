@@ -1,9 +1,5 @@
 package com.openclassrooms.realestatemanager.model
 
-import androidx.room.ColumnInfo
-import androidx.room.Entity
-import androidx.room.PrimaryKey
-
 /**
  * Defines a real estate.
  * @param id : Id of the estate
@@ -21,7 +17,7 @@ import androidx.room.PrimaryKey
  * @param selected : Define if a estate is currently being consulted (true) or not (false)
  */
 data class Estate(
-    val id: Int,
+    val id: Long,
     var type: String,
     var district: String,
     var price: Int,

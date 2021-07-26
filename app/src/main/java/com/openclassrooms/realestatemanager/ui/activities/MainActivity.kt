@@ -8,13 +8,12 @@ import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.net.Uri
 import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.view.ViewPropertyAnimator
 import androidx.annotation.IdRes
 import androidx.annotation.StringRes
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.net.toUri
 import androidx.core.view.ViewCompat
@@ -23,20 +22,21 @@ import androidx.lifecycle.ViewModelProvider
 import com.openclassrooms.realestatemanager.AppInfo
 import com.openclassrooms.realestatemanager.MediaAccessHandler
 import com.openclassrooms.realestatemanager.R
-import com.openclassrooms.realestatemanager.Utils
 import com.openclassrooms.realestatemanager.databinding.ActivityMainBinding
 import com.openclassrooms.realestatemanager.receiver.NetworkBroadcastReceiver
 import com.openclassrooms.realestatemanager.ui.fragments.FragmentEstateDetails
-import com.openclassrooms.realestatemanager.ui.fragments.FragmentSettings
 import com.openclassrooms.realestatemanager.ui.fragments.FragmentListEstate
 import com.openclassrooms.realestatemanager.ui.fragments.FragmentNewEstate
+import com.openclassrooms.realestatemanager.ui.fragments.FragmentSettings
 import com.openclassrooms.realestatemanager.viewmodels.CurrencyViewModel
 import com.openclassrooms.realestatemanager.viewmodels.ListEstatesViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
 /**
  * [AppCompatActivity] subclass which defines the main activity of the application.
  * This activity contains all existing fragments.
  */
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity(), MainActivityCallback {
 
     /** View Binding parameter */
@@ -78,8 +78,7 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
         if (savedInstanceState != null) {
             restoreViews(savedInstanceState)
             fragmentNewEstate = supportFragmentManager.findFragmentByTag(FragmentNewEstate.TAG)
-            fragmentEstateDetails = supportFragmentManager
-                                                       .findFragmentByTag(FragmentEstateDetails.TAG)
+            fragmentEstateDetails = supportFragmentManager.findFragmentByTag(FragmentEstateDetails.TAG)
             fragmentSettings = supportFragmentManager.findFragmentByTag(FragmentSettings.TAG)
             removeExistingFragments()
             restoreFragments(containerId)
@@ -89,6 +88,7 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
         handleConnectivityBarBtnListener()
         initializeViewModels()
         MediaAccessHandler.initializeNbPermissionRequests(this)
+        accessDatabase()
     }
 
     override fun onResume() {
@@ -428,5 +428,11 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
             // Reset number of permission requests
             editor.putInt(AppInfo.PREF_PERMISSIONS, 0).apply()
         }
+    }
+
+    private fun accessDatabase() {
+        listEstatesViewModel.repository.loadAllEstates().observe(this, {
+            listEstatesViewModel.restoreData(it)
+        })
     }
 }

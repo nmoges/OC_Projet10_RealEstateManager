@@ -6,7 +6,6 @@ import android.net.Uri
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.*
 import android.widget.*
 import androidx.annotation.LayoutRes
@@ -242,7 +241,6 @@ class FragmentNewEstate : Fragment() {
     private fun addNewPhoto() {
         listEstatesViewModel.selectedEstate?.run {
             val newPhoto: Photo? = listEstatesViewModel.createNewPhoto(textNameMediaDialog)
-           // updateObserverToViewModelStatus(false)
             listEstatesViewModel.clearTempPhotoUri()
             if (newPhoto != null) {
                 listPhoto.add(0, newPhoto)
@@ -477,7 +475,7 @@ class FragmentNewEstate : Fragment() {
             interior.surface = surface
             this.price = price.toInt()
         }
-        listEstatesViewModel.updateViewModel(updateEstate)
+        listEstatesViewModel.updateDatabase(updateEstate)
         confirmExit = true
         (activity as MainActivity).onBackPressed()
     }

@@ -1,4 +1,4 @@
-package com.openclassrooms.realestatemanager.database
+package com.openclassrooms.data.entities
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
@@ -8,7 +8,7 @@ import androidx.room.PrimaryKey
 data class InteriorData(
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "id_interior")
-    val idInterior: Int,
+    var idInterior: Long = 0,
 
     @ColumnInfo(name = "number_rooms")
     var numberRooms: Int,
@@ -22,5 +22,5 @@ data class InteriorData(
     var surface: Int,
 
     @ColumnInfo(name = "id_associated_estate")
-    val idAssociatedEstate: Int
+    var associatedId: Long
 )

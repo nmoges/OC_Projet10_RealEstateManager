@@ -45,7 +45,6 @@ class MediaDisplayHandler {
                 .centerCrop()
                 .override(imageView.width, imageView.height)
                 .into(imageView)
-
             return imageView
         }
 

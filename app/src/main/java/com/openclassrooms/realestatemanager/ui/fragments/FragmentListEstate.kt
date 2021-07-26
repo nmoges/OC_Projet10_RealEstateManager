@@ -7,17 +7,19 @@ import androidx.appcompat.view.menu.MenuBuilder
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.openclassrooms.realestatemanager.ui.activities.MainActivity
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.databinding.FragmentListEstateBinding
 import com.openclassrooms.realestatemanager.model.Estate
+import com.openclassrooms.realestatemanager.ui.activities.MainActivity
 import com.openclassrooms.realestatemanager.ui.adapters.ListEstatesAdapter
 import com.openclassrooms.realestatemanager.viewmodels.CurrencyViewModel
 import com.openclassrooms.realestatemanager.viewmodels.ListEstatesViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
 /**
  * [Fragment] subclass used to display the list of real estate.
  */
+@AndroidEntryPoint
 class FragmentListEstate : Fragment() {
 
     companion object {
@@ -137,7 +139,7 @@ class FragmentListEstate : Fragment() {
                 notifyDataSetChanged()
                 // Update background text
                 handleBackgroundMaterialTextVisibility(if (listEstates.size > 0) View.INVISIBLE
-                else View.INVISIBLE)
+                                                       else View.VISIBLE)
             }
         })
 
