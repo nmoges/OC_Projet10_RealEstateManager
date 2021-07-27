@@ -25,8 +25,6 @@ G
 settings.gradle,0\5\05efc8b1657769a27696d478ded1e95f38737233
 €
 Papp/src/main/java/com/openclassrooms/realestatemanager/ui/MediaDisplayHandler.kt,2\1\21461e103fec08f9b04298694b22ef577055dd66
-ˆ
-Xapp/src/main/java/com/openclassrooms/realestatemanager/ui/fragments/FragmentNewEstate.kt,1\0\10e9fd407e603b8e87eac8081b920670bdebfc8a
 q
 Aapp/src/main/java/com/openclassrooms/realestatemanager/AppInfo.kt,f\8\f8e7cae62fac8f3581a3f05de0e89e15f032b39e
 y

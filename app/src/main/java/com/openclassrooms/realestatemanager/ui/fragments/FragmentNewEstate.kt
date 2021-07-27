@@ -2,6 +2,7 @@ package com.openclassrooms.realestatemanager.ui.fragments
 
 import android.app.AlertDialog
 import android.content.Context
+import android.content.res.ColorStateList
 import android.net.Uri
 import android.os.Bundle
 import android.text.Editable
@@ -113,6 +114,7 @@ class FragmentNewEstate : Fragment() {
         handleAddPhotoButton()
         handleSlidersListeners()
         handleConfirmationButtonListener()
+        handleTextInputEditTextWatchers()
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -273,7 +275,6 @@ class FragmentNewEstate : Fragment() {
             }
             else MediaAccessHandler.requestPermission(activity as MainActivity)
             builderAddMediaDialog.dismiss() }
-
         // Item "Import from gallery"
         view?.findViewById<ConstraintLayout>(R.id.import_from_gallery_button)?.setOnClickListener {
             if (MediaAccessHandler.checkPermissions(activity as MainActivity)) {
@@ -402,27 +403,22 @@ class FragmentNewEstate : Fragment() {
             else { if (type && resValue != null) resources.getString(resValue, currentValue)
                    else currentValue.toString() }
         }
-
         binding.sliderSurface.addOnChangeListener { _, _, _ ->
             val text = getSliderString(5000, binding.sliderSurface.value.toInt(),
                 R.string.str_sqm_unit_greater_than_or_equal, R.string.str_sqm_unit, true)
             binding.sliderSurfaceValue.text = text }
-
         binding.sliderRooms.addOnChangeListener { _, _, _ ->
             val text = getSliderString(20, binding.sliderRooms.value.toInt(),
                 R.string.str_greater_than_or_equal, null, false)
             binding.sliderRoomsValue.text = text }
-
         binding.sliderBathrooms.addOnChangeListener { _, _, _ ->
             val text = getSliderString(5, binding.sliderBathrooms.value.toInt(),
                 R.string.str_greater_than_or_equal, null, false)
             binding.sliderBathroomsValue.text = text }
-
         binding.sliderBedrooms.addOnChangeListener { _, _, _ ->
             val text = getSliderString(10, binding.sliderBedrooms.value.toInt(),
                 R.string.str_greater_than_or_equal, null, false)
             binding.sliderBedroomsValue.text = text }
-
     }
 
     private fun handleConfirmationButtonListener() {
@@ -440,7 +436,10 @@ class FragmentNewEstate : Fragment() {
                 displayToastEstate(false)
                 createEstate(name, location, description, nameAgent, price)
             }
-            else displayToastEstate(true)
+            else {
+                displayToastEstate(true)
+                displayErrorBoxMessage()
+            }
         }
     }
 
@@ -460,23 +459,75 @@ class FragmentNewEstate : Fragment() {
 
     //TODO : A déplacer dans le viewmodel
     private fun createEstate(name: String, location: String, description: String, nameAgent: String, price : String) {
-        val surface: Int = binding.sliderSurface.value.toInt()
-        val rooms: Int = binding.sliderRoomsValue.text.toString().toInt()
-        val bathrooms: Int = binding.sliderBathroomsValue.text.toString().toInt()
-        val bedrooms: Int = binding.sliderBedroomsValue.text.toString().toInt()
         listEstatesViewModel.selectedEstate?.apply {
             type = name
             address = location
             this.description = description
             this.nameAgent = nameAgent
-            interior.numberRooms = rooms
-            interior.numberBathrooms = bathrooms
-            interior.numberBedrooms = bedrooms
-            interior.surface = surface
+            interior.numberRooms = binding.sliderRoomsValue.text.toString().toInt()
+            interior.numberBathrooms = binding.sliderBathroomsValue.text.toString().toInt()
+            interior.numberBedrooms = binding.sliderBedroomsValue.text.toString().toInt()
+            interior.surface = binding.sliderSurface.value.toInt()
             this.price = price.toInt()
         }
         listEstatesViewModel.updateDatabase(updateEstate)
         confirmExit = true
         (activity as MainActivity).onBackPressed()
+    }
+
+    private fun displayErrorBoxMessage() {
+        if (binding.newEstateNameSectionTextInputEdit.text?.isEmpty() == true)
+                binding.newEstateNameSectionTextInputLayout.apply {
+                    isErrorEnabled = true
+                    error = "Empty" }
+        if (binding.newEstateLocationSectionTextInputEdit.text?.isEmpty() == true)
+                binding.newEstateLocationSectionTextInputLayout.apply {
+                    isErrorEnabled = true
+                    error = "Empty" }
+        if (binding.newEstateDescSectionTextInputEdit.text?.isEmpty() == true)
+                binding.newEstateDescSectionTextInputLayout.apply {
+                    isErrorEnabled = true
+                    error = "Empty" }
+        if (binding.newEstatePriceSectionTextInputEdit.text?.isEmpty() == true)
+                binding.newEstatePriceSectionTextInputLayout.apply {
+                    isErrorEnabled = true
+                    error = "Empty" }
+        if (binding.newEstateAgentSectionTextInputEdit.text?.isEmpty() == true)
+                binding.newEstateAgentSectionTextInputLayout.apply {
+                    isErrorEnabled = true
+                    error = "Empty" }
+    }
+
+    private fun handleTextInputEditTextWatchers() {
+        binding.newEstateNameSectionTextInputEdit.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: Editable?) {
+                                binding.newEstateNameSectionTextInputLayout.isErrorEnabled = false }
+        })
+        binding.newEstateLocationSectionTextInputEdit.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: Editable?) {
+                            binding.newEstateLocationSectionTextInputLayout.isErrorEnabled = false }
+        })
+        binding.newEstateDescSectionTextInputEdit.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: Editable?) {
+                                binding.newEstateDescSectionTextInputLayout.isErrorEnabled = false }
+        })
+        binding.newEstatePriceSectionTextInputEdit.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: Editable?) {
+                               binding.newEstatePriceSectionTextInputLayout.isErrorEnabled = false }
+        })
+        binding.newEstateAgentSectionTextInputEdit.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: Editable?) {
+                               binding.newEstateAgentSectionTextInputLayout.isErrorEnabled = false }
+        })
     }
 }
