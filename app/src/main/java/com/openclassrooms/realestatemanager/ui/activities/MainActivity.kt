@@ -14,6 +14,7 @@ import android.view.ViewPropertyAnimator
 import androidx.annotation.IdRes
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.edit
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.net.toUri
 import androidx.core.view.ViewCompat
@@ -105,8 +106,8 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
     private fun initializeViewModels() {
         listEstatesViewModel = ViewModelProvider(this).get(ListEstatesViewModel::class.java)
         currencyViewModel = ViewModelProvider(this).get(CurrencyViewModel::class.java)
-
     }
+
     /**
      * Handles fragment removal operations.
      */
@@ -339,7 +340,7 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
     }
 
     override fun onBackPressed() {
-        var status: Boolean
+        val status: Boolean
         // Check if FragmentNewEstate is currently displayed
         if (isFragmentDisplayed(FragmentNewEstate.TAG)) {
             val fragment = supportFragmentManager.findFragmentByTag(FragmentNewEstate.TAG)
@@ -351,9 +352,7 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
                 restoreViewsInFragmentListEstate()
             }
             // If false, a "confirm cancellation" dialog must be displayed
-            else { fragment.builderCancelEstateDialog.show()
-                //handleDialogCancellationConfirmation()
-            }
+            else fragment.builderCancelEstateDialog.show()
         }
         else {
             // If no fragment has been removed from stack, close app
@@ -374,14 +373,13 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
 
     /**
      * Handle floating action button visibility.
-     * @param visibility : Visibiity status of the floating action button
+     * @param visibility : Visibility status of the floating action button
      */
     fun handleFabVisibility(visibility: Int) =
         binding.fab.apply { if (visibility == View.VISIBLE) show() else hide() }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-
         // From camera : Get Uri from saved value in SharedPreferences
         if (resultCode == RESULT_OK && requestCode == AppInfo.REQUEST_IMAGE_CAPTURE) {
             val sharedPreferences: SharedPreferences =
@@ -393,7 +391,6 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
                 fragment.addNewPhotoUri(uriString.toUri())
             }
         }
-
         // From Gallery : get Uri from data Intent
         if (resultCode == RESULT_OK && data != null) {
             val imageMediaUri: Uri? = data.data
@@ -424,9 +421,8 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
             && grantResults[2] == PackageManager.PERMISSION_GRANTED) {
             val nbRequestsSaved : SharedPreferences = getSharedPreferences(AppInfo.FILE_SHARED_PREF,
                 Context.MODE_PRIVATE)
-            val editor: SharedPreferences.Editor = nbRequestsSaved.edit()
             // Reset number of permission requests
-            editor.putInt(AppInfo.PREF_PERMISSIONS, 0).apply()
+            nbRequestsSaved.edit { putInt(AppInfo.PREF_PERMISSIONS, 0) }
         }
     }
 

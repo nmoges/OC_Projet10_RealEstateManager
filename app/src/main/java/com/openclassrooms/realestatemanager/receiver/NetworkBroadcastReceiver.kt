@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.net.ConnectivityManager
 import android.os.Build
-import android.util.Log
 import com.openclassrooms.realestatemanager.ui.activities.MainActivityCallback
 
 class NetworkBroadcastReceiver(private val callback: MainActivityCallback): BroadcastReceiver() {

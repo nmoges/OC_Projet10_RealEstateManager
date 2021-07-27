@@ -11,6 +11,9 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
+/**
+ * Module for [RealEstateManagerDatabase] dependency injection.
+ */
 @Module
 @InstallIn(SingletonComponent::class)
 object DatabaseModule {
@@ -21,7 +24,7 @@ object DatabaseModule {
         return Room.databaseBuilder(
             context,
             RealEstateManagerDatabase::class.java,
-            "real_estate_amanager_database"
+            "real_estate_manager_database"
         ).fallbackToDestructiveMigration().build()
     }
 

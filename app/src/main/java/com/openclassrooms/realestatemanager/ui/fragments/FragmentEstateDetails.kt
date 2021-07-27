@@ -1,7 +1,6 @@
 package com.openclassrooms.realestatemanager.ui.fragments
 
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import android.widget.FrameLayout
 import androidx.fragment.app.Fragment
@@ -37,7 +36,7 @@ class FragmentEstateDetails : Fragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+                              savedInstanceState: Bundle?): View {
         binding = FragmentEstateDetailsBinding.inflate(inflater, container, false)
         return binding.root
     }

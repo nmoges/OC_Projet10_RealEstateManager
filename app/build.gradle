@@ -96,19 +96,13 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines_version"
 
     // Lifecycle
-    def lifecycle_version = "2.3.1"
+    def lifecycle_version = "2.4.0-alpha02"
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version"
 
     // Room
     def room_version = "2.3.0"
     implementation("androidx.room:room-runtime:$room_version")
     kapt "androidx.room:room-compiler:$room_version"
-
-    // Jetpack Compose Integration
-    //implementation("androidx.navigation:navigation-compose:1.0.0-alpha10")
-
-    // Maps SDK for Android Utility Library
-    // implementation 'com.google.maps.android:android-maps-utils:2.2.0'
 
     // Hilt
     implementation("com.google.dagger:hilt-android:$hilt_version")

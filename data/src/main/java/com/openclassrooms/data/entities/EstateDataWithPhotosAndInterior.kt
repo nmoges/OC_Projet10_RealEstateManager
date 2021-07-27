@@ -16,7 +16,7 @@ data class EstateDataWithPhotosAndInterior(
 
     /**
      * Defines an one-to-one relationship between an [EstateData] from table_estates
-     * and its associated [Interior] from table_interiors.
+     * and its associated [InteriorData] from table_interiors.
      */
     @Relation(parentColumn = "id_estate", entityColumn = "id_associated_estate")
     val interiorData: InteriorData

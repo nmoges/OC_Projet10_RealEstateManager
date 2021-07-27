@@ -1,6 +1,5 @@
 package com.openclassrooms.realestatemanager.viewmodels
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -80,7 +79,6 @@ class ListEstatesViewModel @Inject constructor(
             indice--
         }
     }
-
 
     // Database access
     fun restoreData(list: List<EstateDataWithPhotosAndInterior>) {

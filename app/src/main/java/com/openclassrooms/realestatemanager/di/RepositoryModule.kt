@@ -11,6 +11,9 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
+/**
+ * Module for [RealEstateRepository] dependency injection.
+ */
 @Module
 @InstallIn(SingletonComponent::class)
 object RepositoryModule {

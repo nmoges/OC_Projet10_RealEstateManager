@@ -72,7 +72,7 @@ class ListEstatesAdapter(private val onItemClicked: (Int) -> Unit) :
      */
     private fun displayPrice(holder: ListEstateViewHolder, position: Int) {
         // Handle conversion USD -> EUR if needed
-        var price: Int = if (currency == "USD") listEstates[position].price
+        val price: Int = if (currency == "USD") listEstates[position].price
                          else Utils.convertDollarToEuro(listEstates[position].price)
         // Display price
         val priceFormat: String = formatPrice(price.toString())

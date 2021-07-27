@@ -6,10 +6,7 @@ package com.openclassrooms.realestatemanager.model
  * @param type : Type of real estate (apartment, loft, etc.)
  * @param district : District of the real estate
  * @param price : Price ($)
- * @param numberRooms : Number of rooms (including bedrooms and bathrooms)
- * @param numberBathrooms : Number of bathrooms
- * @param numberBedrooms : Number of bedrooms
- * @param surface : surface (sq m)
+ * @param interior : defines estate interior properties (rooms, surface)
  * @param description : real estate description
  * @param address : location address
  * @param nameAgent : name of the associated real estate agent
