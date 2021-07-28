@@ -1,10 +1,11 @@
-package com.openclassrooms.realestatemanager.di
+package com.openclassrooms.data.di
 
 import com.openclassrooms.data.dao.EstateDao
 import com.openclassrooms.data.dao.EstateWithPhotosAndInteriorDao
 import com.openclassrooms.data.dao.InteriorDao
 import com.openclassrooms.data.dao.PhotoDao
 import com.openclassrooms.data.repository.RealEstateRepository
+import com.openclassrooms.data.repository.RealEstateRepositoryAccess
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -24,7 +25,7 @@ object RepositoryModule {
                          photoDao: PhotoDao,
                          interiorDao: InteriorDao,
                          estateWithPhotosAndInteriorDao: EstateWithPhotosAndInteriorDao
-    ): RealEstateRepository {
+    ): RealEstateRepositoryAccess {
         return RealEstateRepository(estateDao, photoDao, interiorDao, estateWithPhotosAndInteriorDao)
     }
 }

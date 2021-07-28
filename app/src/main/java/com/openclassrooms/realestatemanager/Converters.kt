@@ -7,67 +7,35 @@ import com.openclassrooms.realestatemanager.model.Estate
 import com.openclassrooms.realestatemanager.model.Interior
 import com.openclassrooms.realestatemanager.model.Photo
 
-class Converters{
-    companion object {
+// Estate converters
+fun Estate.toEstateData() = EstateData(idEstate = this.id, type = this.type,
+                                       district = this.district, price = this.price,
+                                       description = this.description, address = this.address,
+                                       nameAgent = this.nameAgent, status = this.status)
 
-        fun convertEstateToEstateData(estate: Estate): EstateData =
-            EstateData(
-                    idEstate = estate.id,
-                    type = estate.type,
-                    district = estate.district,
-                    price = estate.price,
-                    description = estate.description,
-                    address = estate.address,
-                    nameAgent = estate.nameAgent,
-                    status = estate.status
-            )
+fun EstateData.toEstate(interior: Interior, listPhoto: MutableList<Photo>)
+                          = Estate(id = this.idEstate, type = this.type,
+                                   district = this.district, price = this.price,
+                                   description = this.description, address = this.address,
+                                   status = this.status, nameAgent = this.nameAgent,
+                                   selected = false, interior = interior,
+                                   listPhoto = listPhoto)
 
-        fun convertEstateDataToEstate(estateData: EstateData,
-                                      interior: Interior,
-                                      listPhoto: MutableList<Photo>): Estate =
-            Estate(id = estateData.idEstate,
-                   type = estateData.type,
-                   district = estateData.district,
-                   price = estateData.price,
-                   description = estateData.description,
-                   address = estateData.address,
-                   status = estateData.status,
-                   nameAgent = estateData.nameAgent,
-                   selected = false,
-                   interior = interior,
-                   listPhoto = listPhoto)
 
-        fun convertPhotoToPhotoData(photo: Photo, associatedId: Long): PhotoData =
-            PhotoData(
-                uriConverted = photo.uriConverted,
-                name = photo.name,
-                associatedId = associatedId
-            )
+// Photo converters
+fun Photo.toPhotoData(associatedId: Long) = PhotoData(uriConverted = this.uriConverted,
+                                                      name = this.name,
+                                                      associatedId = associatedId)
 
-        fun convertPhotoDataToPhoto(photoData: PhotoData): Photo =
-            Photo(
-                uriConverted = photoData.uriConverted,
-                name = photoData.name
-            )
+fun PhotoData.toPhoto() = Photo(uriConverted = this.uriConverted, name = this.name)
 
-        fun convertInteriorToInteriorData(interior: Interior, associatedId: Long): InteriorData =
-            InteriorData(
-                idInterior = interior.id,
-                numberRooms = interior.numberRooms,
-                numberBathrooms = interior.numberBathrooms,
-                numberBedrooms = interior.numberBedrooms,
-                surface = interior.surface,
-                associatedId = associatedId
-            )
+// Interior converters
+fun Interior.toInteriorData(associatedId: Long) = InteriorData(
+                                 idInterior = id, numberRooms = numberRooms,
+                                 numberBathrooms = numberBathrooms, numberBedrooms = numberBedrooms,
+                                 surface = surface, associatedId = associatedId)
 
-        fun convertInteriorDataToInterior(interiorData: InteriorData): Interior =
-            Interior(
-                id = interiorData.idInterior,
-                numberRooms = interiorData.numberRooms,
-                numberBedrooms = interiorData.numberBedrooms,
-                numberBathrooms = interiorData.numberBathrooms,
-                surface = interiorData.surface
-            )
-
-    }
-}
+fun InteriorData.toInterior() = Interior(
+                                id = idInterior, numberRooms = numberRooms,
+                                numberBedrooms = numberBedrooms, numberBathrooms = numberBathrooms,
+                                surface = surface)

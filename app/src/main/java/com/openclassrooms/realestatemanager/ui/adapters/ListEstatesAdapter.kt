@@ -1,6 +1,7 @@
 package com.openclassrooms.realestatemanager.ui.adapters
 
 import android.os.Build
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -21,8 +22,13 @@ import com.openclassrooms.realestatemanager.ui.activities.MainActivity
 class ListEstatesAdapter(private val onItemClicked: (Int) -> Unit) :
     RecyclerView.Adapter<ListEstatesAdapter.ListEstateViewHolder>(){
 
+    /** Contains list of [Estate] to display in recycler view */
     var listEstates: MutableList<Estate> = mutableListOf()
+
+    /** Contains the currency to display */
     var currency: String = "USD"
+
+    /** Parent activity */
     lateinit var activity: MainActivity
 
     inner class ListEstateViewHolder(view: View, val onItemClicked: (Int) -> Unit) :
@@ -34,11 +40,7 @@ class ListEstatesAdapter(private val onItemClicked: (Int) -> Unit) :
         var item: ConstraintLayout = view.findViewById(R.id.constraint_layout_item)
         var status: MaterialTextView = view.findViewById(R.id.status)
 
-        init {
-             item.setOnClickListener {
-                    onItemClicked(adapterPosition)
-             }
-        }
+        init { item.setOnClickListener { onItemClicked(adapterPosition) } }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ListEstateViewHolder {
@@ -51,15 +53,10 @@ class ListEstatesAdapter(private val onItemClicked: (Int) -> Unit) :
 
     override fun onBindViewHolder(holder: ListEstateViewHolder, position: Int) {
         holder.type.text = listEstates[position].type
-
         holder.district.text = listEstates[position].district
-
         displayPrice(holder, position)
-
         displayBackgroundColor(holder, position)
-
         displayPhoto(holder, position)
-
         displaySaleStatus(holder, position)
     }
 

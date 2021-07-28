@@ -7,6 +7,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.*
 import android.widget.*
 import androidx.annotation.LayoutRes
@@ -81,7 +82,7 @@ class FragmentNewEstate : Fragment() {
             if (name != null) {
                 textNameMediaDialog = name.toString()
                 builderNameMediaDialog.getButton(AlertDialog.BUTTON_POSITIVE)
-                                      .isEnabled = name.isNotEmpty() }
+                    .isEnabled = name.isNotEmpty() }
         }
     }
 
@@ -159,7 +160,7 @@ class FragmentNewEstate : Fragment() {
             val editText = this.findViewById<TextInputEditText>(R.id.new_media_text_input_edit)
             editText.text = Editable.Factory.getInstance().newEditable(textNameMediaDialog)
             getButton(AlertDialog.BUTTON_POSITIVE)
-                                  .isEnabled = textNameMediaDialog.isNotEmpty()
+                .isEnabled = textNameMediaDialog.isNotEmpty()
         }
     }
 
@@ -191,9 +192,9 @@ class FragmentNewEstate : Fragment() {
      */
     private fun initializeDialogCancelEstate() {
         val title = if (updateEstate) resources.getString(R.string.str_dialog_cancel_modification_title)
-                    else resources.getString(R.string.str_dialog_cancel_creation_title)
+        else resources.getString(R.string.str_dialog_cancel_creation_title)
         val message = if (updateEstate) resources.getString(R.string.str_dialog_cancel_modifications_message)
-                      else resources.getString(R.string.str_dialog_cancel_creation_message)
+        else resources.getString(R.string.str_dialog_cancel_creation_message)
         builderCancelEstateDialog = AlertDialog.Builder(activity)
             .setTitle(title).setMessage(message)
             .setPositiveButton(resources.getString(R.string.str_dialog_button_yes)) {_, _ ->
@@ -231,8 +232,6 @@ class FragmentNewEstate : Fragment() {
             .setTitle(resources.getString(R.string.str_dialog_name_media_title))
             .setView(viewNameMediaDialog)
             .setPositiveButton(resources.getString(R.string.str_dialog_button_yes)) {_, _ ->
-               // textNameMediaDialog = textInputEditText?.text.toString()
-                //updateObserverToViewModelStatus(true)
                 addNewPhoto()
                 textInputEditText?.text?.clear() }
             .setNegativeButton(resources.getString(R.string.str_dialog_button_cancel)) {_, _ ->
@@ -245,9 +244,9 @@ class FragmentNewEstate : Fragment() {
             val newPhoto: Photo? = listEstatesViewModel.createNewPhoto(textNameMediaDialog)
             listEstatesViewModel.clearTempPhotoUri()
             if (newPhoto != null) {
-                listPhoto.add(0, newPhoto)
+                listPhoto.add(newPhoto)
                 numberPhotosAdded++
-                addNewFrameLayoutToBinding(listPhoto.first())
+                addNewFrameLayoutToBinding(listPhoto.last())
             }
         }
     }
@@ -255,12 +254,13 @@ class FragmentNewEstate : Fragment() {
     private fun addNewFrameLayoutToBinding(photo: Photo) {
         val frameLayout: FrameLayout = MediaDisplayHandler
             .createNewFrameLayout(photo, activity as MainActivity)
+       // binding.linearLayoutMedia.addView(frameLayout, 0)
         binding.linearLayoutMedia.addView(frameLayout, 0)
     }
 
     private fun getViewFromLayoutInflater(@LayoutRes layout: Int): View? {
         val inflater: LayoutInflater? =
-                       context?.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as? LayoutInflater
+            context?.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as? LayoutInflater
         return inflater?.inflate(layout, null)
     }
 
@@ -296,13 +296,13 @@ class FragmentNewEstate : Fragment() {
             val currentEstate = listEstatesViewModel.selectedEstate ?: return
             newEstateNameSectionTextInputEdit.text = convertStringToEditable(currentEstate.type)
             newEstateLocationSectionTextInputEdit.text =
-                                                      convertStringToEditable(currentEstate.address)
+                convertStringToEditable(currentEstate.address)
             newEstateDescSectionTextInputEdit.text =
-                                                  convertStringToEditable(currentEstate.description)
+                convertStringToEditable(currentEstate.description)
             newEstateAgentSectionTextInputEdit.text =
-                                                    convertStringToEditable(currentEstate.nameAgent)
+                convertStringToEditable(currentEstate.nameAgent)
             newEstatePriceSectionTextInputEdit.text =
-                                             convertStringToEditable(currentEstate.price.toString())
+                convertStringToEditable(currentEstate.price.toString())
             sliderSurface.value = currentEstate.interior.surface.toFloat()
             sliderRooms.value = currentEstate.interior.numberRooms.toFloat()
             sliderBathrooms.value = currentEstate.interior.numberBathrooms.toFloat()
@@ -315,9 +315,9 @@ class FragmentNewEstate : Fragment() {
      */
     private fun updateMaterialButtonText() {
         if (updateEstate) binding.confirmationButton.text =
-             resources.getString(R.string.str_button_confirmation_modification)
+            resources.getString(R.string.str_button_confirmation_modification)
         else binding.confirmationButton.text =
-             resources.getString(R.string.str_button_confirmation_creation)
+            resources.getString(R.string.str_button_confirmation_creation)
     }
 
     /**
@@ -325,9 +325,9 @@ class FragmentNewEstate : Fragment() {
      */
     private fun updateToolbarTitle() {
         if (updateEstate) (activity as MainActivity)
-        .setToolbarProperties(R.string.str_toolbar_fragment_modify_estate_title, true)
+            .setToolbarProperties(R.string.str_toolbar_fragment_modify_estate_title, true)
         else (activity as MainActivity)
-        .setToolbarProperties(R.string.str_toolbar_fragment_new_estate_title, true)
+            .setToolbarProperties(R.string.str_toolbar_fragment_new_estate_title, true)
     }
 
     /**
@@ -392,7 +392,8 @@ class FragmentNewEstate : Fragment() {
      */
     private fun updateHorizontalScrollViewWithPhotos() {
         listEstatesViewModel.selectedEstate?.let {
-            it.listPhoto.asReversed().forEach {  photo -> addNewFrameLayoutToBinding(photo) }
+            it.listPhoto.forEach {  photo ->
+                addNewFrameLayoutToBinding(photo) }
         }
     }
 
@@ -401,7 +402,7 @@ class FragmentNewEstate : Fragment() {
                             @StringRes resValue: Int?, type: Boolean): String {
             return if (currentValue == maxValue) { resources.getString(resMaxValue, currentValue) }
             else { if (type && resValue != null) resources.getString(resValue, currentValue)
-                   else currentValue.toString() }
+            else currentValue.toString() }
         }
         binding.sliderSurface.addOnChangeListener { _, _, _ ->
             val text = getSliderString(5000, binding.sliderSurface.value.toInt(),
@@ -429,7 +430,6 @@ class FragmentNewEstate : Fragment() {
             val price: String = binding.newEstatePriceSectionTextInputEdit.text.toString()
             val nameAgent: String = binding.newEstateAgentSectionTextInputEdit.text.toString()
 
-            //TODO() : Déplacer dans ViewModel
             if (name.isNotEmpty() && location.isNotEmpty() && description.isNotEmpty()
                 && price.isNotEmpty() && nameAgent.isNotEmpty()
                 && listEstatesViewModel.selectedEstate?.listPhoto?.isNotEmpty() == true) {
@@ -446,14 +446,14 @@ class FragmentNewEstate : Fragment() {
     private fun displayToastEstate(error: Boolean) {
         if (error) // Error creating/modifying Estate
             Toast.makeText(context, resources.getString(R.string.str_toast_missing_information),
-                           Toast.LENGTH_LONG).show()
+                Toast.LENGTH_LONG).show()
         else {
             if (updateEstate) // Modifications saved
                 Toast.makeText(context, resources.getString(R.string.str_toast_estate_modified),
-                               Toast.LENGTH_LONG).show()
+                    Toast.LENGTH_LONG).show()
             else // New estate created
                 Toast.makeText(context, resources.getString(R.string.str_toast_new_estate_created),
-                               Toast.LENGTH_LONG).show()
+                    Toast.LENGTH_LONG).show()
         }
     }
 
@@ -477,25 +477,25 @@ class FragmentNewEstate : Fragment() {
 
     private fun displayErrorBoxMessage() {
         if (binding.newEstateNameSectionTextInputEdit.text?.isEmpty() == true)
-                binding.newEstateNameSectionTextInputLayout.apply {
-                    isErrorEnabled = true
-                    error = "Empty" }
+            binding.newEstateNameSectionTextInputLayout.apply {
+                isErrorEnabled = true
+                error = "Empty" }
         if (binding.newEstateLocationSectionTextInputEdit.text?.isEmpty() == true)
-                binding.newEstateLocationSectionTextInputLayout.apply {
-                    isErrorEnabled = true
-                    error = "Empty" }
+            binding.newEstateLocationSectionTextInputLayout.apply {
+                isErrorEnabled = true
+                error = "Empty" }
         if (binding.newEstateDescSectionTextInputEdit.text?.isEmpty() == true)
-                binding.newEstateDescSectionTextInputLayout.apply {
-                    isErrorEnabled = true
-                    error = "Empty" }
+            binding.newEstateDescSectionTextInputLayout.apply {
+                isErrorEnabled = true
+                error = "Empty" }
         if (binding.newEstatePriceSectionTextInputEdit.text?.isEmpty() == true)
-                binding.newEstatePriceSectionTextInputLayout.apply {
-                    isErrorEnabled = true
-                    error = "Empty" }
+            binding.newEstatePriceSectionTextInputLayout.apply {
+                isErrorEnabled = true
+                error = "Empty" }
         if (binding.newEstateAgentSectionTextInputEdit.text?.isEmpty() == true)
-                binding.newEstateAgentSectionTextInputLayout.apply {
-                    isErrorEnabled = true
-                    error = "Empty" }
+            binding.newEstateAgentSectionTextInputLayout.apply {
+                isErrorEnabled = true
+                error = "Empty" }
     }
 
     private fun handleTextInputEditTextWatchers() {
@@ -503,31 +503,31 @@ class FragmentNewEstate : Fragment() {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
             override fun afterTextChanged(s: Editable?) {
-                                binding.newEstateNameSectionTextInputLayout.isErrorEnabled = false }
+                binding.newEstateNameSectionTextInputLayout.isErrorEnabled = false }
         })
         binding.newEstateLocationSectionTextInputEdit.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
             override fun afterTextChanged(s: Editable?) {
-                            binding.newEstateLocationSectionTextInputLayout.isErrorEnabled = false }
+                binding.newEstateLocationSectionTextInputLayout.isErrorEnabled = false }
         })
         binding.newEstateDescSectionTextInputEdit.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
             override fun afterTextChanged(s: Editable?) {
-                                binding.newEstateDescSectionTextInputLayout.isErrorEnabled = false }
+                binding.newEstateDescSectionTextInputLayout.isErrorEnabled = false }
         })
         binding.newEstatePriceSectionTextInputEdit.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
             override fun afterTextChanged(s: Editable?) {
-                               binding.newEstatePriceSectionTextInputLayout.isErrorEnabled = false }
+                binding.newEstatePriceSectionTextInputLayout.isErrorEnabled = false }
         })
         binding.newEstateAgentSectionTextInputEdit.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
             override fun afterTextChanged(s: Editable?) {
-                               binding.newEstateAgentSectionTextInputLayout.isErrorEnabled = false }
+                binding.newEstateAgentSectionTextInputLayout.isErrorEnabled = false }
         })
     }
 }

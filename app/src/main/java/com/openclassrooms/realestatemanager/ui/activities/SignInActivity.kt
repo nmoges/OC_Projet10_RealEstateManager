@@ -12,13 +12,20 @@ import com.google.firebase.auth.FirebaseAuth
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.databinding.ActivitySignInBinding
 
+/**
+ * [AppCompatActivity] subclass which defines the sign-in activity of the application.
+ */
 class SignInActivity : AppCompatActivity() {
 
     companion object {
+        /** Request code */
         const val RC_SIGN_IN = 100
     }
+
+    /** Binding parameter */
     private lateinit var binding: ActivitySignInBinding
 
+    /** Contains list of providers used to sign-in */
     private val providers: List<AuthUI.IdpConfig> = listOf(
         AuthUI.IdpConfig.GoogleBuilder().build(),
         AuthUI.IdpConfig.FacebookBuilder().build(),
@@ -36,6 +43,9 @@ class SignInActivity : AppCompatActivity() {
         handleConnexionButtonsListeners()
     }
 
+    /**
+     * Handles click events of buttons.
+     */
     private fun handleConnexionButtonsListeners() {
         val layout: AuthMethodPickerLayout = AuthMethodPickerLayout
             .Builder(R.layout.custom_auth_layout)
@@ -58,6 +68,9 @@ class SignInActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Intent launcher for auto-generated authentication activity
+     */
     private fun startMainActivity() {
         // Launch MainActivity
         val intent = Intent(this, MainActivity::class.java)
@@ -66,6 +79,9 @@ class SignInActivity : AppCompatActivity() {
 
     /**
      * Handles results from Firebase auto-generated activity.
+     * @param requestCode : request code
+     * @param resultCode : result code
+     * @param data : returned intent
      */
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)

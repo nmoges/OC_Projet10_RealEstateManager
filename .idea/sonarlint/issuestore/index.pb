@@ -23,18 +23,8 @@ G
 data/proguard-rules.pro,0\f\0fbb6d729d2f1271751b1eee2d01927256945f01
 ?
 settings.gradle,0\5\05efc8b1657769a27696d478ded1e95f38737233
-€
-Papp/src/main/java/com/openclassrooms/realestatemanager/ui/MediaDisplayHandler.kt,2\1\21461e103fec08f9b04298694b22ef577055dd66
-q
-Aapp/src/main/java/com/openclassrooms/realestatemanager/AppInfo.kt,f\8\f8e7cae62fac8f3581a3f05de0e89e15f032b39e
-y
-Iapp/src/main/java/com/openclassrooms/realestatemanager/BaseApplication.kt,b\a\ba91db68c1b0215281812e92d69f604f96833e35
-t
-Dapp/src/main/java/com/openclassrooms/realestatemanager/Converters.kt,e\9\e94f26051f05b93073e34a8ad4d01b36a38ef6a6
 k
 ;data/src/main/java/com/openclassrooms/data/dao/EstateDao.kt,d\a\da01de06cbf65a4ca044e74cd5a21a35791f1874
-€
-Pdata/src/main/java/com/openclassrooms/data/dao/EstateWithPhotosAndInteriorDao.kt,6\3\63d464ae755f655dc64c49b3c2ff2cdfc4497917
 m
 =data/src/main/java/com/openclassrooms/data/dao/InteriorDao.kt,0\3\03d82c0b94b839d61f4420fbcdf2300dd6aa5ea6
 j
@@ -47,9 +37,9 @@ s
 Cdata/src/main/java/com/openclassrooms/data/entities/InteriorData.kt,c\4\c4cf374e82c5b6c20dd9d05ee3da372f66f644f9
 p
 @data/src/main/java/com/openclassrooms/data/entities/PhotoData.kt,a\a\aad053980ff6334b42b736cbd89a003a3a786d9d
-}
-Mdata/src/main/java/com/openclassrooms/data/repository/RealEstateRepository.kt,4\1\4196dc0dc96bd15b61ea58786c3ccdddae9a2ac4
 <
 build.gradle,f\0\f07866736216be0ee2aba49e392191aeae700a35
 A
 data/build.gradle,7\2\72c2781d3d9ac8b82a3543f0fba5c796b2975232
+€
+Pdata/src/main/java/com/openclassrooms/data/dao/EstateWithPhotosAndInteriorDao.kt,6\3\63d464ae755f655dc64c49b3c2ff2cdfc4497917

@@ -12,6 +12,9 @@ import com.openclassrooms.realestatemanager.model.Estate
 import com.openclassrooms.realestatemanager.ui.MediaDisplayHandler
 import com.openclassrooms.realestatemanager.viewmodels.ListEstatesViewModel
 
+/**
+ * [Fragment] subclass used to display the details of a selected existing [Estate].
+ */
 class FragmentEstateDetails : Fragment() {
 
     companion object {
@@ -87,7 +90,7 @@ class FragmentEstateDetails : Fragment() {
      * [Estate].
      */
     private fun updateHorizontalScrollViewWithPhotos() {
-        selectedEstateToDisplay?.listPhoto?.forEach {
+        selectedEstateToDisplay?.listPhoto?.asReversed()?.forEach {
             val frameLayout: FrameLayout = MediaDisplayHandler.createNewFrameLayout(
                 it, (activity as MainActivity))
             binding.linearLayout.addView(frameLayout)

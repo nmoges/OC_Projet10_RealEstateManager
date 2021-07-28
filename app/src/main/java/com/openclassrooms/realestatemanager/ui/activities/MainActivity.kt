@@ -61,9 +61,11 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
     /** Contains a reference to a [FragmentSettings] object */
     private var fragmentSettings: Fragment? = null
 
-    /** Contains ViewModel reference */
+    /** Contains ViewModels reference */
     lateinit var listEstatesViewModel: ListEstatesViewModel
     lateinit var currencyViewModel: CurrencyViewModel
+
+    /** Contains a reference to a [NetworkBroadcastReceiver] object */
     private val networkBroadcastReceiver: NetworkBroadcastReceiver = NetworkBroadcastReceiver(this)
 
     companion object {
@@ -103,6 +105,9 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
         unregisterReceiver(networkBroadcastReceiver)
     }
 
+    /**
+     * Initializes both view models.
+     */
     private fun initializeViewModels() {
         listEstatesViewModel = ViewModelProvider(this).get(ListEstatesViewModel::class.java)
         currencyViewModel = ViewModelProvider(this).get(CurrencyViewModel::class.java)
@@ -172,7 +177,7 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
     }
 
     /**
-     * Displays [FragmentSettings]
+     * Displays [FragmentSettings].
      */
     fun displayFragmentSettings() {
         launchTransaction(containerId, FragmentSettings.newInstance(), FragmentSettings.TAG)
@@ -426,8 +431,11 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
         }
     }
 
+    /**
+     * Accesses RealEstateManager application database to restore existing data.
+     */
     private fun accessDatabase() {
-        listEstatesViewModel.repository.loadAllEstates().observe(this, {
+        listEstatesViewModel.repositoryAccess.loadAllEstates().observe(this, {
             listEstatesViewModel.restoreData(it)
         })
     }

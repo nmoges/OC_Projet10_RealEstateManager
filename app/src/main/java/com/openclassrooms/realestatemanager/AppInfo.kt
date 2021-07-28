@@ -1,5 +1,8 @@
 package com.openclassrooms.realestatemanager
 
+/**
+ * Contains RealEstateManager application constant values.
+ */
 object AppInfo {
 
     // SharedPreferences parameters

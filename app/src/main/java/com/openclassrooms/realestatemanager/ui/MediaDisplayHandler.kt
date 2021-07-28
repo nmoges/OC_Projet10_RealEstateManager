@@ -14,6 +14,10 @@ import com.bumptech.glide.Glide
 import com.openclassrooms.realestatemanager.model.Photo
 import com.openclassrooms.realestatemanager.ui.activities.MainActivity
 
+/**
+ * Class defined to handle display of new FrameLayouts containing selected estate photos.
+ */
+//TODO() : Create fun returning a FrameLayout.LayoutParams object
 class MediaDisplayHandler {
 
     companion object {
@@ -25,21 +29,24 @@ class MediaDisplayHandler {
 
         /**
          * Handles the [ImageView] creation containing a new photo.
+         * @param photoUri : uri of a photo
+         * @param mainActivity : parent activity
+         * @return ImageView : image to display
          */
         private fun createNewImageView(photoUri: Uri, mainActivity: MainActivity): ImageView {
-
             val imageView = ImageView(mainActivity)
+            // Defines FrameLayout parameters
             val params: FrameLayout.LayoutParams =
                 FrameLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.WRAP_CONTENT)
-
             params.setMargins(0.toPx(mainActivity), 0, 20.toPx(mainActivity), 20.toPx(mainActivity))
+            // Defines ImageView parameters
             imageView.layoutParams = params
             imageView.layoutParams.width = 150.toPx(mainActivity)
             imageView.layoutParams.height = 150.toPx(mainActivity)
             imageView.scaleType = ImageView.ScaleType.FIT_XY
-
+            // Display image
             Glide.with(mainActivity)
                 .load(photoUri)
                 .centerCrop()
@@ -50,15 +57,19 @@ class MediaDisplayHandler {
 
         /**
          * Handles the banner [View] creation displayed.
+         * @param mainActivity : parent activity
+         * @return View : background view
          */
         private fun createNewBackgroundView(mainActivity: MainActivity): View {
             val view = View(mainActivity)
+            // Defines FrameLayout parameters
             val params: FrameLayout.LayoutParams =
                 FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.WRAP_CONTENT)
             params.setMargins(0.toPx(mainActivity), 20.toPx(mainActivity),
                              20.toPx(mainActivity), 20.toPx(mainActivity))
             params.gravity = Gravity.BOTTOM
+            // Define view parameters
             view.layoutParams = params
             view.layoutParams.width = 150.toPx(mainActivity)
             view.layoutParams.height = 50.toPx(mainActivity)
@@ -69,15 +80,20 @@ class MediaDisplayHandler {
         /**
          * Handles the [TextView] creation displaying the name of the associated displayed
          * photo.
+         * @param name : photo name
+         * @param mainActivity : parent activity
+         * @return TextView : textview to display
          */
         private fun createText(name: String?, mainActivity: MainActivity): TextView {
             val textView = TextView(mainActivity)
+            // Defines FrameLayout parameters
             val params: FrameLayout.LayoutParams =
                 FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.WRAP_CONTENT)
             params.setMargins(20.toPx(mainActivity), 0.toPx(mainActivity),
                               0.toPx(mainActivity), 40.toPx(mainActivity))
             params.gravity = Gravity.BOTTOM
+            // Define textView parameters
             textView.layoutParams = params
             textView.text = name
             textView.setTextColor(Color.parseColor("#FFFFFF"))
