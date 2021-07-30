@@ -366,7 +366,10 @@
                 android:layout_height="wrap_content"
                 android:textSize="@dimen/hint_text_input"
                 android:hint="@string/str_new_estate_agent_hint_text_input"
-                android:inputType="text" />
+                android:inputType="text"
+                android:clickable="true"
+                android:focusableInTouchMode="false"
+                android:cursorVisible="false"/>
 
         </com.google.android.material.textfield.TextInputLayout>
 

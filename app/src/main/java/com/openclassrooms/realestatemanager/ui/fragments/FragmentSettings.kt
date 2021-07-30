@@ -21,12 +21,7 @@ import com.openclassrooms.realestatemanager.viewmodels.CurrencyViewModel
  */
 class FragmentSettings : Fragment() {
 
-    companion object {
-        const val TAG = "TAG_FRAGMENT_SETTINGS"
-        const val DIALOG_CURRENCY_SELECT_KEY = "DIALOG_CURRENCY_SELECT_KEY"
-        const val DIALOG_DELETE_ACCOUNT_KEY = "DIALOG_DELETE_ACCOUNT_KEY"
-        fun newInstance(): FragmentSettings = FragmentSettings()
-    }
+    companion object { fun newInstance(): FragmentSettings = FragmentSettings() }
 
     /** View Binding parameter */
     private lateinit var binding: FragmentSettingsBinding
@@ -196,10 +191,10 @@ class FragmentSettings : Fragment() {
      * @param savedInstanceState : Bundle
      */
     private fun restoreDialog(savedInstanceState: Bundle?) {
-        if (savedInstanceState?.getBoolean(DIALOG_CURRENCY_SELECT_KEY) == true) {
+        if (savedInstanceState?.getBoolean(AppInfo.DIALOG_CURRENCY_SELECT_KEY) == true) {
             builderCurrencySelectionDialog.show()
         }
-        if (savedInstanceState?.getBoolean(DIALOG_DELETE_ACCOUNT_KEY) == true) {
+        if (savedInstanceState?.getBoolean(AppInfo.DIALOG_DELETE_ACCOUNT_KEY) == true) {
             builderDeleteAccountDialog.show()
         }
     }
@@ -207,8 +202,8 @@ class FragmentSettings : Fragment() {
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.apply {
-            putBoolean(DIALOG_CURRENCY_SELECT_KEY, builderCurrencySelectionDialog.isShowing)
-            putBoolean(DIALOG_DELETE_ACCOUNT_KEY, builderDeleteAccountDialog.isShowing)
+            putBoolean(AppInfo.DIALOG_CURRENCY_SELECT_KEY, builderCurrencySelectionDialog.isShowing)
+            putBoolean(AppInfo.DIALOG_DELETE_ACCOUNT_KEY, builderDeleteAccountDialog.isShowing)
         }
     }
 

@@ -17,10 +17,7 @@ import com.openclassrooms.realestatemanager.viewmodels.ListEstatesViewModel
  */
 class FragmentEstateDetails : Fragment() {
 
-    companion object {
-        const val TAG: String = "TAG_FRAGMENT_ESTATE_DETAILS"
-        fun newInstance(): FragmentEstateDetails = FragmentEstateDetails()
-    }
+    companion object { fun newInstance(): FragmentEstateDetails = FragmentEstateDetails() }
 
     /** binding parameter */
     private lateinit var binding: FragmentEstateDetailsBinding

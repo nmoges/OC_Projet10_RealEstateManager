@@ -1,4 +1,4 @@
-package com.openclassrooms.realestatemanager.di
+package com.openclassrooms.data.di
 
 import android.content.Context
 import androidx.room.Room
@@ -17,7 +17,7 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object DatabaseModule {
-
+// TODO : passer DAOs en internal
     @Singleton
     @Provides
     fun provideDatabase(@ApplicationContext context: Context): RealEstateManagerDatabase {
@@ -46,4 +46,8 @@ object DatabaseModule {
     @Provides
     fun provideEstateWithPhotosAndInteriorDao(db: RealEstateManagerDatabase) =
                                                                    db.estateWithPhotosAndInteriorDao
+
+    @Singleton
+    @Provides
+    fun provideAgentDao(db: RealEstateManagerDatabase) = db.agentDao
 }

@@ -7,9 +7,11 @@ import androidx.lifecycle.viewModelScope
 import com.openclassrooms.data.entities.EstateDataWithPhotosAndInterior
 import com.openclassrooms.data.repository.RealEstateRepositoryAccess
 import com.openclassrooms.realestatemanager.*
+import com.openclassrooms.realestatemanager.model.Agent
 import com.openclassrooms.realestatemanager.model.Estate
 import com.openclassrooms.realestatemanager.model.Interior
 import com.openclassrooms.realestatemanager.model.Photo
+import com.openclassrooms.realestatemanager.service.DummyListAgentGenerator
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -32,10 +34,22 @@ class ListEstatesViewModel @Inject constructor(
     val photoUriEstate: LiveData<String>
         get() = _photoUriEstate
 
+    private val _listAgents: MutableLiveData<List<Agent>> = MutableLiveData()
+    val listAgents: LiveData<List<Agent>>
+        get() = _listAgents
+
     /**
      * Contains selected [Estate].
      */
     var selectedEstate: Estate? = null
+
+    init { restoreListAgents() }
+
+    private fun restoreListAgents() {
+        viewModelScope.launch {
+            _listAgents.postValue(getAllAgents())
+        }
+    }
 
     /**
      * Set a selected [Estate] by user (click on item) to [selectedEstate]
@@ -47,9 +61,16 @@ class ListEstatesViewModel @Inject constructor(
      */
     fun createNewEstate() {
         selectedEstate =
-            Estate(id = 0, type = "", district = "", price = 0,
-                   Interior(id= 0, numberRooms = 0, numberBathrooms = 0, numberBedrooms = 0, surface = 0),
-                   description = "", address = "", nameAgent = "", status = false, selected = false)
+            Estate(id = 1, type = "", district = "", price = 0, description = "", address = "",
+                   interior = Interior(id= 1,
+                                       numberRooms = 0,
+                                       numberBathrooms = 0,
+                                       numberBedrooms = 0,
+                                       surface = 0),
+                   agent = Agent(id = 1,
+                                 firstName = "",
+                                 lastName = ""),
+                   status = false, selected = false)
     }
 
     /**
@@ -86,31 +107,32 @@ class ListEstatesViewModel @Inject constructor(
      * @param numberPhotosAdded : Number of photos added since the beginning of the modifications.
      */
     fun removePhotosIfEstateCreationCancelled(numberPhotosAdded: Int) {
-       var indice = numberPhotosAdded
+        var indice = numberPhotosAdded
         while (indice > 0) {
-            selectedEstate?.listPhoto?.removeFirst()
+            selectedEstate?.listPhoto?.removeLast()
             indice--
         }
     }
 
-    // Database access
     /**
      * Restores data from database.
      * @param list : list of data
      */
     fun restoreData(list: List<EstateDataWithPhotosAndInterior>) {
-        val listEstateRestored: MutableList<Estate> = mutableListOf()
-
-        list.forEach { it ->
-            val interior = it.interiorData.toInterior()
-            val listPhoto: MutableList<Photo> = mutableListOf()
-            it.listPhotosData.forEach {
-                listPhoto.add(it.toPhoto())
+        viewModelScope.launch {
+            val listEstateRestored: MutableList<Estate> = mutableListOf()
+            list.forEach { it ->
+                val interior = it.interiorData.toInterior()
+                val listPhoto: MutableList<Photo> = mutableListOf()
+                it.listPhotosData.forEach {
+                    listPhoto.add(it.toPhoto())
+                }
+                val agentData = repositoryAccess.getAgent(it.estateData.idAgent)
+                val estate = it.estateData.toEstate(interior, listPhoto, agentData.toAgent())
+                listEstateRestored.add(estate)
             }
-            val estate = it.estateData.toEstate(interior, listPhoto)
-            listEstateRestored.add(estate)
+            _listEstates.postValue(listEstateRestored)
         }
-        _listEstates.postValue(listEstateRestored)
     }
 
     /**
@@ -184,4 +206,77 @@ class ListEstatesViewModel @Inject constructor(
             repositoryAccess.updateInterior(interiorData)
         }
     }
+
+    fun test() {
+        viewModelScope.launch {
+            DummyListAgentGenerator.listAgents.forEach {
+                repositoryAccess.insertAgent(it.toAgentData())
+            }
+            restoreListAgents()
+        }
+    }
+
+    /**
+     * Retrieves all stored agents data from database.
+     */
+    private suspend fun getAllAgents(): List<Agent> {
+        val listAgentData = repositoryAccess.getAllAgents()
+        val listAgents: MutableList<Agent> = mutableListOf()
+        listAgentData.forEach {
+            listAgents.add(it.toAgent())
+        }
+        return listAgents
+    }
+
+    /**
+     * Update [selectedEstate] field with [Agent] values.
+     * @param id : selected id agent
+     * @param updateEstate : defines type of operation (creation or update estate)
+     */
+    fun addAgentToSelectedEstate(id: Int, updateEstate: Boolean) {
+        viewModelScope.launch {
+            val agentData = repositoryAccess.getAgent(id.toLong())
+            val agent = agentData.toAgent()
+            selectedEstate?.agent.apply {
+                this?.id = agent.id
+                this?.firstName = agent.firstName
+                this?.lastName = agent.lastName
+            }
+            updateDatabase(updateEstate)
+        }
+    }
+
+    /**
+     * Updates [selectedEstate] field with [Interior] values.
+     * @param numberRooms : number of rooms
+     * @param numberBathrooms : number of bathrooms
+     * @param numberBedrooms : number of bedrooms
+     * @param surface : surface estate
+     */
+    fun updateInteriorSelectedEstate(numberRooms: Int, numberBathrooms: Int,
+                                     numberBedrooms: Int, surface: Int ) {
+        selectedEstate?.interior.apply {
+            this?.numberRooms = numberRooms
+            this?.numberBedrooms = numberBedrooms
+            this?.numberBathrooms = numberBathrooms
+            this?.surface = surface
+        }
+    }
+
+    /**
+     * Updates [selectedEstate] field values.
+     * @param type : type of estate
+     * @param location : address of the estate
+     * @param description : description of the estate
+     * @param price : price of the estate
+     */
+    fun updateSelectedEstate(type: String, location: String, description: String, price: Int) {
+        selectedEstate?.apply {
+            this.type = type
+            this.address = location
+            this.description = description
+            this.price = price
+        }
+    }
 }
+

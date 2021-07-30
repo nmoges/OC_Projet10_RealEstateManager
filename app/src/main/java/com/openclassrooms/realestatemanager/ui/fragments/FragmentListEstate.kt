@@ -7,6 +7,7 @@ import androidx.appcompat.view.menu.MenuBuilder
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.openclassrooms.realestatemanager.AppInfo
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.databinding.FragmentListEstateBinding
 import com.openclassrooms.realestatemanager.model.Estate
@@ -22,10 +23,7 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class FragmentListEstate : Fragment() {
 
-    companion object {
-        const val TAG = "TAG_FRAGMENT_LIST_ESTATE"
-        fun newInstance(): FragmentListEstate = FragmentListEstate()
-    }
+    companion object { fun newInstance(): FragmentListEstate = FragmentListEstate() }
 
     /** View Binding parameter */
     private lateinit var binding: FragmentListEstateBinding
@@ -54,7 +52,6 @@ class FragmentListEstate : Fragment() {
         // Initialize toolbar
         (activity as MainActivity)
             .setToolbarProperties(R.string.str_toolbar_fragment_list_estate_title, false)
-
         initializeRecyclerView()
         addObserversToViewModels()
     }
@@ -78,7 +75,6 @@ class FragmentListEstate : Fragment() {
             clearPreviousSelection(position)
             val status: Boolean = updateItemSelectionStatus(position)
             notifyDataSetChanged()
-
             if (status) {
                 activity.handleFabVisibility(View.INVISIBLE)
                 activity.handleBackgroundGridVisibility(View.INVISIBLE)
@@ -105,7 +101,6 @@ class FragmentListEstate : Fragment() {
         super.onCreateOptionsMenu(menu, inflater)
         menu.clear()
         inflater.inflate(R.menu.menu_fragment_list_estate, menu)
-
         if (menu is MenuBuilder) {
             val menuBuilder: MenuBuilder = menu
             menuBuilder.setOptionalIconsVisible(true)
@@ -166,7 +161,8 @@ class FragmentListEstate : Fragment() {
 
     private fun resetSelection(listEstate: List<Estate>) {
         val orientation: Boolean = (activity as MainActivity).typeOrientation
-        val itemSelected: Boolean = parentFragmentManager.findFragmentByTag(FragmentEstateDetails.TAG) == null
+        val itemSelected: Boolean = parentFragmentManager
+                                     .findFragmentByTag(AppInfo.TAG_FRAGMENT_ESTATE_DETAILS) == null
 
         if ((activity as MainActivity).typeLayout) {
             if (!orientation && !itemSelected) {

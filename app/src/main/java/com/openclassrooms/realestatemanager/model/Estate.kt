@@ -9,7 +9,7 @@ package com.openclassrooms.realestatemanager.model
  * @param interior : defines estate interior properties (rooms, surface)
  * @param description : real estate description
  * @param address : location address
- * @param nameAgent : name of the associated real estate agent
+ * @param agent :  associated real estate agent
  * @param status : Real estate status (sold, or for sale)
  * @param selected : Define if a estate is currently being consulted (true) or not (false)
  */
@@ -21,7 +21,7 @@ data class Estate(
     var interior: Interior,
     var description: String,
     var address: String,
-    var nameAgent: String,
+    var agent: Agent,
     var status: Boolean = false,
     var selected: Boolean = false,
     var listPhoto: MutableList<Photo> = mutableListOf()
