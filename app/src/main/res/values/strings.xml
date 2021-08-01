@@ -93,6 +93,14 @@
     <string name="str_toast_new_estate_created">New estate created</string>
     <string name="str_toast_estate_modified">Modifications saved</string>
 
+    <!-- FragmentEstateDetails.xml -->
+    <string name="str_dialog_confirm_sale_tile">Confirm sale</string>
+    <string name="str_dialog_confirm_sale_message">This estate will be definitely marked as sold. Confirm ?</string>
+    <string name="str_sold_status">Sold on</string>
+    <string name="str_available_status">Available</string>
+    <string name="str_sale_button_text">Sold</string>
+    <string name="str_published_on">Published on</string>
+
     <!-- custom_auth_layout.xml -->
     <string name="content_desc_logo_app">Logo application</string>
     <string name="str_authentication_btn_facebook">Connect with Facebook</string>
@@ -131,5 +139,5 @@
     <string name="str_text_delete_account">Delete your Real Estate Manager account</string>
 
     <!-- fragment_list_estate_item.xml -->
-    <string name="str_sold_status">SOLD</string>
+    <string name="str_sold_status_item">SOLD</string>
 </resources>

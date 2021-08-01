@@ -1,5 +1,6 @@
 package com.openclassrooms.realestatemanager.ui.fragments
 
+import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.os.Bundle
 import android.view.*
@@ -13,6 +14,8 @@ import com.openclassrooms.realestatemanager.databinding.FragmentEstateDetailsBin
 import com.openclassrooms.realestatemanager.model.Estate
 import com.openclassrooms.realestatemanager.ui.MediaDisplayHandler
 import com.openclassrooms.realestatemanager.viewmodels.ListEstatesViewModel
+import java.text.SimpleDateFormat
+import java.util.*
 
 /**
  * [Fragment] subclass used to display the details of a selected existing [Estate].
@@ -57,6 +60,8 @@ class FragmentEstateDetails : Fragment() {
         initializeSaleButtonDisplay()
         initializeConfirmationDialog()
         updateMaterialTextSaleStatus()
+        updatePublishDateToDisplay()
+        updateSaleDateToDisplay()
         restoreDialog(savedInstanceState)
     }
 
@@ -136,7 +141,7 @@ class FragmentEstateDetails : Fragment() {
     private fun updateMaterialTextSaleStatus() {
         val status = selectedEstateToDisplay?.status
         if (status != null) {
-            val text = "Sold"
+            val text = resources.getString(R.string.str_sold_status)
             if (status) binding.saleStatus.apply {
                 this.text = text
                 setTextColor(resources.getColor(R.color.red_google))
@@ -145,12 +150,51 @@ class FragmentEstateDetails : Fragment() {
     }
 
     /**
+     * Updates "publish date" MaterialTextView.
+     */
+    private fun updatePublishDateToDisplay() {
+        selectedEstateToDisplay?.run {
+            val publishDate = getDate(mutableListOf(dates.entryDate.entryDateDay,
+                                                           dates.entryDate.entryDateMonth,
+                                                           dates.entryDate.entryDateYear))
+            val textToDisplay = resources.getString(R.string.str_published_on) + ": $publishDate"
+            binding.publishDate.text = textToDisplay
+        }
+    }
+
+    /**
+     * Updates "sale date" MaterialTextView.
+     */
+    private fun updateSaleDateToDisplay() {
+        selectedEstateToDisplay?.run {
+            val saleDate = getDate(mutableListOf(dates.saleDate.saleDateDay,
+                                                      dates.saleDate.saleDateMonth,
+                                                      dates.saleDate.saleDateYear))
+            val textToDisplay = resources.getString(R.string.str_sold_status) + ": $saleDate"
+            binding.saleStatus.text = textToDisplay
+        }
+    }
+
+    //TODO() : To move
+    @SuppressLint("SimpleDateFormat")
+    private fun getDate(list: MutableList<Int>): String {
+        val calendar = Calendar.getInstance()
+        calendar.set(list[2], list[1], list[0])
+
+        val simpleDateFormat: SimpleDateFormat = when (Locale.getDefault().language) {
+            "en" -> { SimpleDateFormat("MM/dd/yyyy") }
+            else -> { SimpleDateFormat("dd/MM/yyyy") }
+        }
+        return simpleDateFormat.format(calendar.time)
+    }
+
+    /**
      * Initializes an [AlertDialog.Builder] to display a confirmation message to user.
      */
     private fun initializeConfirmationDialog() {
         builderConfirmDialog = AlertDialog.Builder(activity)
-            .setTitle("Confirm sell")
-            .setMessage("This estate will be definitely marked as SOLD. Confirm ?")
+            .setTitle(resources.getString(R.string.str_dialog_confirm_sale_tile))
+            .setMessage(resources.getString(R.string.str_dialog_confirm_sale_message))
             .setPositiveButton(resources.getString(R.string.str_dialog_button_yes))
             { _, _ ->
                 selectedEstateToDisplay?.status = true

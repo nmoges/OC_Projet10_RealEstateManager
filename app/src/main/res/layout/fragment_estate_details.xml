@@ -346,13 +346,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
-            android:text="Available."
+            android:text="@string/str_available_status"
             android:textSize="@dimen/text_description_grid"
             android:textStyle="italic"
             android:layout_marginBottom="10dp"/>
         <com.google.android.material.button.MaterialButton
             android:id="@+id/sale_button"
-            android:text="Sold !"
+            android:text="@string/str_sale_button_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:icon="@drawable/ic_baseline_real_estate_agent_24dp_white"

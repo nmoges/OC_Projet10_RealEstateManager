@@ -61,7 +61,7 @@
             android:id="@+id/status"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/str_sold_status"
+            android:text="@string/str_sold_status_item"
             android:textSize="25sp"
             android:textStyle="bold"
             android:textColor="#66FF0017"

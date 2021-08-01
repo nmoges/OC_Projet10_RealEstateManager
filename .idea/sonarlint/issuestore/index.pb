@@ -25,8 +25,6 @@ G
 settings.gradle,0\5\05efc8b1657769a27696d478ded1e95f38737233
 <
 build.gradle,f\0\f07866736216be0ee2aba49e392191aeae700a35
-q
-Aapp/src/main/java/com/openclassrooms/realestatemanager/Utils.java,f\1\f1cdde1ae10dbcb7e4502dc957ce7854a5461cbb
 y
 Iapp/src/main/java/com/openclassrooms/realestatemanager/BaseApplication.kt,b\a\ba91db68c1b0215281812e92d69f604f96833e35
 €
