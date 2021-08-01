@@ -21,12 +21,10 @@ import androidx.core.view.ViewCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.openclassrooms.realestatemanager.AppInfo
-import com.openclassrooms.realestatemanager.MediaAccessHandler
+import com.openclassrooms.realestatemanager.utils.MediaAccessHandler
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.databinding.ActivityMainBinding
 import com.openclassrooms.realestatemanager.receiver.NetworkBroadcastReceiver
-import com.openclassrooms.realestatemanager.service.DummyListAgentGenerator
-import com.openclassrooms.realestatemanager.toAgentData
 import com.openclassrooms.realestatemanager.ui.fragments.FragmentEstateDetails
 import com.openclassrooms.realestatemanager.ui.fragments.FragmentListEstate
 import com.openclassrooms.realestatemanager.ui.fragments.FragmentNewEstate
@@ -34,7 +32,6 @@ import com.openclassrooms.realestatemanager.ui.fragments.FragmentSettings
 import com.openclassrooms.realestatemanager.viewmodels.CurrencyViewModel
 import com.openclassrooms.realestatemanager.viewmodels.ListEstatesViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import dagger.hilt.android.scopes.ViewModelScoped
 
 /**
  * [AppCompatActivity] subclass which defines the main activity of the application.

@@ -1,7 +1,7 @@
 package com.openclassrooms.data.dao
 
 import androidx.room.*
-import com.openclassrooms.data.entities.DatesData
+import com.openclassrooms.data.entities.date.DatesData
 
 @Dao
 interface DatesDao {

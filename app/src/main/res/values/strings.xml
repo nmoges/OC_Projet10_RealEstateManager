@@ -140,4 +140,8 @@
 
     <!-- fragment_list_estate_item.xml -->
     <string name="str_sold_status_item">SOLD</string>
+
+    <!-- NotificationHandler.kt -->
+    <string name="notification_title">Real Estate Manager</string>
+    <string name="notification_message">New estate available</string>
 </resources>

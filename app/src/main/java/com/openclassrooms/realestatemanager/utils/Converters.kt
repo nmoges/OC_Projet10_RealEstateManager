@@ -1,7 +1,13 @@
-package com.openclassrooms.realestatemanager
+package com.openclassrooms.realestatemanager.utils
 
 import com.openclassrooms.data.entities.*
+import com.openclassrooms.data.entities.date.DatesData
+import com.openclassrooms.data.entities.date.EntryDateData
+import com.openclassrooms.data.entities.date.SaleDateData
 import com.openclassrooms.realestatemanager.model.*
+import com.openclassrooms.realestatemanager.model.date.Dates
+import com.openclassrooms.realestatemanager.model.date.EntryDate
+import com.openclassrooms.realestatemanager.model.date.SaleDate
 
 // Estate converters
 fun Estate.toEstateData() = EstateData(type = this.type,
@@ -63,25 +69,25 @@ fun DatesData.toDates() = Dates(
 )
 
 fun EntryDate.toEntryDateData() = EntryDateData(
-    entryDateDay = entryDateDay,
-    entryDateMonth = entryDateMonth,
-    entryDateYear = entryDateYear
+    day = day,
+    month = month,
+    year = year
 )
 
 fun EntryDateData.toEntryDate() = EntryDate(
-    entryDateDay = entryDateDay,
-    entryDateMonth = entryDateMonth,
-    entryDateYear = entryDateYear
+    day = day,
+    month = month,
+    year = year
 )
 
 fun SaleDate.toSaleDateData() = SaleDateData(
-    saleDateDay = saleDateDay,
-    saleDateMonth = saleDateMonth,
-    saleDateYear = saleDateYear
+    day = day,
+    month = month,
+    year = year
 )
 
 fun SaleDateData.toSaleDate() = SaleDate(
-    saleDateDay = saleDateDay,
-    saleDateMonth = saleDateMonth,
-    saleDateYear = saleDateYear
+    day = day,
+    month = month,
+    year = year
 )

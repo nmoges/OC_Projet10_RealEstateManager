@@ -37,4 +37,8 @@ object AppInfo {
     const val TAG_FRAGMENT_SETTINGS = "TAG_FRAGMENT_SETTINGS"
     const val TAG_FRAGMENT_LIST_ESTATE = "TAG_FRAGMENT_LIST_ESTATE"
     const val TAG_FRAGMENT_ESTATE_DETAILS = "TAG_FRAGMENT_ESTATE_DETAILS"
+
+    // Notification parameters
+    const val CHANNEL_ID = "CHANNEL_ID"
+    const val CHANNEL_NAME = "channel_real_estate_manager_app"
 }

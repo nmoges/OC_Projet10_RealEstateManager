@@ -16,14 +16,17 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textfield.TextInputLayout
 import com.openclassrooms.realestatemanager.AppInfo
-import com.openclassrooms.realestatemanager.MediaAccessHandler
+import com.openclassrooms.realestatemanager.utils.MediaAccessHandler
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.databinding.FragmentNewEstateBinding
 import com.openclassrooms.realestatemanager.model.Estate
 import com.openclassrooms.realestatemanager.model.Photo
+import com.openclassrooms.realestatemanager.notification.NotificationHandler
 import com.openclassrooms.realestatemanager.ui.MediaDisplayHandler
 import com.openclassrooms.realestatemanager.ui.activities.MainActivity
+import com.openclassrooms.realestatemanager.utils.CustomTextWatcher
 import com.openclassrooms.realestatemanager.viewmodels.ListEstatesViewModel
 
 /**
@@ -33,7 +36,7 @@ class FragmentNewEstate : Fragment() {
     companion object { fun newInstance(): FragmentNewEstate = FragmentNewEstate() }
 
     /** View Binding parameter */
-    lateinit var binding: FragmentNewEstateBinding
+    private lateinit var binding: FragmentNewEstateBinding
 
     /** Contains ViewModel reference */
     private lateinit var listEstatesViewModel: ListEstatesViewModel
@@ -65,14 +68,12 @@ class FragmentNewEstate : Fragment() {
     var confirmExit: Boolean = false
 
     /** Defines a [TextWatcher] for [builderNameMediaDialog] */
-    private val textWatcher: TextWatcher = object : TextWatcher {
-        override fun beforeTextChanged(name: CharSequence?, start: Int, count: Int, after: Int) { }
-        override fun onTextChanged(name: CharSequence?, start: Int, before: Int, count: Int) { }
-        override fun afterTextChanged(name: Editable?) {
-            if (name != null) {
-                textNameMediaDialog = name.toString()
+    private val textWatcher: TextWatcher = object : CustomTextWatcher() {
+        override fun afterTextChanged(sequence: Editable?) {
+            if (sequence != null) {
+                textNameMediaDialog = sequence.toString()
                 builderNameMediaDialog.getButton(AlertDialog.BUTTON_POSITIVE)
-                    .isEnabled = name.isNotEmpty() }
+                    .isEnabled = sequence.isNotEmpty() }
         }
     }
 
@@ -318,13 +319,12 @@ class FragmentNewEstate : Fragment() {
             Editable.Factory.getInstance().newEditable(text)
         with(binding) {
             val currentEstate = listEstatesViewModel.selectedEstate ?: return
-            newEstateNameSectionTextInputEdit.text = convertStringToEditable(currentEstate.type)
-            newEstateLocationSectionTextInputEdit.text = convertStringToEditable(currentEstate.address)
-            newEstateDescSectionTextInputEdit.text = convertStringToEditable(currentEstate.description)
-            newEstateAgentSectionTextInputEdit.text =
+            nameSectionEdit.text = convertStringToEditable(currentEstate.type)
+            locationSectionEdit.text = convertStringToEditable(currentEstate.address)
+            descSectionEdit.text = convertStringToEditable(currentEstate.description)
+            agentSectionEdit.text =
             convertStringToEditable("${currentEstate.agent.firstName} ${currentEstate.agent.lastName}")
-            newEstatePriceSectionTextInputEdit.text =
-                                             convertStringToEditable(currentEstate.price.toString())
+            priceSectionEdit.text = convertStringToEditable(currentEstate.price.toString())
             sliderSurface.value = currentEstate.interior.surface.toFloat()
             sliderRooms.value = currentEstate.interior.numberRooms.toFloat()
             sliderBathrooms.value = currentEstate.interior.numberBathrooms.toFloat()
@@ -338,7 +338,7 @@ class FragmentNewEstate : Fragment() {
     private fun updateMaterialButtonText() {
         binding.confirmationButton.apply {
             text = if (updateEstate) resources.getString(R.string.str_button_confirmation_modification)
-            else resources.getString(R.string.str_button_confirmation_creation)
+                   else resources.getString(R.string.str_button_confirmation_creation)
         }
     }
 
@@ -360,11 +360,11 @@ class FragmentNewEstate : Fragment() {
     private fun confirmReset() {
         val currentEstate = listEstatesViewModel.selectedEstate ?: return
         with(binding) {
-            newEstateNameSectionTextInputEdit.text?.clear()
-            newEstateLocationSectionTextInputEdit.text?.clear()
-            newEstateDescSectionTextInputEdit.text?.clear()
-            newEstateAgentSectionTextInputEdit.text?.clear()
-            newEstatePriceSectionTextInputEdit.text?.clear()
+            nameSectionEdit.text?.clear()
+            locationSectionEdit.text?.clear()
+            descSectionEdit.text?.clear()
+            agentSectionEdit.text?.clear()
+            priceSectionEdit.text?.clear()
             sliderSurface.value = 200.0F
             sliderRooms.value = 5.0F
             sliderBathrooms.value = 1.0F
@@ -459,24 +459,35 @@ class FragmentNewEstate : Fragment() {
      * Handle user interactions with confirmation button.
      */
     private fun handleConfirmationButtonListener() {
-        binding.confirmationButton.setOnClickListener {
-            val name: String = binding.newEstateNameSectionTextInputEdit.text.toString()
-            val location: String = binding.newEstateLocationSectionTextInputEdit.text.toString()
-            val description: String = binding.newEstateDescSectionTextInputEdit.text.toString()
-            val price: String = binding.newEstatePriceSectionTextInputEdit.text.toString()
-            if (name.isNotEmpty() && location.isNotEmpty()
-                && description.isNotEmpty() && price.isNotEmpty()
-                && listEstatesViewModel.selectedEstate?.listPhoto?.isNotEmpty() == true) {
-                displayToastEstate(false)
-                updateSelectedEstateFromViewModel(name, location, description, price)
-            }
-            else {
-                displayToastEstate(true)
-                displayErrorBoxMessage()
+        binding.apply {
+            confirmationButton.setOnClickListener {
+                val name: String = nameSectionEdit.text.toString()
+                val location: String = locationSectionEdit.text.toString()
+                val description: String = descSectionEdit.text.toString()
+                val price: String = priceSectionEdit.text.toString()
+                val nameAgent: String = agentSectionEdit.text.toString()
+                if (name.isNotEmpty() && location.isNotEmpty() && nameAgent.isNotEmpty()
+                    && description.isNotEmpty() && price.isNotEmpty()
+                    && listEstatesViewModel.selectedEstate?.listPhoto?.isNotEmpty() == true) {
+                    displayToastEstate(false)
+                    launchNotification()
+                    updateSelectedEstateFromViewModel(name, location, description, price)
+                }
+                else {
+                    displayToastEstate(true)
+                    displayErrorBoxMessage()
+                }
             }
         }
     }
 
+    private fun launchNotification(){
+        val context = context
+        if (context != null) {
+            val notificationHandler = NotificationHandler(context)
+            notificationHandler.createNotification()
+        }
+    }
     /**
      * Displays [Toast] messages.
      */
@@ -521,26 +532,16 @@ class FragmentNewEstate : Fragment() {
      */
     private fun displayErrorBoxMessage() {
         binding.apply {
-            if (newEstateNameSectionTextInputEdit.text?.isEmpty() == true)
-                newEstateNameSectionTextInputLayout.apply {
-                    isErrorEnabled = true
-                    error = "Empty" }
-            if (newEstateLocationSectionTextInputEdit.text?.isEmpty() == true)
-                newEstateLocationSectionTextInputLayout.apply {
-                    isErrorEnabled = true
-                    error = "Empty" }
-            if (newEstateDescSectionTextInputEdit.text?.isEmpty() == true)
-                newEstateDescSectionTextInputLayout.apply {
-                    isErrorEnabled = true
-                    error = "Empty" }
-            if (newEstatePriceSectionTextInputEdit.text?.isEmpty() == true)
-                newEstatePriceSectionTextInputLayout.apply {
-                    isErrorEnabled = true
-                    error = "Empty" }
-            if (newEstateAgentSectionTextInputEdit.text?.isEmpty() == true)
-                newEstateAgentSectionTextInputLayout.apply {
-                    isErrorEnabled = true
-                    error = "Empty" }
+            if (nameSectionEdit.text?.isEmpty() == true)
+                updateErrorStatus(true, nameSectionLayout)
+            if (locationSectionEdit.text?.isEmpty() == true)
+                updateErrorStatus(true, locationSectionLayout)
+            if (descSectionEdit.text?.isEmpty() == true)
+                updateErrorStatus(true, descSectionLayout)
+            if (priceSectionEdit.text?.isEmpty() == true)
+                updateErrorStatus(true, priceSectionLayout)
+            if (agentSectionEdit.text?.isEmpty() == true)
+                updateErrorStatus(true, agentSectionLayout)
         }
     }
 
@@ -549,36 +550,34 @@ class FragmentNewEstate : Fragment() {
      */
     private fun handleTextInputEditTextWatchers() {
         binding.apply {
-            newEstateNameSectionTextInputEdit.addTextChangedListener(object : TextWatcher {
-                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            nameSectionEdit.addTextChangedListener(object : CustomTextWatcher() {
                 override fun afterTextChanged(s: Editable?) {
-                    newEstateNameSectionTextInputLayout.isErrorEnabled = false } })
-            newEstateLocationSectionTextInputEdit.addTextChangedListener(object : TextWatcher {
-                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+                    updateErrorStatus(false, nameSectionLayout)} })
+            locationSectionEdit.addTextChangedListener(object : CustomTextWatcher() {
                 override fun afterTextChanged(s: Editable?) {
-                    newEstateLocationSectionTextInputLayout.isErrorEnabled = false } })
-            newEstateDescSectionTextInputEdit.addTextChangedListener(object : TextWatcher {
-                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+                    updateErrorStatus(false, locationSectionLayout)} })
+            descSectionEdit.addTextChangedListener(object : CustomTextWatcher() {
                 override fun afterTextChanged(s: Editable?) {
-                    newEstateDescSectionTextInputLayout.isErrorEnabled = false } })
-            newEstatePriceSectionTextInputEdit.addTextChangedListener(object : TextWatcher {
-                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+                    updateErrorStatus(false, descSectionLayout)} })
+            priceSectionEdit.addTextChangedListener(object : CustomTextWatcher() {
                 override fun afterTextChanged(s: Editable?) {
-                    newEstatePriceSectionTextInputLayout.isErrorEnabled = false } })
+                    updateErrorStatus(false, priceSectionLayout)} })
         }
+    }
+
+    private fun updateErrorStatus(status: Boolean, layout: TextInputLayout) {
+        if (status) layout.apply {
+                                    isErrorEnabled = true
+                                    error = "Empty"
+                                 }
+        else layout.isErrorEnabled = false
     }
 
     /**
      * Handle user interactions with TextInputEditText field for agent selection.
      */
     private fun handleNameAgentTextInputEditListener() {
-        binding.newEstateAgentSectionTextInputEdit.setOnClickListener {
-            builderListAgentsDialog.show()
-        }
+        binding.agentSectionEdit.setOnClickListener { builderListAgentsDialog.show() }
     }
 
     /**
@@ -586,8 +585,6 @@ class FragmentNewEstate : Fragment() {
      */
     private fun updateNameAgentTextInputEditText(position: Int, nameAgent: String?) {
         agentSelected = position
-        binding.newEstateAgentSectionTextInputEdit.text =
-                                               Editable.Factory.getInstance().newEditable(nameAgent)
+        binding.agentSectionEdit.text = Editable.Factory.getInstance().newEditable(nameAgent)
     }
-
 }

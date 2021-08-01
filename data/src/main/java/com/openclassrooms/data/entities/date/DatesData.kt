@@ -1,4 +1,4 @@
-package com.openclassrooms.data.entities
+package com.openclassrooms.data.entities.date
 
 import androidx.room.ColumnInfo
 import androidx.room.Embedded

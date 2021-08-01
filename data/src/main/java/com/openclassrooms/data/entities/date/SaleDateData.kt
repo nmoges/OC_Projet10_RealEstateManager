@@ -1,14 +1,14 @@
-package com.openclassrooms.data.entities
+package com.openclassrooms.data.entities.date
 
 import androidx.room.ColumnInfo
 
 data class SaleDateData(
     @ColumnInfo(name = "sale_date_day")
-    var saleDateDay: Int,
+    var day: Int,
 
     @ColumnInfo(name = "sale_date_month")
-    var saleDateMonth: Int,
+    var month: Int,
 
     @ColumnInfo(name = "sale_date_year")
-    var saleDateYear: Int
+    var year: Int
 )

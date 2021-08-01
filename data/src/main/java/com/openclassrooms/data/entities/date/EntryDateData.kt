@@ -1,14 +1,14 @@
-package com.openclassrooms.data.entities
+package com.openclassrooms.data.entities.date
 
 import androidx.room.ColumnInfo
 
 class EntryDateData(
     @ColumnInfo(name = "entry_date_day")
-    var entryDateDay: Int,
+    var day: Int,
 
     @ColumnInfo(name = "entry_date_month")
-    var entryDateMonth: Int,
+    var month: Int,
 
     @ColumnInfo(name = "entry_date_year")
-    var entryDateYear: Int,
+    var year: Int,
 )

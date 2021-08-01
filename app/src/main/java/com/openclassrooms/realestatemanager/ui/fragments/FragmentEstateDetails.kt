@@ -8,11 +8,11 @@ import android.widget.FrameLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.openclassrooms.realestatemanager.AppInfo
-import com.openclassrooms.realestatemanager.ui.activities.MainActivity
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.databinding.FragmentEstateDetailsBinding
 import com.openclassrooms.realestatemanager.model.Estate
 import com.openclassrooms.realestatemanager.ui.MediaDisplayHandler
+import com.openclassrooms.realestatemanager.ui.activities.MainActivity
 import com.openclassrooms.realestatemanager.viewmodels.ListEstatesViewModel
 import java.text.SimpleDateFormat
 import java.util.*
@@ -154,10 +154,10 @@ class FragmentEstateDetails : Fragment() {
      */
     private fun updatePublishDateToDisplay() {
         selectedEstateToDisplay?.run {
-            val publishDate = getDate(mutableListOf(dates.entryDate.entryDateDay,
-                                                           dates.entryDate.entryDateMonth,
-                                                           dates.entryDate.entryDateYear))
-            val textToDisplay = resources.getString(R.string.str_published_on) + ": $publishDate"
+            val publishDateText = getDate(mutableListOf(dates.entryDate.day,
+                                                           dates.entryDate.month,
+                                                           dates.entryDate.year))
+            val textToDisplay = resources.getString(R.string.str_published_on) + ": $publishDateText"
             binding.publishDate.text = textToDisplay
         }
     }
@@ -167,11 +167,14 @@ class FragmentEstateDetails : Fragment() {
      */
     private fun updateSaleDateToDisplay() {
         selectedEstateToDisplay?.run {
-            val saleDate = getDate(mutableListOf(dates.saleDate.saleDateDay,
-                                                      dates.saleDate.saleDateMonth,
-                                                      dates.saleDate.saleDateYear))
-            val textToDisplay = resources.getString(R.string.str_sold_status) + ": $saleDate"
-            binding.saleStatus.text = textToDisplay
+            val saleDate = dates.saleDate
+            if (saleDate.day != 0 && saleDate.month != 0 && saleDate.year != 0) {
+                val saleDateText = getDate(mutableListOf(dates.saleDate.day,
+                    dates.saleDate.month,
+                    dates.saleDate.year))
+                val textToDisplay = resources.getString(R.string.str_sold_status) + ": $saleDateText"
+                binding.saleStatus.text = textToDisplay
+            }
         }
     }
 
@@ -179,12 +182,13 @@ class FragmentEstateDetails : Fragment() {
     @SuppressLint("SimpleDateFormat")
     private fun getDate(list: MutableList<Int>): String {
         val calendar = Calendar.getInstance()
-        calendar.set(list[2], list[1], list[0])
+        calendar.set(list[2], list[1]-1, list[0])
 
         val simpleDateFormat: SimpleDateFormat = when (Locale.getDefault().language) {
             "en" -> { SimpleDateFormat("MM/dd/yyyy") }
             else -> { SimpleDateFormat("dd/MM/yyyy") }
         }
+
         return simpleDateFormat.format(calendar.time)
     }
 

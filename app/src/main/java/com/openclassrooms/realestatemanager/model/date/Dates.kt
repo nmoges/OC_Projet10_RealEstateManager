@@ -1,4 +1,4 @@
-package com.openclassrooms.realestatemanager.model
+package com.openclassrooms.realestatemanager.model.date
 
 /**
  * Defines dates associated to a real estate (entry date for selling, and sale date)

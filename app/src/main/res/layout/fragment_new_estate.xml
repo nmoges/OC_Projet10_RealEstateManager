@@ -16,7 +16,7 @@
         android:orientation="vertical">
         <!-- TEXT INPUT NAME -->
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/new_estate_name_section_text_input_layout"
+            android:id="@+id/name_section_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/margin_start_text_input_layout"
@@ -25,7 +25,7 @@
             style="@style/TextInputLayoutCustom">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/new_estate_name_section_text_input_edit"
+                android:id="@+id/name_section_edit"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="@dimen/hint_text_input"
@@ -36,7 +36,7 @@
 
         <!-- TEXT INPUT LOCATION -->
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/new_estate_location_section_text_input_layout"
+            android:id="@+id/location_section_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/margin_start_text_input_layout"
@@ -45,7 +45,7 @@
             style="@style/TextInputLayoutCustom">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/new_estate_location_section_text_input_edit"
+                android:id="@+id/location_section_edit"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="@dimen/hint_text_input"
@@ -56,7 +56,7 @@
 
         <!-- TEXT INPUT DESCRIPTION -->
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/new_estate_desc_section_text_input_layout"
+            android:id="@+id/desc_section_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/margin_start_text_input_layout"
@@ -65,7 +65,7 @@
             style="@style/TextInputLayoutCustom">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/new_estate_desc_section_text_input_edit"
+                android:id="@+id/desc_section_edit"
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
                 android:gravity="top"
@@ -309,20 +309,20 @@
             android:columnCount="2">
 
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/new_estate_price_section_text_input_layout"
+                android:id="@+id/price_section_layout"
                 android:layout_width="200dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/margin_start_text_input_layout"
                 android:layout_marginEnd="@dimen/margin_end_text_input_layout"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintRight_toLeftOf="@id/new_estate_price_section_text_input_edit"
+                app:layout_constraintRight_toLeftOf="@id/price_section_edit"
                 android:layout_row="0"
                 android:layout_column="0"
                 style="@style/TextInputLayoutCustom">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/new_estate_price_section_text_input_edit"
+                    android:id="@+id/price_section_edit"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textSize="@dimen/hint_text_input"
@@ -345,7 +345,7 @@
                 android:layout_column="1"
                 android:layout_gravity="center_vertical"
                 android:textStyle="bold"
-                app:layout_constraintLeft_toRightOf="@id/new_estate_price_section_text_input_layout"
+                app:layout_constraintLeft_toRightOf="@id/price_section_layout"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"/>
 
@@ -353,7 +353,7 @@
 
         <!-- TEXT INPUT NAME AGENT -->
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/new_estate_agent_section_text_input_layout"
+            android:id="@+id/agent_section_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/margin_start_text_input_layout"
@@ -362,7 +362,7 @@
             style="@style/TextInputLayoutCustom">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/new_estate_agent_section_text_input_edit"
+                android:id="@+id/agent_section_edit"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="@dimen/hint_text_input"

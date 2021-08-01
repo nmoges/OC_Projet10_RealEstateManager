@@ -1,4 +1,4 @@
-package com.openclassrooms.realestatemanager
+package com.openclassrooms.realestatemanager.utils
 
 import android.annotation.SuppressLint
 import android.app.AlertDialog
@@ -13,6 +13,8 @@ import androidx.core.app.ActivityCompat
 import androidx.core.app.ActivityCompat.shouldShowRequestPermissionRationale
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
+import com.openclassrooms.realestatemanager.AppInfo
+import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.ui.activities.MainActivity
 import java.io.File
 import java.io.IOException
@@ -47,7 +49,8 @@ class MediaAccessHandler {
          */
         @SuppressLint("CommitPrefEdits")
         fun initializeNbPermissionRequests(activity: MainActivity) {
-            filePreferences = activity.getSharedPreferences(AppInfo.FILE_SHARED_PREF,
+            filePreferences = activity.getSharedPreferences(
+                AppInfo.FILE_SHARED_PREF,
                                                             Context.MODE_PRIVATE)
             // Get number of permissions requests already sent
             nbRequest = filePreferences.getInt(AppInfo.PREF_PERMISSIONS, 0)
@@ -70,7 +73,9 @@ class MediaAccessHandler {
         fun requestPermission(activity: MainActivity) {
 
             if (nbRequest <= 1) {// First request
-                ActivityCompat.requestPermissions(activity, permissions, AppInfo.REQUEST_PERMISSIONS_CODE)
+                ActivityCompat.requestPermissions(activity, permissions,
+                    AppInfo.REQUEST_PERMISSIONS_CODE
+                )
             }
             else { // "Don't ask again" checked
                 if (!shouldShowRequestPermissionRationale(activity, permissions[0])
@@ -78,7 +83,9 @@ class MediaAccessHandler {
                     && !shouldShowRequestPermissionRationale(activity, permissions[2]))
                     displayAccessSettingsDialog(activity)
                 else // "Don't ask again" not checked
-                    ActivityCompat.requestPermissions(activity, permissions, AppInfo.REQUEST_PERMISSIONS_CODE)
+                    ActivityCompat.requestPermissions(activity, permissions,
+                        AppInfo.REQUEST_PERMISSIONS_CODE
+                    )
             }
             nbRequest++
             editor.putInt(AppInfo.PREF_PERMISSIONS, nbRequest).apply()
@@ -110,7 +117,7 @@ class MediaAccessHandler {
                     intent.data = Uri.parse(activity.resources.getString(R.string.uri_string_package))
                     activity.startActivity(intent)
                 }
-                .setNegativeButton(activity.resources.getString(R.string.str_dialog_button_cancel)) { _,_ -> }
+                .setNegativeButton(activity.resources.getString(R.string.str_dialog_button_cancel)) { _, _ -> }
                 .create()
 
             builderAccessSettingsDialog.show()

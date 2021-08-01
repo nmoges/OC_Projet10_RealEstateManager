@@ -1,9 +1,9 @@
 package com.openclassrooms.data.repository
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import com.openclassrooms.data.dao.*
 import com.openclassrooms.data.entities.*
+import com.openclassrooms.data.entities.date.DatesData
 
 interface RealEstateRepositoryAccess {
 
@@ -49,7 +49,8 @@ class RealEstateRepository(
     private val interiorDao: InteriorDao,
     private val agentDao: AgentDao,
     private val datesDao: DatesDao,
-    private val estateWithPhotosAndInteriorDao: EstateWithPhotosAndInteriorDao): RealEstateRepositoryAccess {
+    private val estateWithPhotosAndInteriorDao: EstateWithPhotosAndInteriorDao):
+    RealEstateRepositoryAccess {
 
     // EstateDao
 
@@ -94,5 +95,5 @@ class RealEstateRepository(
 
     // EstateWithPhotosAndInteriorDao
     override fun loadAllEstates(): LiveData<List<EstateDataWithPhotosAndInterior>> =
-        estateWithPhotosAndInteriorDao.loadAllEstates()
+                                                     estateWithPhotosAndInteriorDao.loadAllEstates()
 }

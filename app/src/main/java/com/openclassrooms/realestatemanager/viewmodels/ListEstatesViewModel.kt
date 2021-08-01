@@ -1,15 +1,17 @@
 package com.openclassrooms.realestatemanager.viewmodels
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.openclassrooms.data.entities.EstateDataWithPhotosAndInterior
 import com.openclassrooms.data.repository.RealEstateRepositoryAccess
-import com.openclassrooms.realestatemanager.*
 import com.openclassrooms.realestatemanager.model.*
+import com.openclassrooms.realestatemanager.model.date.Dates
+import com.openclassrooms.realestatemanager.model.date.EntryDate
+import com.openclassrooms.realestatemanager.model.date.SaleDate
 import com.openclassrooms.realestatemanager.service.DummyListAgentGenerator
+import com.openclassrooms.realestatemanager.utils.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import java.util.*
@@ -324,11 +326,9 @@ class ListEstatesViewModel @Inject constructor(
             calendar.get(Calendar.YEAR)
         )
         if (!type) selectedEstate?.dates?.entryDate = EntryDate(
-                          entryDateDay = date[0], entryDateMonth = date[1], entryDateYear = date[2])
+                          day = date[0], month = date[1], year = date[2])
         else selectedEstate?.dates?.saleDate = SaleDate(
-                             saleDateDay = date[0], saleDateMonth = date[1], saleDateYear = date[2])
-
-
+                          day = date[0], month = date[1], year = date[2])
     }
 }
 
