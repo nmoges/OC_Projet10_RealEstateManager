@@ -1,5 +1,6 @@
 package com.openclassrooms.data.repository
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import com.openclassrooms.data.dao.*
 import com.openclassrooms.data.entities.*
@@ -22,11 +23,18 @@ interface RealEstateRepositoryAccess {
     suspend fun updateInterior(interiorData: InteriorData)
 
     // AgentDao
-    suspend fun insertAgent(agentData: AgentData)
+    suspend fun insertAgent(agentData: AgentData): Long
 
-    suspend fun getAgent(id: Long): AgentData
+    suspend fun getAgentById(id: Long): AgentData
 
     suspend fun getAllAgents(): List<AgentData>
+
+    // DatesDao
+    suspend fun insertDates(datesData: DatesData): Long
+
+    suspend fun updateDates(datesData: DatesData)
+
+    suspend fun getDatesById(id: Long): DatesData
 
     // EstateWithPhotosAndInteriorDao
     fun loadAllEstates(): LiveData<List<EstateDataWithPhotosAndInterior>>
@@ -40,33 +48,49 @@ class RealEstateRepository(
     private val photoDao: PhotoDao,
     private val interiorDao: InteriorDao,
     private val agentDao: AgentDao,
+    private val datesDao: DatesDao,
     private val estateWithPhotosAndInteriorDao: EstateWithPhotosAndInteriorDao): RealEstateRepositoryAccess {
 
     // EstateDao
 
-    override suspend fun insertEstate(estateData: EstateData): Long = estateDao.insertEstateData(estateData)
+    override suspend fun insertEstate(estateData: EstateData): Long =
+        estateDao.insertEstateData(estateData)
 
-    override suspend fun updateEstate(estateData: EstateData) = estateDao.updateEstateData(estateData)
+    override suspend fun updateEstate(estateData: EstateData) =
+        estateDao.updateEstateData(estateData)
 
     // PhotoDao
-    override suspend fun insertPhoto(photoData: PhotoData) = photoDao.insertPhotoData(photoData)
+    override suspend fun insertPhoto(photoData: PhotoData) =
+        photoDao.insertPhotoData(photoData)
 
-    override suspend fun getPhotos(id: Long): List<PhotoData> = photoDao.getPhotos(id)
+    override suspend fun getPhotos(id: Long): List<PhotoData> =
+        photoDao.getPhotos(id)
 
     // InteriorDao
     override suspend fun insertInterior(interiorData: InteriorData) =
         interiorDao.insertInteriorData(interiorData)
 
-    override suspend fun updateInterior(interiorData: InteriorData) = interiorDao.updateInteriorData(interiorData)
-
-    // AgentDao
-    override suspend fun insertAgent(agentData: AgentData) {
-        agentDao.insertAgentData(agentData)
+    override suspend fun updateInterior(interiorData: InteriorData) {
+        interiorDao.updateInteriorData(interiorData)
     }
 
-    override suspend fun getAgent(id: Long): AgentData = agentDao.getAgentFromId(id)
 
-    override suspend fun getAllAgents(): List<AgentData> = agentDao.getAllAgents()
+    // AgentDao
+    override suspend fun insertAgent(agentData: AgentData): Long =
+        agentDao.insertAgentData(agentData)
+
+    override suspend fun getAgentById(id: Long): AgentData =
+        agentDao.getAgentById(id)
+
+    override suspend fun getAllAgents(): List<AgentData> =
+        agentDao.getAllAgents()
+
+    // DatesDao
+    override suspend fun insertDates(datesData: DatesData): Long = datesDao.insertDateData(datesData)
+
+    override suspend fun updateDates(datesData: DatesData) = datesDao.updateDateData(datesData)
+
+    override suspend fun getDatesById(id: Long): DatesData = datesDao.getDatesById(id)
 
     // EstateWithPhotosAndInteriorDao
     override fun loadAllEstates(): LiveData<List<EstateDataWithPhotosAndInterior>> =

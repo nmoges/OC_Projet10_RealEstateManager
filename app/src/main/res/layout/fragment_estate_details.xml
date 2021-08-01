@@ -14,6 +14,19 @@
         android:paddingTop="20dp"
         android:paddingBottom="20dp">
 
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/publish_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Published on : May 5, 2021"
+            android:textStyle="italic"
+            android:layout_marginStart="20dp"
+            android:layout_marginBottom="10dp"
+            android:textSize="14sp"
+            app:layout_constraintTop_toTopOf="@id/surface_grid_layout"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintBottom_toBottomOf="@id/surface_grid_layout"/>
+
         <!-- "Media" section -->
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/title_section_media"
@@ -315,5 +328,37 @@
             android:background="@color/grey41"
             android:layout_marginTop="20dp"
             android:layout_gravity="center"/>
+
+        <!-- "Status" section -->
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/title_section_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:layout_marginStart="@dimen/margin_start_description_material_text"
+            android:text="@string/str_details_status_section_title"
+            style="@style/MaterialTextViewTitleCustom"/>
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/sale_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:text="Available."
+            android:textSize="@dimen/text_description_grid"
+            android:textStyle="italic"
+            android:layout_marginBottom="10dp"/>
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/sale_button"
+            android:text="Sold !"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:icon="@drawable/ic_baseline_real_estate_agent_24dp_white"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            style="@style/ConfirmationMaterialButton"/>
     </LinearLayout>
 </ScrollView>

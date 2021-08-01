@@ -123,8 +123,8 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
         when {
             fragmentNewEstate != null -> {
                 fragmentNewEstate?.let {
-                        supportFragmentManager.beginTransaction().remove(it).commit()
-                        supportFragmentManager.executePendingTransactions()
+                    supportFragmentManager.beginTransaction().remove(it).commit()
+                    supportFragmentManager.executePendingTransactions()
                 }
             }
             fragmentEstateDetails != null -> {
@@ -440,7 +440,7 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
     private fun accessDatabase() {
         listEstatesViewModel.repositoryAccess.loadAllEstates().observe(this, {
             listEstatesViewModel.restoreData(it)
-            listEstatesViewModel.test()
+            //  listEstatesViewModel.test()
         })
     }
 }

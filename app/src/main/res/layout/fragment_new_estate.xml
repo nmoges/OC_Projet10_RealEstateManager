@@ -327,6 +327,7 @@
                     android:layout_height="wrap_content"
                     android:textSize="@dimen/hint_text_input"
                     android:hint="@string/str_new_estate_price_hint_text_input"
+                    android:maxLength="9"
                     android:inputType="number"/>
 
             </com.google.android.material.textfield.TextInputLayout>

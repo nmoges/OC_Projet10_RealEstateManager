@@ -13,7 +13,7 @@ interface AgentDao {
     suspend fun updateAgentData(agentData: AgentData)
 
     @Query("SELECT * FROM table_agents WHERE id = :id")
-    suspend fun getAgentFromId(id: Long): AgentData
+    suspend fun getAgentById(id: Long): AgentData
 
     @Query("SELECT * FROM table_agents")
     suspend fun getAllAgents(): List<AgentData>

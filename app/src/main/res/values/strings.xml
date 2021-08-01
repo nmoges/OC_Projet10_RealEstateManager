@@ -63,6 +63,7 @@
     <!-- fragment_estate_details.xml -->
     <string name="str_details_media_section_title">Media</string>
     <string name="str_details_description_section_title">Description</string>
+    <string name="str_details_status_section_title">Status</string>
     <string name="str_details_surface_sub_section_title">Surface</string>
     <string name="str_details_number_of_rooms_sub_section_title">Number of rooms</string>
     <string name="str_details_number_of_bedrooms_sub_section_title">Number of bedrooms</string>
@@ -87,6 +88,7 @@
     <string name="str_dialog_add_media_option_take_picture">Take picture</string>
     <string name="str_dialog_add_media_option_import_from_gallery">Import from gallery</string>
     <string name="str_dialog_name_media_title">Name photo</string>
+    <string name="str_dialog_select_agent_title">Select agent</string>
     <string name="str_toast_missing_information">Can\'t create Estate, missing information</string>
     <string name="str_toast_new_estate_created">New estate created</string>
     <string name="str_toast_estate_modified">Modifications saved</string>

@@ -198,7 +198,7 @@ class FragmentNewEstate : Fragment() {
             if (list != null) {
                 list.forEach { arrayAdapter.add("${it.firstName} ${it.lastName}") }
                 builderListAgentsDialog = AlertDialog.Builder(activity)
-                    .setTitle("Select agent")
+                    .setTitle(resources.getString(R.string.str_dialog_select_agent_title))
                     .setAdapter(arrayAdapter) { _, which ->
                      updateNameAgentTextInputEditText(which+1, arrayAdapter.getItem(which)) }
                     .create()
@@ -309,7 +309,6 @@ class FragmentNewEstate : Fragment() {
             else MediaAccessHandler.requestPermission(activity as MainActivity)
             builderAddMediaDialog.dismiss() }
     }
-
 
     /**
      * Initializes TextInputEdit fields with current [Estate] properties values to modify.
@@ -509,6 +508,7 @@ class FragmentNewEstate : Fragment() {
                     numberBathrooms = binding.sliderBathroomsValue.text.toString().toInt(),
                     numberBedrooms = binding.sliderBedroomsValue.text.toString().toInt(),
                     surface = binding.sliderSurface.value.toInt())
+                addDateToSelectedEstate(false)
                 addAgentToSelectedEstate(agentSelected, updateEstate)
                 }
              }

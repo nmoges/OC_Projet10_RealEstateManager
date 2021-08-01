@@ -1,5 +1,6 @@
 package com.openclassrooms.realestatemanager.viewmodels
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -7,15 +8,16 @@ import androidx.lifecycle.viewModelScope
 import com.openclassrooms.data.entities.EstateDataWithPhotosAndInterior
 import com.openclassrooms.data.repository.RealEstateRepositoryAccess
 import com.openclassrooms.realestatemanager.*
-import com.openclassrooms.realestatemanager.model.Agent
-import com.openclassrooms.realestatemanager.model.Estate
-import com.openclassrooms.realestatemanager.model.Interior
-import com.openclassrooms.realestatemanager.model.Photo
+import com.openclassrooms.realestatemanager.model.*
 import com.openclassrooms.realestatemanager.service.DummyListAgentGenerator
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import java.util.*
 import javax.inject.Inject
 
+/**
+ * View Model class containing the estates values.
+ */
 @HiltViewModel
 class ListEstatesViewModel @Inject constructor(
     val repositoryAccess: RealEstateRepositoryAccess
@@ -45,6 +47,9 @@ class ListEstatesViewModel @Inject constructor(
 
     init { restoreListAgents() }
 
+    /**
+     * Restores the list of existing agents in database.
+     */
     private fun restoreListAgents() {
         viewModelScope.launch {
             _listAgents.postValue(getAllAgents())
@@ -62,15 +67,12 @@ class ListEstatesViewModel @Inject constructor(
     fun createNewEstate() {
         selectedEstate =
             Estate(id = 1, type = "", district = "", price = 0, description = "", address = "",
-                   interior = Interior(id= 1,
-                                       numberRooms = 0,
-                                       numberBathrooms = 0,
-                                       numberBedrooms = 0,
-                                       surface = 0),
-                   agent = Agent(id = 1,
-                                 firstName = "",
-                                 lastName = ""),
-                   status = false, selected = false)
+                   interior = Interior(id= 1, numberRooms = 0, numberBathrooms = 0,
+                                       numberBedrooms = 0, surface = 0),
+                   agent = Agent(id = 1, firstName = "", lastName = ""),
+                   status = false, selected = false,
+                   dates = Dates(id = 1, entryDate = EntryDate(), saleDate = SaleDate())
+            )
     }
 
     /**
@@ -124,11 +126,11 @@ class ListEstatesViewModel @Inject constructor(
             list.forEach { it ->
                 val interior = it.interiorData.toInterior()
                 val listPhoto: MutableList<Photo> = mutableListOf()
-                it.listPhotosData.forEach {
-                    listPhoto.add(it.toPhoto())
-                }
-                val agentData = repositoryAccess.getAgent(it.estateData.idAgent)
-                val estate = it.estateData.toEstate(interior, listPhoto, agentData.toAgent())
+                it.listPhotosData.forEach { listPhoto.add(it.toPhoto()) }
+                val agentData = repositoryAccess.getAgentById(it.estateData.idAgent)
+                val datesData = repositoryAccess.getDatesById(it.estateData.idEstate)
+                val estate = it.estateData.toEstate(interior, listPhoto,
+                                                    agentData.toAgent(), datesData.toDates())
                 listEstateRestored.add(estate)
             }
             _listEstates.postValue(listEstateRestored)
@@ -144,6 +146,7 @@ class ListEstatesViewModel @Inject constructor(
             val estateData = estate.toEstateData()
             val id = repositoryAccess.insertEstate(estateData)
             insertInteriorInDatabase(estate.interior, id)
+            insertDatesInDatabase(estate.dates, id)
             estate.listPhoto.forEach {
                 insertPhotoInDatabase(it, id)
             }
@@ -175,12 +178,25 @@ class ListEstatesViewModel @Inject constructor(
     }
 
     /**
+     * Access insert dates method from repository interface.
+     * @param dates : dates data to store in table_dates
+     * @param associatedId : associated estate id
+     */
+    private fun insertDatesInDatabase(dates: Dates, associatedId: Long) {
+        viewModelScope.launch {
+            val datesData = dates.toDatesData(associatedId)
+            repositoryAccess.insertDates(datesData)
+        }
+    }
+
+    /**
      * Updates table_estates from database.
      * @param estate : updated estate
      */
     private fun updateEstateInDatabase(estate: Estate) {
         viewModelScope.launch {
             val estateData = estate.toEstateData()
+            estateData.idEstate = estate.id
             // Update table_estates
             repositoryAccess.updateEstate(estateData)
             // Update table_interiors
@@ -192,6 +208,8 @@ class ListEstatesViewModel @Inject constructor(
                     insertPhotoInDatabase(estate.listPhoto[i], estate.id)
                 }
             }
+            // Update table_dates
+            updateDatesInDatabase(estate.dates, estate.id)
         }
     }
 
@@ -203,10 +221,25 @@ class ListEstatesViewModel @Inject constructor(
     private fun updateInteriorInDatabase(interior: Interior, idAssociatedEstate: Long) {
         viewModelScope.launch {
             val interiorData = interior.toInteriorData(idAssociatedEstate)
+            interiorData.idInterior = idAssociatedEstate
             repositoryAccess.updateInterior(interiorData)
         }
     }
 
+    /**
+     * Updates table_dates from database.
+     * @param dates : updated dates
+     * @param idAssociatedEstate : estate associated id
+     */
+    private fun updateDatesInDatabase(dates: Dates, idAssociatedEstate: Long) {
+        viewModelScope.launch {
+            val datesData = dates.toDatesData(idAssociatedEstate)
+            datesData.idDates = idAssociatedEstate
+            repositoryAccess.updateDates(datesData)
+        }
+    }
+
+    // TODO() : test function to remove later : used to inject dummy agent data
     fun test() {
         viewModelScope.launch {
             DummyListAgentGenerator.listAgents.forEach {
@@ -235,7 +268,7 @@ class ListEstatesViewModel @Inject constructor(
      */
     fun addAgentToSelectedEstate(id: Int, updateEstate: Boolean) {
         viewModelScope.launch {
-            val agentData = repositoryAccess.getAgent(id.toLong())
+            val agentData = repositoryAccess.getAgentById(id.toLong())
             val agent = agentData.toAgent()
             selectedEstate?.agent.apply {
                 this?.id = agent.id
@@ -277,6 +310,25 @@ class ListEstatesViewModel @Inject constructor(
             this.description = description
             this.price = price
         }
+    }
+
+    /**
+     * Adds date to selected estate.
+     * @param type : type of date to add (entry date or sale date)
+     */
+    fun addDateToSelectedEstate(type: Boolean) {
+        val calendar: Calendar = Calendar.getInstance()
+        val date: MutableList<Int> = mutableListOf(
+            calendar.get(Calendar.DAY_OF_MONTH),
+            calendar.get(Calendar.MONTH)+1,
+            calendar.get(Calendar.YEAR)
+        )
+        if (!type) selectedEstate?.dates?.entryDate = EntryDate(
+                          entryDateDay = date[0], entryDateMonth = date[1], entryDateYear = date[2])
+        else selectedEstate?.dates?.saleDate = SaleDate(
+                             saleDateDay = date[0], saleDateMonth = date[1], saleDateYear = date[2])
+
+
     }
 }
 

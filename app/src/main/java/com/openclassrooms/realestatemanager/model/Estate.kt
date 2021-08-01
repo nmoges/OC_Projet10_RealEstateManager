@@ -10,11 +10,12 @@ package com.openclassrooms.realestatemanager.model
  * @param description : real estate description
  * @param address : location address
  * @param agent :  associated real estate agent
+ * @param dates : associated entry and sell dates
  * @param status : Real estate status (sold, or for sale)
  * @param selected : Define if a estate is currently being consulted (true) or not (false)
  */
 data class Estate(
-    val id: Long,
+    var id: Long,
     var type: String,
     var district: String,
     var price: Int,
@@ -22,6 +23,7 @@ data class Estate(
     var description: String,
     var address: String,
     var agent: Agent,
+    var dates: Dates,
     var status: Boolean = false,
     var selected: Boolean = false,
     var listPhoto: MutableList<Photo> = mutableListOf()

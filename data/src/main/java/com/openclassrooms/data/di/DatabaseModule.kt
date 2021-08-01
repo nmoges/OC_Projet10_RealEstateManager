@@ -50,4 +50,8 @@ object DatabaseModule {
     @Singleton
     @Provides
     fun provideAgentDao(db: RealEstateManagerDatabase) = db.agentDao
+
+    @Singleton
+    @Provides
+    fun provideDatesDao(db: RealEstateManagerDatabase) = db.datesDao
 }

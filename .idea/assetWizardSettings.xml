@@ -18,7 +18,7 @@
                                 <PersistentState>
                                   <option name="values">
                                     <map>
-                                      <entry key="url" value="file:/$USER_HOME$/AppData/Local/Android/Sdk/icons/material/materialicons/account_circle/baseline_account_circle_24.xml" />
+                                      <entry key="url" value="file:/$USER_HOME$/AppData/Local/Android/Sdk/icons/material/materialicons/sell/baseline_sell_24.xml" />
                                     </map>
                                   </option>
                                 </PersistentState>
@@ -30,7 +30,7 @@
                           <map>
                             <entry key="autoMirrored" value="true" />
                             <entry key="color" value="686868" />
-                            <entry key="outputName" value="ic_baseline_account_circle_24dp_red" />
+                            <entry key="outputName" value="ic_baseline_sell_24dp_grey41" />
                             <entry key="sourceFile" value="C:\Users\nicol\OneDrive\Documents\Formation\OpenClassrooms\Projet 9\App\RealEstateManager\RealEstateManager" />
                           </map>
                         </option>

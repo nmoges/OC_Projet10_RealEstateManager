@@ -1,10 +1,12 @@
 package com.openclassrooms.realestatemanager.ui.fragments
 
+import android.app.AlertDialog
 import android.os.Bundle
 import android.view.*
 import android.widget.FrameLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.openclassrooms.realestatemanager.AppInfo
 import com.openclassrooms.realestatemanager.ui.activities.MainActivity
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.databinding.FragmentEstateDetailsBinding
@@ -28,6 +30,9 @@ class FragmentEstateDetails : Fragment() {
     /** Contains a reference an [Estate] selected by user to be displayed */
     private var selectedEstateToDisplay: Estate? = null
 
+    /** Contains an [AlertDialog.Builder] reference to display a confirmation message */
+    private lateinit var builderConfirmDialog: AlertDialog
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
@@ -43,12 +48,16 @@ class FragmentEstateDetails : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        // Initialize toolbar
         (activity as MainActivity).setToolbarProperties(
             R.string.str_toolbar_fragment_list_estate_title, true)
         selectedEstateToDisplay = listEstatesViewModel.selectedEstate
         updateViewsWithEstateProperties()
         updateHorizontalScrollViewWithPhotos()
+        handleSaleButtonListener()
+        initializeSaleButtonDisplay()
+        initializeConfirmationDialog()
+        updateMaterialTextSaleStatus()
+        restoreDialog(savedInstanceState)
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -91,6 +100,83 @@ class FragmentEstateDetails : Fragment() {
             val frameLayout: FrameLayout = MediaDisplayHandler.createNewFrameLayout(
                 it, (activity as MainActivity))
             binding.linearLayout.addView(frameLayout)
+        }
+    }
+
+    /**
+     * Initializes sale button display.
+     */
+    private fun initializeSaleButtonDisplay() {
+        binding.saleButton.visibility = if (selectedEstateToDisplay?.status == true) View.GONE
+                                        else View.VISIBLE
+
+    }
+
+    /**
+     * Handles sale button interactions.
+     */
+    private fun handleSaleButtonListener() {
+        binding.saleButton.setOnClickListener {
+            builderConfirmDialog.show()
+        }
+    }
+
+    /**
+     * Updates sale status of the estate in database.
+     */
+    private fun updateSaleStatusInDb() {
+        listEstatesViewModel.selectedEstate = selectedEstateToDisplay
+        listEstatesViewModel.addDateToSelectedEstate(true)
+        listEstatesViewModel.updateDatabase(true)
+    }
+
+    /**
+     * Updates sale status display.
+     */
+    private fun updateMaterialTextSaleStatus() {
+        val status = selectedEstateToDisplay?.status
+        if (status != null) {
+            val text = "Sold"
+            if (status) binding.saleStatus.apply {
+                this.text = text
+                setTextColor(resources.getColor(R.color.red_google))
+            }
+        }
+    }
+
+    /**
+     * Initializes an [AlertDialog.Builder] to display a confirmation message to user.
+     */
+    private fun initializeConfirmationDialog() {
+        builderConfirmDialog = AlertDialog.Builder(activity)
+            .setTitle("Confirm sell")
+            .setMessage("This estate will be definitely marked as SOLD. Confirm ?")
+            .setPositiveButton(resources.getString(R.string.str_dialog_button_yes))
+            { _, _ ->
+                selectedEstateToDisplay?.status = true
+                binding.saleButton.visibility = View.INVISIBLE
+                updateSaleStatusInDb()
+                updateMaterialTextSaleStatus()
+            }
+            .setNegativeButton(resources.getString(R.string.str_dialog_button_cancel))
+            { _, _ ->  }
+            .create()
+    }
+
+    /**
+     * Restores [builderConfirmDialog] if displayed before a configuration change.
+     * @param savedInstanceState : Bundle
+     */
+    private fun restoreDialog(savedInstanceState: Bundle?) {
+        if (savedInstanceState?.getBoolean(AppInfo.DIALOG_CONFIRM_SELL_KEY) == true) {
+            builderConfirmDialog.show()
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.apply {
+            putBoolean(AppInfo.DIALOG_CONFIRM_SELL_KEY, builderConfirmDialog.isShowing)
         }
     }
 }
