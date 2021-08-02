@@ -101,7 +101,7 @@
                         android:layout_width="@dimen/icon_photo_size"
                         android:layout_height="@dimen/icon_photo_size"
                         android:layout_gravity="center"
-                        android:background="@drawable/dotted_border_background"
+                        android:background="@drawable/background_img_button_behavior"
                         android:src="@drawable/ic_baseline_insert_photo_24dp_grey62"
                         android:contentDescription="@string/str_button_add_media"/>
 

@@ -24,6 +24,7 @@ import com.openclassrooms.realestatemanager.AppInfo
 import com.openclassrooms.realestatemanager.utils.MediaAccessHandler
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.databinding.ActivityMainBinding
+import com.openclassrooms.realestatemanager.notification.NotificationHandler
 import com.openclassrooms.realestatemanager.receiver.NetworkBroadcastReceiver
 import com.openclassrooms.realestatemanager.ui.fragments.FragmentEstateDetails
 import com.openclassrooms.realestatemanager.ui.fragments.FragmentListEstate
@@ -68,6 +69,9 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
     /** Contains a reference to a [NetworkBroadcastReceiver] object */
     private val networkBroadcastReceiver: NetworkBroadcastReceiver = NetworkBroadcastReceiver(this)
 
+    /** Contain a [NotificationHandler] object reference */
+    lateinit var notificationHandler: NotificationHandler
+
     companion object {
         const val FAB_STATUS_KEY = "FAB_STATUS_KEY"
     }
@@ -87,6 +91,7 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
             restoreFragments(containerId)
         }
         initializeToolbar()
+        initializeNotificationHandler()
         handleFloatingActionButton()
         handleConnectivityBarBtnListener()
         initializeViewModels()
@@ -103,6 +108,10 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
     override fun onPause() {
         super.onPause()
         unregisterReceiver(networkBroadcastReceiver)
+    }
+
+    private fun initializeNotificationHandler() {
+        notificationHandler = NotificationHandler(this)
     }
 
     /**

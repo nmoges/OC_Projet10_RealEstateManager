@@ -18,8 +18,10 @@ class NotificationHandler(val context: Context) {
     private val manager: NotificationManager =
                        context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
+    /**
+     * Builds a notification.
+     */
     fun createNotification() {
-
         val builder: NotificationCompat.Builder =
             NotificationCompat.Builder(context, AppInfo.CHANNEL_ID)
                               .setSmallIcon(R.drawable.ic_launcher_background)
@@ -33,6 +35,9 @@ class NotificationHandler(val context: Context) {
         manager.notify( 0, builder.build())
     }
 
+    /**
+     * Defines notification priority.
+     */
     private fun setPriority(): Int {
         return  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
                     Notification.PRIORITY_DEFAULT
@@ -40,6 +45,9 @@ class NotificationHandler(val context: Context) {
 
     }
 
+    /**
+     * Defines notification channel.
+     */
     @RequiresApi(Build.VERSION_CODES.O)
     private fun createChannel() {
         val channel = NotificationChannel(AppInfo.CHANNEL_ID,

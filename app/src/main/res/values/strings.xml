@@ -48,7 +48,7 @@
     <string name="str_sqm_unit">%1$d sqm</string>
     <string name="str_sqm_unit_greater_than_or_equal">≥%1$d sqm</string>
     <string name="str_greater_than_or_equal">≥%1$d</string>
-    <string name="str_new_estate_surface_section_area_unit">sq m</string>
+    <string name="str_new_estate_surface_section_area_unit">sqm</string>
     <string name="str_new_estate_surface_number_of_rooms_title">Number of rooms</string>
     <string name="str_new_estate_surface_rooms_hint">Rooms</string>
     <string name="str_new_estate_surface_bathrooms_hint">Bathrooms</string>

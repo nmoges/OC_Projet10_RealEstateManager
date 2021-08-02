@@ -3,8 +3,10 @@ package com.openclassrooms.realestatemanager.ui.fragments
 import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import android.widget.FrameLayout
+import androidx.core.view.get
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.openclassrooms.realestatemanager.AppInfo
@@ -69,6 +71,16 @@ class FragmentEstateDetails : Fragment() {
         super.onCreateOptionsMenu(menu, inflater)
         menu.clear()
         inflater.inflate(R.menu.menu_fragment_estate_details, menu)
+        initializeMenuIcons(menu)
+    }
+
+    /**
+     * Enables/disables "edit" menu icon display according to the [Estate] status (available or sold)
+     * @param menu : menu to initialize
+     */
+    private fun initializeMenuIcons(menu: Menu) {
+        val status = selectedEstateToDisplay?.status
+        status?.let { menu[0].isVisible = !it }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
