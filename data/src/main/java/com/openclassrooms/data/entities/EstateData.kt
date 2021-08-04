@@ -14,10 +14,8 @@ data class EstateData(
     @ColumnInfo(name = "id_estate")
     var idEstate: Long = 0,
     var type: String,
-    var district: String,
     var price: Int,
     var description: String,
-    var address: String,
     @ColumnInfo(name = "id_agent")
     var idAgent: Long,
     var status: Boolean,

@@ -22,7 +22,6 @@ import com.openclassrooms.realestatemanager.viewmodels.ListEstatesViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
 import java.util.*
 
 /**
@@ -122,7 +121,7 @@ class FragmentEstateDetails : Fragment() {
             numberOfRoomsValue.text = selectedEstateToDisplay?.interior?.numberRooms.toString()
             numberOfBathroomsValue.text = selectedEstateToDisplay?.interior?.numberBathrooms.toString()
             numberOfBedroomsValue.text = selectedEstateToDisplay?.interior?.numberBedrooms.toString()
-            addressLocationText.text = selectedEstateToDisplay?.address
+            addressLocationText.text = selectedEstateToDisplay?.location?.address
         }
     }
 
@@ -161,7 +160,7 @@ class FragmentEstateDetails : Fragment() {
      */
     private fun updateSaleStatusInDb() {
         listEstatesViewModel.selectedEstate = selectedEstateToDisplay
-        listEstatesViewModel.addDateToSelectedEstate(true)
+        listEstatesViewModel.updateDateSelectedEstate(true)
         listEstatesViewModel.updateDatabase(true)
     }
 
@@ -213,13 +212,6 @@ class FragmentEstateDetails : Fragment() {
     private fun getDate(list: MutableList<Int>): String {
         val calendar = Calendar.getInstance()
         calendar.set(list[2], list[1]-1, list[0])
-
-       /* val simpleDateFormat: SimpleDateFormat = when (Locale.getDefault().language) {
-            "en" -> { SimpleDateFormat("MM/dd/yyyy") }
-            else -> { SimpleDateFormat("dd/MM/yyyy") }
-        }*/
-
-       // return simpleDateFormat.format(calendar.time)
         return Utils.getTodayDate(calendar.time)
     }
 

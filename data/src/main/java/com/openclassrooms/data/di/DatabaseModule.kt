@@ -54,4 +54,8 @@ object DatabaseModule {
     @Singleton
     @Provides
     fun provideDatesDao(db: RealEstateManagerDatabase) = db.datesDao
+
+    @Singleton
+    @Provides
+    fun provideLocationDao(db: RealEstateManagerDatabase) = db.locationDao
 }

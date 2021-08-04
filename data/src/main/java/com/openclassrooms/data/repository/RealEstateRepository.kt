@@ -38,6 +38,11 @@ interface RealEstateRepositoryAccess {
 
     suspend fun getDatesById(id: Long): DatesData
 
+    // LocationDao
+    suspend fun insertLocation(locationData: LocationData): Long
+
+    suspend fun updateLocation(locationData: LocationData)
+
     // EstateWithPhotosAndInteriorDao
     fun loadAllEstates(): LiveData<List<EstateDataWithPhotosAndInterior>>
 
@@ -52,6 +57,7 @@ class RealEstateRepository(
     private val estateDao: EstateDao,
     private val photoDao: PhotoDao,
     private val interiorDao: InteriorDao,
+    private val locationDao: LocationDao,
     private val agentDao: AgentDao,
     private val datesDao: DatesDao,
     private val estateWithPhotosAndInteriorDao: EstateWithPhotosAndInteriorDao):
@@ -80,7 +86,6 @@ class RealEstateRepository(
         interiorDao.updateInteriorData(interiorData)
     }
 
-
     // AgentDao
     override suspend fun insertAgent(agentData: AgentData): Long =
         agentDao.insertAgentData(agentData)
@@ -98,6 +103,12 @@ class RealEstateRepository(
 
     override suspend fun getDatesById(id: Long): DatesData = datesDao.getDatesById(id)
 
+    // LocationDao
+    override suspend fun insertLocation(locationData: LocationData): Long =
+                                                        locationDao.insertLocationData(locationData)
+
+    override suspend fun updateLocation(locationData: LocationData) =
+                                                        locationDao.updateLocationData(locationData)
     // EstateWithPhotosAndInteriorDao
     override fun loadAllEstates(): LiveData<List<EstateDataWithPhotosAndInterior>> =
                                                      estateWithPhotosAndInteriorDao.loadAllEstates()

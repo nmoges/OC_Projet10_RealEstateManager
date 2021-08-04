@@ -21,11 +21,12 @@ object RepositoryModule {
     fun provideRepository(estateDao: EstateDao,
                          photoDao: PhotoDao,
                          interiorDao: InteriorDao,
+                         locationDao: LocationDao,
                          agentDao: AgentDao,
                          datesDao: DatesDao,
                          estateWithPhotosAndInteriorDao: EstateWithPhotosAndInteriorDao
     ): RealEstateRepositoryAccess {
-        return RealEstateRepository(estateDao, photoDao, interiorDao,
+        return RealEstateRepository(estateDao, photoDao, interiorDao, locationDao,
                                     agentDao, datesDao, estateWithPhotosAndInteriorDao)
     }
 }

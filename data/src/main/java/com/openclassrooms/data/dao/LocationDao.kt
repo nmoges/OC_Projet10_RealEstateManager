@@ -1,22 +1,22 @@
- package com.openclassrooms.data.dao
+package com.openclassrooms.data.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Update
-import com.openclassrooms.data.entities.InteriorData
 import com.openclassrooms.data.database.RealEstateManagerDatabase
+import com.openclassrooms.data.entities.LocationData
 
 /**
  * Data access object interface to [RealEstateManagerDatabase]
- * table_interiors.
+ * table_locations.
  */
 @Dao
-interface InteriorDao {
+interface LocationDao {
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertInteriorData(interiorData: InteriorData)
+    suspend fun insertLocationData(locationData: LocationData): Long
 
     @Update
-    suspend fun updateInteriorData(interiorData: InteriorData)
+    suspend fun updateLocationData(locationData: LocationData)
 }

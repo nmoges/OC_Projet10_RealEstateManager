@@ -25,8 +25,8 @@ import androidx.lifecycle.ViewModelProvider
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.widget.Autocomplete
 import com.google.android.libraries.places.widget.AutocompleteActivity
-import com.openclassrooms.data.BuildConfig
 import com.openclassrooms.realestatemanager.AppInfo
+import com.openclassrooms.realestatemanager.BuildConfig
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.databinding.ActivityMainBinding
 import com.openclassrooms.realestatemanager.notification.NotificationHandler
@@ -39,6 +39,8 @@ import com.openclassrooms.realestatemanager.utils.MediaAccessHandler
 import com.openclassrooms.realestatemanager.viewmodels.CurrencyViewModel
 import com.openclassrooms.realestatemanager.viewmodels.ListEstatesViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import java.io.IOException
+import java.util.*
 
 /**
  * [AppCompatActivity] subclass which defines the main activity of the application.
@@ -105,7 +107,8 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
         accessDatabase()
 
         // To access Places API methods
-        if (!Places.isInitialized()) Places.initialize(applicationContext, BuildConfig.API_KEY)
+       if (!Places.isInitialized())
+                 Places.initialize(applicationContext, BuildConfig.MAPS_API_KEY)
         val placesClient = Places.createClient(this)
     }
 
@@ -452,7 +455,7 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
             Activity.RESULT_OK -> {
                 data?.let {
                     val place = Autocomplete.getPlaceFromIntent(data)
-                    place.address?.let { listEstatesViewModel.updateLocation(it) }
+                    listEstatesViewModel.updateLocationSelectedEstate(place, this)
                 }
             }
             AutocompleteActivity.RESULT_ERROR -> {
@@ -494,7 +497,7 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
     private fun accessDatabase() {
         listEstatesViewModel.repositoryAccess.loadAllEstates().observe(this, {
             listEstatesViewModel.restoreData(it)
-            listEstatesViewModel.test()
+         //   listEstatesViewModel.test()
         })
     }
 }

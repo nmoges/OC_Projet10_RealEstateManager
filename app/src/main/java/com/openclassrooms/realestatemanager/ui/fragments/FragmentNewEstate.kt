@@ -341,7 +341,7 @@ class FragmentNewEstate : Fragment() {
         with(binding) {
             val currentEstate = listEstatesViewModel.selectedEstate ?: return
             nameSectionEdit.text = StringHandler.convertStringToEditable(currentEstate.type)
-            locationSectionEdit.text = StringHandler.convertStringToEditable(currentEstate.address)
+            locationSectionEdit.text = StringHandler.convertStringToEditable(currentEstate.location.address)
             descSectionEdit.text = StringHandler.convertStringToEditable(currentEstate.description)
             agentSectionEdit.text = StringHandler.convertStringToEditable("" +
                                  "${currentEstate.agent.firstName} ${currentEstate.agent.lastName}")
@@ -502,7 +502,7 @@ class FragmentNewEstate : Fragment() {
                     && listEstatesViewModel.selectedEstate?.listPhoto?.isNotEmpty() == true) {
                     displayToastEstate(false)
                     (activity as MainActivity).notificationHandler.createNotification()
-                    updateSelectedEstateFromViewModel(name, location, description, price) }
+                    updateSelectedEstateFromViewModel(name, description, price) }
                 else {
                     displayToastEstate(true)
                     displayErrorBoxMessage() }
@@ -532,17 +532,17 @@ class FragmentNewEstate : Fragment() {
      * @param description : new description estate
      * @param price : new price estate
      */
-    private fun updateSelectedEstateFromViewModel(name: String, location: String, description:
+    private fun updateSelectedEstateFromViewModel(name: String, description:
                                                   String, price : String) {
         listEstatesViewModel.apply {
             selectedEstate?.apply {
-                updateSelectedEstate(name, location, description, price.toInt())
+                updateSelectedEstate(name, description, price.toInt())
                 updateInteriorSelectedEstate(numberRooms = binding.sliderRooms.value.toInt(),
                                              numberBathrooms = binding.sliderBathrooms.value.toInt(),
                                              numberBedrooms = binding.sliderBedrooms.value.toInt(),
                                              surface = binding.sliderSurface.value.toInt())
-                addDateToSelectedEstate(false)
-                addAgentToSelectedEstate(agentSelected, updateEstate) }
+                updateDateSelectedEstate(false)
+                updateAgentSelectedEstate(agentSelected, updateEstate) }
              }
         confirmExit = true
         (activity as MainActivity).onBackPressed()

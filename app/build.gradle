@@ -15,8 +15,6 @@ android {
         versionName "1.0"
         multiDexEnabled true
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
-
-        buildConfigField "String", "API_KEY", API_KEY
     }
 
     buildFeatures {
@@ -25,7 +23,7 @@ android {
     
     buildTypes {
         debug {
-            buildConfigField "String", "API_KEY", API_KEY
+            buildConfigField "String", "MAPS_API_KEY", MAPS_API_KEY
             testCoverageEnabled true
         }
         release {

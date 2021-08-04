@@ -52,7 +52,7 @@ class ListEstatesAdapter(private val onItemClicked: (Int) -> Unit) :
 
     override fun onBindViewHolder(holder: ListEstateViewHolder, position: Int) {
         holder.type.text = listEstates[position].type
-        holder.district.text = listEstates[position].district
+        holder.district.text = listEstates[position].location.district
         displayPrice(holder, position)
         displayBackgroundColor(holder, position)
         displayPhoto(holder, position)

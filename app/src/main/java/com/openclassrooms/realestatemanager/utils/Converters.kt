@@ -10,19 +10,17 @@ import com.openclassrooms.realestatemanager.model.date.EntryDate
 import com.openclassrooms.realestatemanager.model.date.SaleDate
 
 // Estate converters
-fun Estate.toEstateData() = EstateData(type = this.type,
-                                       district = this.district, price = this.price,
-                                       description = this.description, address = this.address,
+fun Estate.toEstateData() = EstateData(type = this.type, price = this.price,
+                                       description = this.description,
                                        status = this.status, idAgent = this.agent.id)
 
 fun EstateData.toEstate(interior: Interior, listPhoto: MutableList<Photo>, agent: Agent,
-                        dates: Dates) = Estate(
-                            id = this.idEstate, type = this.type,
-                            district = this.district, price = this.price,
-                            description = this.description, address = this.address,
+                        dates: Dates, location: Location) = Estate(
+                            id = this.idEstate, type = this.type, price = this.price,
+                            description = this.description,
                             status = this.status, agent = agent,
                             selected = false, interior = interior,
-                            listPhoto = listPhoto, dates= dates)
+                            listPhoto = listPhoto, dates= dates, location = location)
 
 
 // Photo converters
@@ -41,6 +39,23 @@ fun InteriorData.toInterior() = Interior(
                                 id = idInterior, numberRooms = numberRooms,
                                 numberBedrooms = numberBedrooms, numberBathrooms = numberBathrooms,
                                 surface = surface)
+
+// Location converters
+fun Location.toLocationData(associatedId: Long) = LocationData(
+    latitude = latitude,
+    longitude = longitude,
+    address = address,
+    district = district,
+    associatedId = associatedId
+)
+
+fun LocationData.toLocation() = Location(
+    id = idLocation,
+    latitude = latitude,
+    longitude = longitude,
+    address = address,
+    district = district
+)
 
 // Agent converters
 fun AgentData.toAgent() = Agent(
