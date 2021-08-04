@@ -321,7 +321,7 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <!-- Map -->
-        <View
+        <ImageView
             android:id="@+id/map_view"
             android:layout_width="@dimen/size_map"
             android:layout_height="@dimen/size_map"

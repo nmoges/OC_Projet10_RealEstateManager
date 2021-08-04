@@ -1,5 +1,6 @@
 package com.openclassrooms.realestatemanager.viewmodels
 
+import android.app.Activity
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -24,30 +25,38 @@ import javax.inject.Inject
 class ListEstatesViewModel @Inject constructor(
     val repositoryAccess: RealEstateRepositoryAccess
 ): ViewModel() {
-    /**
-     * Contains list of existing [Estate] objects.
-     */
+
+    /** Contains list of existing [Estate] objects.  */
     private val _listEstates: MutableLiveData<List<Estate>> = MutableLiveData()
     val listEstates: LiveData<List<Estate>>
         get() = _listEstates
 
-    /**
-     * Contains a temporary photo uri converted value.
-     */
+    /** Contains a temporary photo uri converted value. */
     private val _photoUriEstate: MutableLiveData<String> = MutableLiveData()
     val photoUriEstate: LiveData<String>
         get() = _photoUriEstate
 
+    /** Contains a list of agents. */
     private val _listAgents: MutableLiveData<List<Agent>> = MutableLiveData()
     val listAgents: LiveData<List<Agent>>
         get() = _listAgents
 
-    /**
-     * Contains selected [Estate].
-     */
+    /** Contains a temporary location string value. */
+    private val _locationEstate: MutableLiveData<String> = MutableLiveData()
+    val locationEstate: LiveData<String>
+        get()= _locationEstate
+
+    /** Contains selected [Estate]. */
     var selectedEstate: Estate? = null
 
+
     init { restoreListAgents() }
+
+    /**
+     * Adds new location value.
+     * @param location : location estate
+     */
+    fun updateLocation(location: String) = _locationEstate.postValue(location)
 
     /**
      * Restores the list of existing agents in database.
@@ -69,8 +78,8 @@ class ListEstatesViewModel @Inject constructor(
     fun createNewEstate() {
         selectedEstate =
             Estate(id = 1, type = "", district = "", price = 0, description = "", address = "",
-                   interior = Interior(id= 1, numberRooms = 0, numberBathrooms = 0,
-                                       numberBedrooms = 0, surface = 0),
+                   interior = Interior(id= 1, numberRooms = 5, numberBathrooms = 1,
+                                       numberBedrooms = 1, surface = 200),
                    agent = Agent(id = 1, firstName = "", lastName = ""),
                    status = false, selected = false,
                    dates = Dates(id = 1, entryDate = EntryDate(), saleDate = SaleDate())
@@ -329,6 +338,10 @@ class ListEstatesViewModel @Inject constructor(
                           day = date[0], month = date[1], year = date[2])
         else selectedEstate?.dates?.saleDate = SaleDate(
                           day = date[0], month = date[1], year = date[2])
+    }
+
+    fun performAutocompleteRequest(activity: Activity) {
+        repositoryAccess.performAutocompleteRequest(activity)
     }
 }
 

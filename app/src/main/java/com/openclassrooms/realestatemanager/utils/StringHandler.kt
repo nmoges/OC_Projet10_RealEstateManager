@@ -15,10 +15,8 @@ object StringHandler {
         return if (currentValue == maxValue)
             context?.resources?.getString(resMaxValue, currentValue)
         else
-            if (type && resValue != null)
-                context?.resources?.getString(resValue, currentValue)
-            else
-                currentValue.toString()
+            if (type && resValue != null) context?.resources?.getString(resValue, currentValue)
+            else currentValue.toString()
     }
 
     fun convertStringToEditable(text: String): Editable =

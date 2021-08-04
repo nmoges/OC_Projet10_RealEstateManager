@@ -1,10 +1,13 @@
 package com.openclassrooms.realestatemanager;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
-import android.net.wifi.WifiManager;
+import android.net.ConnectivityManager;
+import android.os.Build;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 /**
  * Created by Philippe on 21/02/2018.
@@ -27,9 +30,18 @@ public class Utils {
      * NOTE : NE PAS SUPPRIMER, A MONTRER DURANT LA SOUTENANCE
      * @return : date
      */
-    public static String getTodayDate(){
+   /* public static String getTodayDate(){
         DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
         return dateFormat.format(new Date());
+    }*/
+    @SuppressLint("SimpleDateFormat")
+    public static String getTodayDate(Date date) {
+        DateFormat dateFormat;
+        if (Locale.getDefault().getLanguage() == "en")
+            dateFormat = new SimpleDateFormat("MM/dd/yyyy");
+        else
+            dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        return dateFormat.format(date);
     }
 
     /**
@@ -38,8 +50,14 @@ public class Utils {
      * @param context : context
      * @return : network status
      */
-    public static Boolean isInternetAvailable(Context context){
-        WifiManager wifi = (WifiManager)context.getSystemService(Context.WIFI_SERVICE);
-        return wifi.isWifiEnabled();
+    public static Boolean isInternetAvailable(Context context) {
+        ConnectivityManager connectivityManager = (ConnectivityManager)
+                                             context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        boolean status;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+            status = connectivityManager.getActiveNetwork() != null;
+        else
+            status = connectivityManager.getActiveNetworkInfo() != null;
+        return status;
     }
 }

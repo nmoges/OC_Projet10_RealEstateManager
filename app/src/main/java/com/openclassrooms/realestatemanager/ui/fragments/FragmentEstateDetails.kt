@@ -2,6 +2,7 @@ package com.openclassrooms.realestatemanager.ui.fragments
 
 import android.annotation.SuppressLint
 import android.app.AlertDialog
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.*
@@ -9,13 +10,18 @@ import android.widget.FrameLayout
 import androidx.core.view.get
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.bumptech.glide.Glide
 import com.openclassrooms.realestatemanager.AppInfo
 import com.openclassrooms.realestatemanager.R
+import com.openclassrooms.realestatemanager.Utils
 import com.openclassrooms.realestatemanager.databinding.FragmentEstateDetailsBinding
 import com.openclassrooms.realestatemanager.model.Estate
 import com.openclassrooms.realestatemanager.ui.MediaDisplayHandler
 import com.openclassrooms.realestatemanager.ui.activities.MainActivity
 import com.openclassrooms.realestatemanager.viewmodels.ListEstatesViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -65,6 +71,7 @@ class FragmentEstateDetails : Fragment() {
         updatePublishDateToDisplay()
         updateSaleDateToDisplay()
         restoreDialog(savedInstanceState)
+        test()
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -74,6 +81,17 @@ class FragmentEstateDetails : Fragment() {
         initializeMenuIcons(menu)
     }
 
+    private fun test() {
+        CoroutineScope(Dispatchers.Main).launch {
+            val uri: Uri = Uri.parse("https://maps.googleapis.com/maps/api/staticmap?center=Berkeley,CA&zoom=14&size=400x400&key=AIzaSyAW3Gd-OwtjTXqIGfO7pgv8OKCWDlNfQmw")
+
+            Glide.with(activity as MainActivity)
+                .load(uri)
+                .centerCrop()
+                .override(binding.mapView.width, binding.mapView.height)
+                .into(binding.mapView)
+        }
+    }
     /**
      * Enables/disables "edit" menu icon display according to the [Estate] status (available or sold)
      * @param menu : menu to initialize
@@ -196,12 +214,13 @@ class FragmentEstateDetails : Fragment() {
         val calendar = Calendar.getInstance()
         calendar.set(list[2], list[1]-1, list[0])
 
-        val simpleDateFormat: SimpleDateFormat = when (Locale.getDefault().language) {
+       /* val simpleDateFormat: SimpleDateFormat = when (Locale.getDefault().language) {
             "en" -> { SimpleDateFormat("MM/dd/yyyy") }
             else -> { SimpleDateFormat("dd/MM/yyyy") }
-        }
+        }*/
 
-        return simpleDateFormat.format(calendar.time)
+       // return simpleDateFormat.format(calendar.time)
+        return Utils.getTodayDate(calendar.time)
     }
 
     /**

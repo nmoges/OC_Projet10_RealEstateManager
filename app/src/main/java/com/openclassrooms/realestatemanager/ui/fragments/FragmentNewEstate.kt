@@ -17,7 +17,6 @@ import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.openclassrooms.realestatemanager.AppInfo
-import com.openclassrooms.realestatemanager.utils.MediaAccessHandler
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.databinding.FragmentNewEstateBinding
 import com.openclassrooms.realestatemanager.model.Estate
@@ -25,6 +24,7 @@ import com.openclassrooms.realestatemanager.model.Photo
 import com.openclassrooms.realestatemanager.ui.MediaDisplayHandler
 import com.openclassrooms.realestatemanager.ui.activities.MainActivity
 import com.openclassrooms.realestatemanager.utils.CustomTextWatcher
+import com.openclassrooms.realestatemanager.utils.MediaAccessHandler
 import com.openclassrooms.realestatemanager.utils.StringHandler
 import com.openclassrooms.realestatemanager.viewmodels.ListEstatesViewModel
 
@@ -115,6 +115,8 @@ class FragmentNewEstate : Fragment() {
         handleConfirmationButtonListener()
         handleEditTextWatchers()
         handleNameAgentEditListener()
+        editLocation()
+        updateLocation()
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -411,7 +413,23 @@ class FragmentNewEstate : Fragment() {
      */
     private fun handleAddPhotoButton() {
         binding.buttonAddPhoto.setOnClickListener {
-            if (!builderAddMediaDialog.isShowing) builderAddMediaDialog.show() }
+            if (!builderAddMediaDialog.isShowing) builderAddMediaDialog.show()
+        }
+    }
+
+    /**
+     * Handles clicks event on location edit text field.
+     */
+    private fun editLocation() {
+        binding.locationSectionEdit.setOnClickListener {
+            listEstatesViewModel.performAutocompleteRequest(activity as MainActivity)
+        }
+    }
+
+    private fun updateLocation() {
+        listEstatesViewModel.locationEstate.observe(viewLifecycleOwner, {
+            binding.locationSectionEdit.text = StringHandler.convertStringToEditable(it)
+        })
     }
 
     /**
@@ -556,9 +574,6 @@ class FragmentNewEstate : Fragment() {
             nameSectionEdit.addTextChangedListener(object : CustomTextWatcher() {
                 override fun afterTextChanged(sequence: Editable?) {
                     updateErrorStatus(false, nameSectionLayout)} })
-            locationSectionEdit.addTextChangedListener(object : CustomTextWatcher() {
-                override fun afterTextChanged(sequence: Editable?) {
-                    updateErrorStatus(false, locationSectionLayout)} })
             descSectionEdit.addTextChangedListener(object : CustomTextWatcher() {
                 override fun afterTextChanged(sequence: Editable?) {
                     updateErrorStatus(false, descSectionLayout)} })

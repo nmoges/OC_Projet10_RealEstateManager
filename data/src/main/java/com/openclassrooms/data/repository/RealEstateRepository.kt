@@ -1,9 +1,11 @@
 package com.openclassrooms.data.repository
 
+import android.app.Activity
 import androidx.lifecycle.LiveData
 import com.openclassrooms.data.dao.*
 import com.openclassrooms.data.entities.*
 import com.openclassrooms.data.entities.date.DatesData
+import com.openclassrooms.data.service.AutocompleteService
 
 interface RealEstateRepositoryAccess {
 
@@ -38,6 +40,9 @@ interface RealEstateRepositoryAccess {
 
     // EstateWithPhotosAndInteriorDao
     fun loadAllEstates(): LiveData<List<EstateDataWithPhotosAndInterior>>
+
+    // Autocomplete service
+    fun performAutocompleteRequest(activity: Activity)
 }
 
 /**
@@ -96,4 +101,8 @@ class RealEstateRepository(
     // EstateWithPhotosAndInteriorDao
     override fun loadAllEstates(): LiveData<List<EstateDataWithPhotosAndInterior>> =
                                                      estateWithPhotosAndInteriorDao.loadAllEstates()
+
+    override fun performAutocompleteRequest(activity: Activity) {
+        AutocompleteService.performAutocompleteRequest(activity)
+    }
 }

@@ -1,5 +1,6 @@
 package com.openclassrooms.realestatemanager.ui.activities
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
@@ -9,6 +10,7 @@ import android.content.res.Configuration
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.ViewPropertyAnimator
 import androidx.annotation.IdRes
@@ -20,8 +22,11 @@ import androidx.core.net.toUri
 import androidx.core.view.ViewCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.google.android.libraries.places.api.Places
+import com.google.android.libraries.places.widget.Autocomplete
+import com.google.android.libraries.places.widget.AutocompleteActivity
+import com.openclassrooms.data.BuildConfig
 import com.openclassrooms.realestatemanager.AppInfo
-import com.openclassrooms.realestatemanager.utils.MediaAccessHandler
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.databinding.ActivityMainBinding
 import com.openclassrooms.realestatemanager.notification.NotificationHandler
@@ -30,6 +35,7 @@ import com.openclassrooms.realestatemanager.ui.fragments.FragmentEstateDetails
 import com.openclassrooms.realestatemanager.ui.fragments.FragmentListEstate
 import com.openclassrooms.realestatemanager.ui.fragments.FragmentNewEstate
 import com.openclassrooms.realestatemanager.ui.fragments.FragmentSettings
+import com.openclassrooms.realestatemanager.utils.MediaAccessHandler
 import com.openclassrooms.realestatemanager.viewmodels.CurrencyViewModel
 import com.openclassrooms.realestatemanager.viewmodels.ListEstatesViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -97,6 +103,10 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
         initializeViewModels()
         MediaAccessHandler.initializeNbPermissionRequests(this)
         accessDatabase()
+
+        // To access Places API methods
+        if (!Places.isInitialized()) Places.initialize(applicationContext, BuildConfig.API_KEY)
+        val placesClient = Places.createClient(this)
     }
 
     override fun onResume() {
@@ -395,23 +405,61 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         // From camera : Get Uri from saved value in SharedPreferences
-        if (resultCode == RESULT_OK && requestCode == AppInfo.REQUEST_IMAGE_CAPTURE) {
-            val sharedPreferences: SharedPreferences =
-                getSharedPreferences(AppInfo.FILE_SHARED_PREF, Context.MODE_PRIVATE)
-            val uriString: String? = sharedPreferences.getString(AppInfo.PREF_CURRENT_URI, "")
-            if (uriString != null) {
-                val fragment = supportFragmentManager.findFragmentByTag(AppInfo.TAG_FRAGMENT_NEW_ESTATE)
-                        as FragmentNewEstate
-                fragment.addNewPhotoUri(uriString.toUri())
-            }
-        }
+        if (resultCode == RESULT_OK && requestCode
+            == AppInfo.REQUEST_IMAGE_CAPTURE) handleCameraResult()
+
         // From Gallery : get Uri from data Intent
-        if (resultCode == RESULT_OK && data != null) {
-            val imageMediaUri: Uri? = data.data
-            if (isFragmentDisplayed(AppInfo.TAG_FRAGMENT_NEW_ESTATE)) {
-                val fragment = supportFragmentManager.findFragmentByTag(AppInfo.TAG_FRAGMENT_NEW_ESTATE)
-                        as FragmentNewEstate
-                if (imageMediaUri != null) fragment.addNewPhotoUri(imageMediaUri)
+        if (resultCode == RESULT_OK && data != null) handleGalleryResult(data)
+
+        // Autocomplete request result
+        if (requestCode == 200) handleAutocompleteResult(resultCode, data)
+    }
+
+    /**
+     * Handle camera photo creation.
+     */
+    private fun handleCameraResult() {
+        val sharedPreferences: SharedPreferences =
+            getSharedPreferences(AppInfo.FILE_SHARED_PREF, Context.MODE_PRIVATE)
+        val uriString: String? = sharedPreferences.getString(AppInfo.PREF_CURRENT_URI, "")
+        if (uriString != null) {
+            val fragment = supportFragmentManager.findFragmentByTag(AppInfo.TAG_FRAGMENT_NEW_ESTATE)
+                    as FragmentNewEstate
+            fragment.addNewPhotoUri(uriString.toUri())
+        }
+    }
+
+    /**
+     * Handle data intent result after an image selection in gallery.
+     * @param data : data intent
+     */
+    private fun handleGalleryResult(data: Intent) {
+        val imageMediaUri: Uri? = data.data
+        if (isFragmentDisplayed(AppInfo.TAG_FRAGMENT_NEW_ESTATE)) {
+            val fragment = supportFragmentManager.findFragmentByTag(AppInfo.TAG_FRAGMENT_NEW_ESTATE)
+                    as FragmentNewEstate
+            if (imageMediaUri != null) fragment.addNewPhotoUri(imageMediaUri)
+        }
+    }
+
+    /**
+     * Handle data intent result from autocomplete request.
+     * @param resultCode : result code
+     * @param data : data intent
+     */
+    private fun handleAutocompleteResult(resultCode: Int, data: Intent?) {
+        when (resultCode) {
+            Activity.RESULT_OK -> {
+                data?.let {
+                    val place = Autocomplete.getPlaceFromIntent(data)
+                    place.address?.let { listEstatesViewModel.updateLocation(it) }
+                }
+            }
+            AutocompleteActivity.RESULT_ERROR -> {
+                data?.let {
+                    val status = Autocomplete.getStatusFromIntent(data)
+                    status.statusMessage?.let { it1 -> Log.i("AUTOCOMPLETE_RESULT", it1) }
+                }
             }
         }
     }
@@ -446,7 +494,7 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
     private fun accessDatabase() {
         listEstatesViewModel.repositoryAccess.loadAllEstates().observe(this, {
             listEstatesViewModel.restoreData(it)
-            //  listEstatesViewModel.test()
+            listEstatesViewModel.test()
         })
     }
 }
