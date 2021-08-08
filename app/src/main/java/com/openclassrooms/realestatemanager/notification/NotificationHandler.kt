@@ -21,12 +21,14 @@ class NotificationHandler(val context: Context) {
     /**
      * Builds a notification.
      */
-    fun createNotification() {
+    fun createNotification(type: Boolean) {
+        val message = if (type) context.resources.getString(R.string.notification_message_estate_updated)
+                      else context.resources.getString(R.string.notification_message_estate_available)
         val builder: NotificationCompat.Builder =
             NotificationCompat.Builder(context, AppInfo.CHANNEL_ID)
                               .setSmallIcon(R.drawable.ic_launcher_background)
                               .setContentTitle(context.resources.getString(R.string.notification_title))
-                              .setContentText(context.resources.getString(R.string.notification_message))
+                              .setContentText(message)
                               .setAutoCancel(true)
                               .setPriority(setPriority())
 

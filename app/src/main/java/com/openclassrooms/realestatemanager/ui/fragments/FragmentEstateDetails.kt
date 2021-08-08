@@ -2,9 +2,7 @@ package com.openclassrooms.realestatemanager.ui.fragments
 
 import android.annotation.SuppressLint
 import android.app.AlertDialog
-import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import android.widget.FrameLayout
 import androidx.core.view.get
@@ -18,6 +16,8 @@ import com.openclassrooms.realestatemanager.databinding.FragmentEstateDetailsBin
 import com.openclassrooms.realestatemanager.model.Estate
 import com.openclassrooms.realestatemanager.ui.MediaDisplayHandler
 import com.openclassrooms.realestatemanager.ui.activities.MainActivity
+import com.openclassrooms.realestatemanager.utils.MapHandler
+import com.openclassrooms.realestatemanager.utils.ProgressBarHandler
 import com.openclassrooms.realestatemanager.viewmodels.ListEstatesViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -70,7 +70,7 @@ class FragmentEstateDetails : Fragment() {
         updatePublishDateToDisplay()
         updateSaleDateToDisplay()
         restoreDialog(savedInstanceState)
-        test()
+        displayLocationOnMap()
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -80,17 +80,26 @@ class FragmentEstateDetails : Fragment() {
         initializeMenuIcons(menu)
     }
 
-    private fun test() {
-        CoroutineScope(Dispatchers.Main).launch {
-            val uri: Uri = Uri.parse("https://maps.googleapis.com/maps/api/staticmap?center=Berkeley,CA&zoom=14&size=400x400&key=AIzaSyAW3Gd-OwtjTXqIGfO7pgv8OKCWDlNfQmw")
-
-            Glide.with(activity as MainActivity)
-                .load(uri)
-                .centerCrop()
-                .override(binding.mapView.width, binding.mapView.height)
-                .into(binding.mapView)
+    /**
+     * Display location estate on a static map.
+     */
+    private fun displayLocationOnMap() {
+        context?.let {
+            CoroutineScope(Dispatchers.Main).launch {
+                selectedEstateToDisplay?.location?.apply {
+                    val uri = MapHandler.getLocationEstateUri(latitude, longitude, 400, 19)
+                    Glide.with(activity as MainActivity)
+                        .load(uri)
+                        .centerCrop()
+                        .placeholder(ProgressBarHandler.getProgressBarDrawable(it))
+                        .override(binding.mapView.width, binding.mapView.height)
+                        .into(binding.mapView)
+                }
+            }
         }
     }
+
+
     /**
      * Enables/disables "edit" menu icon display according to the [Estate] status (available or sold)
      * @param menu : menu to initialize
@@ -182,6 +191,7 @@ class FragmentEstateDetails : Fragment() {
      * Updates "publish date" MaterialTextView.
      */
     private fun updatePublishDateToDisplay() {
+        //TODO() : utiliser parametre string
         selectedEstateToDisplay?.run {
             val publishDateText = getDate(mutableListOf(dates.entryDate.day,
                                                            dates.entryDate.month,
@@ -194,6 +204,7 @@ class FragmentEstateDetails : Fragment() {
     /**
      * Updates "sale date" MaterialTextView.
      */
+    //TODO() : utiliser parametre string
     private fun updateSaleDateToDisplay() {
         selectedEstateToDisplay?.run {
             val saleDate = dates.saleDate

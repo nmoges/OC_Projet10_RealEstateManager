@@ -14,7 +14,6 @@ import com.openclassrooms.realestatemanager.model.*
 import com.openclassrooms.realestatemanager.model.date.Dates
 import com.openclassrooms.realestatemanager.model.date.EntryDate
 import com.openclassrooms.realestatemanager.model.date.SaleDate
-import com.openclassrooms.realestatemanager.service.DummyListAgentGenerator
 import com.openclassrooms.realestatemanager.utils.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -53,13 +52,6 @@ class ListEstatesViewModel @Inject constructor(
     var selectedEstate: Estate? = null
 
     init { restoreListAgents() }
-
-    /**
-     * Adds new location value.
-     * @param location : location estate
-     */
-    fun updateLocation(location: String) = _locationEstate.postValue(location)
-
 
     // -------------------- Estate update --------------------
     /**
@@ -127,7 +119,6 @@ class ListEstatesViewModel @Inject constructor(
     /**
      * Updates [selectedEstate] field values.
      * @param type : type of estate
-     * @param location : address of the estate
      * @param description : description of the estate
      * @param price : price of the estate
      */
@@ -160,18 +151,18 @@ class ListEstatesViewModel @Inject constructor(
         val geocoder = Geocoder(context, Locale.getDefault())
         place.latLng?.let {
             val addresses = geocoder.getFromLocation(it.latitude, it.longitude, 1)
-            val district = if (addresses[0].subLocality != null) addresses[0].subLocality
-            else addresses[0].locality
+            val district = addresses.first().subLocality ?: addresses.first().locality
 
             selectedEstate?.apply {
                 location.latitude = it.latitude
                 location.longitude = it.longitude
                 location.address = place.address ?: ""
                 location.district = district
-                _locationEstate.postValue(location.address)
+                _locationEstate.value = location.address
             }
         }
     }
+
     // -------------------- Handle photo --------------------
     /**
      * Creates a new [Photo] object for an [Estate]
@@ -377,17 +368,6 @@ class ListEstatesViewModel @Inject constructor(
     // -------------------- Autocomplete --------------------
     fun performAutocompleteRequest(activity: Activity) {
         repositoryAccess.performAutocompleteRequest(activity)
-    }
-
-
-    // TODO() : test function to remove later : used to inject dummy agent data
-    fun test() {
-        viewModelScope.launch {
-            DummyListAgentGenerator.listAgents.forEach {
-                repositoryAccess.insertAgent(it.toAgentData())
-            }
-            restoreListAgents()
-        }
     }
 }
 

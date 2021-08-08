@@ -150,7 +150,7 @@ class FragmentListEstate : Fragment() {
         binding.recyclerViewListEstates.apply {
             setHasFixedSize(true)
             layoutManager = LinearLayoutManager(context)
-            adapter = ListEstatesAdapter { handleClickOnEstateItem(it) }
+            adapter = ListEstatesAdapter(context) { handleClickOnEstateItem(it) }
             (adapter as ListEstatesAdapter).activity = (activity as MainActivity)
         }
     }

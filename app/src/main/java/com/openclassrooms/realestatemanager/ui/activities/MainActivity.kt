@@ -497,7 +497,7 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
     private fun accessDatabase() {
         listEstatesViewModel.repositoryAccess.loadAllEstates().observe(this, {
             listEstatesViewModel.restoreData(it)
-         //   listEstatesViewModel.test()
+            // listEstatesViewModel.test()
         })
     }
 }

@@ -323,7 +323,6 @@
             android:id="@+id/map_view"
             android:layout_width="@dimen/size_map"
             android:layout_height="@dimen/size_map"
-            android:background="@color/grey41"
             android:layout_marginTop="20dp"
             android:layout_gravity="center"/>
 

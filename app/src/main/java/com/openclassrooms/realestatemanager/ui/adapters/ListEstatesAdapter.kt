@@ -1,5 +1,6 @@
 package com.openclassrooms.realestatemanager.ui.adapters
 
+import android.content.Context
 import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
@@ -14,11 +15,12 @@ import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.Utils
 import com.openclassrooms.realestatemanager.model.Estate
 import com.openclassrooms.realestatemanager.ui.activities.MainActivity
+import com.openclassrooms.realestatemanager.utils.ProgressBarHandler
 
 /**
  * Adapter class for [com.openclassrooms.realestatemanager.ui.fragments.FragmentListEstate]
  */
-class ListEstatesAdapter(private val onItemClicked: (Int) -> Unit) :
+class ListEstatesAdapter(private val context: Context, private val onItemClicked: (Int) -> Unit) :
     RecyclerView.Adapter<ListEstatesAdapter.ListEstateViewHolder>(){
 
     /** Contains list of [Estate] to display in recycler view */
@@ -95,11 +97,11 @@ class ListEstatesAdapter(private val onItemClicked: (Int) -> Unit) :
     private fun displayPhoto(holder: ListEstateViewHolder, position: Int) {
         if (listEstates[position].listPhoto.size > 0) {
             Glide.with(activity)
-                 .load(listEstates[position].listPhoto[0].uriConverted.toUri())
+                 .load((listEstates[position].listPhoto[0].uriConverted).toUri())
                  .centerCrop()
+                 .placeholder(ProgressBarHandler.getProgressBarDrawable(context))
                  .override(holder.photo.width, holder.photo.height)
                  .into(holder.photo)
-
         }
     }
 

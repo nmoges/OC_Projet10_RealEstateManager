@@ -143,5 +143,6 @@
 
     <!-- NotificationHandler.kt -->
     <string name="notification_title">Real Estate Manager</string>
-    <string name="notification_message">New estate available</string>
+    <string name="notification_message_estate_available">New estate available</string>
+    <string name="notification_message_estate_updated">Estate updated</string>
 </resources>

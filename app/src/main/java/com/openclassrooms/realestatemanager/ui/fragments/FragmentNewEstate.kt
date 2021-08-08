@@ -501,7 +501,7 @@ class FragmentNewEstate : Fragment() {
                     && description.isNotEmpty() && price.isNotEmpty()
                     && listEstatesViewModel.selectedEstate?.listPhoto?.isNotEmpty() == true) {
                     displayToastEstate(false)
-                    (activity as MainActivity).notificationHandler.createNotification()
+                    (activity as MainActivity).notificationHandler.createNotification(updateEstate)
                     updateSelectedEstateFromViewModel(name, description, price) }
                 else {
                     displayToastEstate(true)
@@ -528,7 +528,6 @@ class FragmentNewEstate : Fragment() {
     /**
      * Update selected estate from view model which is used to store database modifications.
      * @param name : new name estate
-     * @param location : new location estate
      * @param description : new description estate
      * @param price : new price estate
      */
