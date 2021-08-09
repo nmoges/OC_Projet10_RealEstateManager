@@ -120,6 +120,7 @@
         android:id="@+id/fab"
         android:layout_width="@dimen/fab_size"
         android:layout_height="@dimen/fab_size"
+        android:src="@drawable/ic_baseline_add_24dp_white"
         android:contentDescription="@string/content_desc_img"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintRight_toRightOf="parent"

@@ -8,6 +8,7 @@ object AppInfo {
     // SharedPreferences parameters
     const val FILE_SHARED_PREF = "FILE_SHARED_PREF"
     const val PREF_PERMISSIONS = "PREF_PERMISSIONS"
+    const val PREF_PERMISSION_LOCATION = "PREF_PERMISSION_LOCATION"
     const val PREF_CURRENCY = "PREF_CURRENCY"
     const val PREF_CURRENT_URI = "PREF_CURRENT_URI"
 
@@ -37,6 +38,7 @@ object AppInfo {
     const val TAG_FRAGMENT_SETTINGS = "TAG_FRAGMENT_SETTINGS"
     const val TAG_FRAGMENT_LIST_ESTATE = "TAG_FRAGMENT_LIST_ESTATE"
     const val TAG_FRAGMENT_ESTATE_DETAILS = "TAG_FRAGMENT_ESTATE_DETAILS"
+    const val TAG_FRAGMENT_MAP = "TAG_FRAGMENT_MAP"
 
     // Notification parameters
     const val CHANNEL_ID = "CHANNEL_ID"

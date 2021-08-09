@@ -22,6 +22,8 @@ import androidx.core.net.toUri
 import androidx.core.view.ViewCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.widget.Autocomplete
 import com.google.android.libraries.places.widget.AutocompleteActivity
@@ -31,16 +33,12 @@ import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.databinding.ActivityMainBinding
 import com.openclassrooms.realestatemanager.notification.NotificationHandler
 import com.openclassrooms.realestatemanager.receiver.NetworkBroadcastReceiver
-import com.openclassrooms.realestatemanager.ui.fragments.FragmentEstateDetails
-import com.openclassrooms.realestatemanager.ui.fragments.FragmentListEstate
-import com.openclassrooms.realestatemanager.ui.fragments.FragmentNewEstate
-import com.openclassrooms.realestatemanager.ui.fragments.FragmentSettings
+import com.openclassrooms.realestatemanager.ui.fragments.*
+import com.openclassrooms.realestatemanager.utils.GPSAccessHandler
 import com.openclassrooms.realestatemanager.utils.MediaAccessHandler
 import com.openclassrooms.realestatemanager.viewmodels.CurrencyViewModel
 import com.openclassrooms.realestatemanager.viewmodels.ListEstatesViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import java.io.IOException
-import java.util.*
 
 /**
  * [AppCompatActivity] subclass which defines the main activity of the application.
@@ -70,6 +68,9 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
     /** Contains a reference to a [FragmentSettings] object */
     private var fragmentSettings: Fragment? = null
 
+    /** Contains a reference to a [FragmentMap] object */
+    private var fragmentMap: Fragment? = null
+
     /** Contains ViewModels reference */
     lateinit var listEstatesViewModel: ListEstatesViewModel
     lateinit var currencyViewModel: CurrencyViewModel
@@ -79,6 +80,8 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
 
     /** Contain a [NotificationHandler] object reference */
     lateinit var notificationHandler: NotificationHandler
+
+    lateinit var locationProviderClient: FusedLocationProviderClient
 
     companion object {
         const val FAB_STATUS_KEY = "FAB_STATUS_KEY"
@@ -95,6 +98,7 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
             fragmentNewEstate = supportFragmentManager.findFragmentByTag(AppInfo.TAG_FRAGMENT_NEW_ESTATE)
             fragmentEstateDetails = supportFragmentManager.findFragmentByTag(AppInfo.TAG_FRAGMENT_ESTATE_DETAILS)
             fragmentSettings = supportFragmentManager.findFragmentByTag(AppInfo.TAG_FRAGMENT_SETTINGS)
+            fragmentMap = supportFragmentManager.findFragmentByTag(AppInfo.TAG_FRAGMENT_MAP)
             removeExistingFragments()
             restoreFragments(containerId)
         }
@@ -104,12 +108,14 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
         handleConnectivityBarBtnListener()
         initializeViewModels()
         MediaAccessHandler.initializeNbPermissionRequests(this)
+        GPSAccessHandler.initializeNbPermissionRequests(this)
         accessDatabase()
 
         // To access Places API methods
-       if (!Places.isInitialized())
+        if (!Places.isInitialized())
                  Places.initialize(applicationContext, BuildConfig.MAPS_API_KEY)
         val placesClient = Places.createClient(this)
+        locationProviderClient = LocationServices.getFusedLocationProviderClient(applicationContext)
     }
 
     override fun onResume() {
@@ -152,11 +158,18 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
                     supportFragmentManager.executePendingTransactions()
                 }
             }
-            fragmentSettings != null ->
+            fragmentSettings != null -> {
                 fragmentSettings?.let {
                     supportFragmentManager.beginTransaction().remove(it).commit()
                     supportFragmentManager.executePendingTransactions()
                 }
+            }
+            fragmentMap != null -> {
+                fragmentMap?.let {
+                    supportFragmentManager.beginTransaction().remove(it).commit()
+                    supportFragmentManager.executePendingTransactions()
+                }
+            }
         }
     }
 
@@ -188,6 +201,10 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
                 launchTransaction(typeContainer, fragmentSettings as FragmentSettings,
                     AppInfo.TAG_FRAGMENT_SETTINGS)
             }
+            fragmentMap != null -> {
+                launchTransaction(typeContainer, fragmentMap as FragmentMap,
+                    AppInfo.TAG_FRAGMENT_MAP)
+            }
         }
     }
 
@@ -203,6 +220,13 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
      */
     fun displayFragmentSettings() {
         launchTransaction(containerId, FragmentSettings.newInstance(), AppInfo.TAG_FRAGMENT_SETTINGS)
+    }
+
+    /**
+     * Displays [FragmentMap].
+     */
+    fun displayFragmentMap() {
+        launchTransaction(containerId, FragmentMap.newInstance(), AppInfo.TAG_FRAGMENT_MAP)
     }
 
     /**
@@ -348,10 +372,14 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
     private fun cleanBackStack(): Boolean {
         val containerIdList: Int = if (typeOrientation && typeLayout) R.id.fragment_container_view_left
         else R.id.fragment_container_view
-        fragmentNewEstate = supportFragmentManager.findFragmentByTag(AppInfo.TAG_FRAGMENT_NEW_ESTATE)
-        fragmentEstateDetails = supportFragmentManager.findFragmentByTag(AppInfo.TAG_FRAGMENT_ESTATE_DETAILS)
-        fragmentSettings = supportFragmentManager.findFragmentByTag(AppInfo.TAG_FRAGMENT_SETTINGS)
-        if (fragmentNewEstate != null || fragmentEstateDetails != null || fragmentSettings != null) {
+        supportFragmentManager.apply {
+            fragmentNewEstate = findFragmentByTag(AppInfo.TAG_FRAGMENT_NEW_ESTATE)
+            fragmentEstateDetails = findFragmentByTag(AppInfo.TAG_FRAGMENT_ESTATE_DETAILS)
+            fragmentSettings = findFragmentByTag(AppInfo.TAG_FRAGMENT_SETTINGS)
+            fragmentMap = findFragmentByTag(AppInfo.TAG_FRAGMENT_MAP)
+        }
+        if (fragmentNewEstate != null || fragmentEstateDetails != null
+            || fragmentSettings != null || fragmentMap != null) {
             // Display FragmentListEstate if needed
             if (!(typeOrientation && typeLayout))
                 launchTransaction(containerIdList,
@@ -407,6 +435,7 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+
         // From camera : Get Uri from saved value in SharedPreferences
         if (resultCode == RESULT_OK && requestCode
             == AppInfo.REQUEST_IMAGE_CAPTURE) handleCameraResult()
@@ -484,11 +513,35 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
             && grantResults[1] == PackageManager.PERMISSION_GRANTED
             && permissions[2] == android.Manifest.permission.CAMERA
             && grantResults[2] == PackageManager.PERMISSION_GRANTED) {
-            val nbRequestsSaved : SharedPreferences = getSharedPreferences(AppInfo.FILE_SHARED_PREF,
-                Context.MODE_PRIVATE)
-            // Reset number of permission requests
-            nbRequestsSaved.edit { putInt(AppInfo.PREF_PERMISSIONS, 0) }
+                handleMediaPermissionsRequestResult()
         }
+
+        if (permissions[0] == android.Manifest.permission.ACCESS_FINE_LOCATION
+            && grantResults[0] == PackageManager.PERMISSION_GRANTED
+            && isFragmentDisplayed(AppInfo.TAG_FRAGMENT_MAP)) {
+                handleLocationPermissionRequestResult()
+        }
+    }
+
+    private fun handleMediaPermissionsRequestResult() {
+        val nbRequestsSaved = getSharedPreferences(AppInfo.FILE_SHARED_PREF,
+            Context.MODE_PRIVATE)
+        // Reset number of permission requests
+        nbRequestsSaved.edit { putInt(AppInfo.PREF_PERMISSIONS, 0).apply() }
+    }
+
+    private fun handleLocationPermissionRequestResult() {
+        val fragment = supportFragmentManager.findFragmentByTag(AppInfo.TAG_FRAGMENT_MAP)
+                as FragmentMap
+        fragment.apply {
+            if (GPSAccessHandler.checkLocationPermission(activity as MainActivity)) {
+                initializeMapOptions()
+                initializeCameraPositionOnMap()
+            }
+        }
+        val nbRequestSaved = getSharedPreferences(AppInfo.FILE_SHARED_PREF, Context.MODE_PRIVATE)
+        // Reset number of permission requests
+        nbRequestSaved.edit { putInt(AppInfo.PREF_PERMISSION_LOCATION, 0).apply() }
     }
 
     /**
@@ -497,7 +550,7 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
     private fun accessDatabase() {
         listEstatesViewModel.repositoryAccess.loadAllEstates().observe(this, {
             listEstatesViewModel.restoreData(it)
-            // listEstatesViewModel.test()
+             listEstatesViewModel.test()
         })
     }
 }

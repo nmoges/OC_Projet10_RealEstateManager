@@ -117,6 +117,13 @@ class FragmentListEstate : Fragment() {
                     displayFragmentSettings()
                 }
             }
+            R.id.map -> {
+                (activity as MainActivity).apply {
+                    handleFabVisibility(View.INVISIBLE)
+                    handleBackgroundGridVisibility(View.INVISIBLE)
+                    displayFragmentMap()
+                }
+            }
             R.id.logout -> {  }
         }
         return super.onOptionsItemSelected(item)

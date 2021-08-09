@@ -2,6 +2,7 @@
     <string name="app_name">Real Estate Manager</string>
     <string name="facebook_application_id">1898055770358844</string>
     <string name="fb_login_protocol_scheme">fb1898055770358844</string>
+    <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">AIzaSyDn2jw9WgTHuGyoJGdr_NdDGGJNhWQeH28</string>
 
     <!-- activity_main.xml -->
     <string name="content_desc_img">Estate image</string>
@@ -13,6 +14,7 @@
 
     <!-- menu_fragment_list_estate.xml -->
     <string name="str_toolbar_fragment_list_estate_title">Real Estate Manager</string>
+    <string name="str_item_map">Map</string>
     <string name="str_item_search">Search</string>
     <string name="str_item_settings">Settings</string>
     <string name="str_item_logout">Logout</string>
@@ -99,7 +101,7 @@
     <string name="str_sold_status">Sold on</string>
     <string name="str_available_status">Available</string>
     <string name="str_sale_button_text">Sold</string>
-    <string name="str_published_on">Published on</string>
+    <string name="str_published_on">Published on : %1$d/%2$d/%3$d</string>
 
     <!-- custom_auth_layout.xml -->
     <string name="content_desc_logo_app">Logo application</string>
@@ -119,7 +121,7 @@
     <!-- MediaAccessHandler.kt -->
     <string name="str_dialog_permission_access_title">Permission Access</string>
     <string name="str_dialog_permission_access_message">Storage and camera accesses must be granted
-        to allow application to work correctly</string>
+        to allow application to work properly</string>
     <string name="str_dialog_permission_access_button_settings">Settings</string>
     <string name="uri_string_package">package:com.openclassrooms.realestatemanager</string>
 
@@ -145,4 +147,14 @@
     <string name="notification_title">Real Estate Manager</string>
     <string name="notification_message_estate_available">New estate available</string>
     <string name="notification_message_estate_updated">Estate updated</string>
+
+    <!-- GPSAccessHandler.kt -->
+    <string name="str_dialog_loc_permission_access_title">Permission Access</string>
+    <string name="str_dialog_loc_permission_access_message">Location access must be granted to allow
+        application de work properly</string>
+
+    <!-- FragmentMap/kt -->
+    <string name="str_dialog_enable_gps_title">Enable GPS</string>
+    <string name="str_dialog_enable_gps_message">The GPS must be enable to access your position</string>
+    <string name="str_dialog_enable_enable_button">Enable</string>
 </resources>

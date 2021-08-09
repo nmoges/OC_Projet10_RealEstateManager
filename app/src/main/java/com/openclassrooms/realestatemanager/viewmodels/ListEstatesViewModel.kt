@@ -14,6 +14,7 @@ import com.openclassrooms.realestatemanager.model.*
 import com.openclassrooms.realestatemanager.model.date.Dates
 import com.openclassrooms.realestatemanager.model.date.EntryDate
 import com.openclassrooms.realestatemanager.model.date.SaleDate
+import com.openclassrooms.realestatemanager.service.DummyListAgentGenerator
 import com.openclassrooms.realestatemanager.utils.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -368,6 +369,17 @@ class ListEstatesViewModel @Inject constructor(
     // -------------------- Autocomplete --------------------
     fun performAutocompleteRequest(activity: Activity) {
         repositoryAccess.performAutocompleteRequest(activity)
+    }
+
+
+    // TODO() : test function to remove later : used to inject dummy agent data
+    fun test() {
+        viewModelScope.launch {
+            DummyListAgentGenerator.listAgents.forEach {
+                repositoryAccess.insertAgent(it.toAgentData())
+            }
+            restoreListAgents()
+        }
     }
 }
 

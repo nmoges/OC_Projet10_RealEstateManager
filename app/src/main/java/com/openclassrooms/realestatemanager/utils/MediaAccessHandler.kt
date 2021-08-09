@@ -56,7 +56,7 @@ object MediaAccessHandler {
     }
 
     /**
-     * Checks if requested permission is granted.
+     * Checks if requested permissions are granted.
      * @param activity : Main activity
      */
     fun checkPermissions(activity: MainActivity):Boolean =
@@ -117,7 +117,6 @@ object MediaAccessHandler {
             }
             .setNegativeButton(activity.resources.getString(R.string.str_dialog_button_cancel)) { _, _ -> }
             .create()
-
         builderAccessSettingsDialog.show()
     }
 

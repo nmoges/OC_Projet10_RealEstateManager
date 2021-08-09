@@ -23,7 +23,7 @@
                                 <PersistentState>
                                   <option name="values">
                                     <map>
-                                      <entry key="url" value="file:/$USER_HOME$/AppData/Local/Android/Sdk/icons/material/materialicons/highlight_off/baseline_highlight_off_24.xml" />
+                                      <entry key="url" value="file:/$USER_HOME$/AppData/Local/Android/Sdk/icons/material/materialicons/gps_off/baseline_gps_off_24.xml" />
                                     </map>
                                   </option>
                                 </PersistentState>
@@ -34,8 +34,9 @@
                         <option name="values">
                           <map>
                             <entry key="autoMirrored" value="true" />
-                            <entry key="color" value="686868" />
-                            <entry key="outputName" value="ic_baseline_highlight_off_24dp_grey41" />
+                            <entry key="color" value="ffffff" />
+                            <entry key="opacityPercent" value="99" />
+                            <entry key="outputName" value="ic_baseline_gps_off_24dp_white" />
                             <entry key="sourceFile" value="C:\Users\nicol\OneDrive\Documents\Formation\OpenClassrooms\Projet 9\App\RealEstateManager\RealEstateManager" />
                           </map>
                         </option>
