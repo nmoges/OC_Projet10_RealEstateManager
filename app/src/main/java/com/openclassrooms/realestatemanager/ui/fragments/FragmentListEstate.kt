@@ -125,7 +125,7 @@ class FragmentListEstate : Fragment() {
                     displayFragmentMap()
                 }
             }
-            R.id.logout -> {  }
+            R.id.logout -> { (activity as MainActivity).showDialogLogout() }
         }
         return super.onOptionsItemSelected(item)
     }

@@ -30,10 +30,12 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.widget.Autocomplete
+import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
 import com.openclassrooms.realestatemanager.AppInfo
 import com.openclassrooms.realestatemanager.BuildConfig
 import com.openclassrooms.realestatemanager.R
+import com.openclassrooms.realestatemanager.authentication.AuthenticationFirebase
 import com.openclassrooms.realestatemanager.databinding.ActivityMainBinding
 import com.openclassrooms.realestatemanager.model.Agent
 import com.openclassrooms.realestatemanager.notification.NotificationHandler
@@ -96,9 +98,10 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
     private var firstNameAgent = ""
     private var lastNameAgent = ""
 
-    companion object {
-        const val FAB_STATUS_KEY = "FAB_STATUS_KEY"
-    }
+    /** Defines an [AlertDialog] for logout */
+    private lateinit var builderLogoutDialog: AlertDialog
+
+    companion object { const val FAB_STATUS_KEY = "FAB_STATUS_KEY" }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -107,16 +110,17 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
         checkScreenProperties()
         initializeFragmentListEstate()
         initializeDialogAddAgent()
+        initializeDialogLogout()
         if (savedInstanceState != null) {
             restoreViews(savedInstanceState)
             fragmentNewEstate = supportFragmentManager.findFragmentByTag(AppInfo.TAG_FRAGMENT_NEW_ESTATE)
-            fragmentEstateDetails = supportFragmentManager.findFragmentByTag(AppInfo.TAG_FRAGMENT_ESTATE_DETAILS)
+            fragmentEstateDetails =
+                       supportFragmentManager.findFragmentByTag(AppInfo.TAG_FRAGMENT_ESTATE_DETAILS)
             fragmentSettings = supportFragmentManager.findFragmentByTag(AppInfo.TAG_FRAGMENT_SETTINGS)
             fragmentMap = supportFragmentManager.findFragmentByTag(AppInfo.TAG_FRAGMENT_MAP)
             removeExistingFragments()
             restoreFragments(containerId)
-            restoreDialogs(savedInstanceState)
-        }
+            restoreDialogs(savedInstanceState) }
         initializeToolbar()
         initializeNotificationHandler()
         handleFloatingActionButton()
@@ -340,8 +344,9 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         binding.fab.let { outState.putInt(FAB_STATUS_KEY, it.visibility) }
-        outState.putBoolean(AppInfo.DIALOG_ADD_AGENT_KEY, builderAddAgentDialog.isShowing)
         outState.apply {
+            putBoolean(AppInfo.DIALOG_ADD_AGENT_KEY, builderAddAgentDialog.isShowing)
+            putBoolean(AppInfo.DIALOG_LOGOUT_KEY, builderLogoutDialog.isShowing)
             putString(AppInfo.FIRST_NAME_AGENT_KEY, firstNameAgent)
             putString(AppInfo.LAST_NAME_AGENT_KEY, lastNameAgent)
         }
@@ -456,8 +461,7 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
         if (uriString != null) {
             val fragment = supportFragmentManager.findFragmentByTag(AppInfo.TAG_FRAGMENT_NEW_ESTATE)
                     as FragmentNewEstate
-            fragment.addNewPhotoUri(uriString.toUri())
-        }
+            fragment.addNewPhotoUri(uriString.toUri()) }
     }
 
     /**
@@ -469,8 +473,7 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
         if (isFragmentDisplayed(AppInfo.TAG_FRAGMENT_NEW_ESTATE)) {
             val fragment = supportFragmentManager.findFragmentByTag(AppInfo.TAG_FRAGMENT_NEW_ESTATE)
                     as FragmentNewEstate
-            if (imageMediaUri != null) fragment.addNewPhotoUri(imageMediaUri)
-        }
+            if (imageMediaUri != null) fragment.addNewPhotoUri(imageMediaUri) }
     }
 
     /**
@@ -483,8 +486,7 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
             Activity.RESULT_OK -> {
                 data?.let {
                     val place = Autocomplete.getPlaceFromIntent(data)
-                    listEstatesViewModel.updateLocationSelectedEstate(place, this) }
-            }
+                    listEstatesViewModel.updateLocationSelectedEstate(place, this) } }
         }
     }
 
@@ -504,14 +506,12 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
             && permissions[1] == android.Manifest.permission.WRITE_EXTERNAL_STORAGE
             && grantResults[1] == PackageManager.PERMISSION_GRANTED
             && permissions[2] == android.Manifest.permission.CAMERA
-            && grantResults[2] == PackageManager.PERMISSION_GRANTED) {
+            && grantResults[2] == PackageManager.PERMISSION_GRANTED)
                 handleMediaPermissionsRequestResult()
-        }
         if (permissions[0] == android.Manifest.permission.ACCESS_FINE_LOCATION
             && grantResults[0] == PackageManager.PERMISSION_GRANTED
-            && isFragmentDisplayed(AppInfo.TAG_FRAGMENT_MAP)) {
+            && isFragmentDisplayed(AppInfo.TAG_FRAGMENT_MAP))
                 handleLocationPermissionRequestResult()
-        }
     }
 
     private fun handleMediaPermissionsRequestResult() {
@@ -552,6 +552,11 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
     }
 
     /**
+     * Displays an [AlertDialog] for logout.
+     */
+    fun showDialogLogout() = builderLogoutDialog.show()
+
+    /**
      * Restores displayed dialogs after a configuration change.
      * @param savedInstanceState : Bundle
      */
@@ -559,8 +564,8 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
         savedInstanceState?.let {
             if (it.getBoolean(AppInfo.DIALOG_ADD_AGENT_KEY)) {
                 showDialogAddAgent()
-                restoreAddAgentDialogText(savedInstanceState)
-            }
+                restoreAddAgentDialogText(savedInstanceState) }
+            if (it.getBoolean(AppInfo.DIALOG_LOGOUT_KEY)) showDialogLogout()
         }
     }
 
@@ -577,13 +582,41 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
         builderAddAgentDialog = AlertDialog.Builder(this)
             .setTitle(resources.getString(R.string.str_dialog_add_agent_title))
             .setView(viewAddNewAgent)
-            .setPositiveButton(resources.getString(R.string.str_dialog_add_agent_confirm)) { _, _ ->
+            .setPositiveButton(resources.getString(R.string.str_dialog_confirm)) { _, _ ->
                 addNewAgent(firstNameAgentInputEdit, lastNameAgentInputEdit)
                 firstNameAgentInputEdit?.text?.clear()
-                lastNameAgentInputEdit?.text?.clear()
-            }
+                lastNameAgentInputEdit?.text?.clear() }
             .setNegativeButton(resources.getString(R.string.str_dialog_button_cancel)) { _, _ -> }
             .create()
+    }
+
+    /**
+     * Initializes an [AlertDialog.Builder] for [builderLogoutDialog] property.
+     */
+    private fun initializeDialogLogout() {
+        builderLogoutDialog = AlertDialog.Builder(this)
+            .setTitle(resources.getString(R.string.str_dialog_logout_title))
+            .setMessage(resources.getString(R.string.str_dialog_logout_message))
+            .setPositiveButton(resources.getString(R.string.str_dialog_confirm))  { _, _ ->
+                AuthenticationFirebase.logoutUser(this) { onLogout(it)} }
+            .setNegativeButton(resources.getString(R.string.str_dialog_button_cancel)) { _, _ -> }
+            .create()
+    }
+
+    /**
+     * Displays a scnkbar for log out information.
+     * @param status : status of the logout operation
+     */
+    private fun onLogout(status: Boolean) {
+        if (status) {
+            Snackbar.make(binding.mainActivity,
+                resources.getString(R.string.str_dialog_logout_title), Snackbar.LENGTH_SHORT).show()
+            finish()
+            overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
+        }
+        else
+            Snackbar.make(binding.mainActivity, resources.getString(R.string.str_error_logout),
+                Snackbar.LENGTH_SHORT).show()
     }
 
     /**

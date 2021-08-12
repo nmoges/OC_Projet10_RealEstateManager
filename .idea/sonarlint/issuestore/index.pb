@@ -35,8 +35,6 @@ Pdata/src/main/java/com/openclassrooms/data/dao/EstateWithPhotosAndInteriorDao.k
 Vapp/src/main/java/com/openclassrooms/realestatemanager/viewmodels/CurrencyViewModel.kt,9\f\9f5d4c4bfebe1401af8e5b89bf7cfb755963efc3
 j
 :data/src/main/java/com/openclassrooms/data/dao/AgentDao.kt,d\2\d20ee6d39cb3c34e59629120160b30356a7288c8
-á
-Wapp/src/main/java/com/openclassrooms/realestatemanager/ui/fragments/FragmentSettings.kt,b\1\b193deea59c9970fe6b0d46e03ea191e71f7b375
 p
 @data/src/main/java/com/openclassrooms/data/entities/PhotoData.kt,a\a\aad053980ff6334b42b736cbd89a003a3a786d9d
 Å
@@ -102,8 +100,6 @@ z
 Japp/src/main/java/com/openclassrooms/realestatemanager/utils/MapHandler.kt,1\e\1ef5bd633c8d156fa1dfbbbf2a3511cbe07732d3
 p
 @data/src/main/java/com/openclassrooms/data/service/MapService.kt,0\4\04ccc69ecdd3bdc1cd57434b40111ed7ed5f8d22
-ä
-Zapp/src/main/java/com/openclassrooms/realestatemanager/notification/NotificationHandler.kt,2\c\2cc36cd1c42d9255e61d09bf4e69efc809953ff7
 Ç
 Rapp/src/main/java/com/openclassrooms/realestatemanager/utils/ProgressBarHandler.kt,d\b\dbe63d1314d52afb625fb7b1d1fe2ca7ab7490a0
 ?
@@ -114,21 +110,11 @@ A
 Vapp/src/main/java/com/openclassrooms/realestatemanager/ui/activities/SignInActivity.kt,a\0\a035330725176dbdadf66fa7a48fe60f59c22fe2
 ã
 [app/src/main/java/com/openclassrooms/realestatemanager/receiver/NetworkBroadcastReceiver.kt,f\1\f117ec76d658633e3629a8628f6a9bf4340324de
-à
-Xapp/src/main/java/com/openclassrooms/realestatemanager/ui/adapters/ListEstatesAdapter.kt,d\0\d06173742ed2234766d9661946f87a9e6e2a544f
-P
- app/src/main/AndroidManifest.xml,8\c\8c55c3ccc257e5907959013f99656e4c8ec3903e
 @
 app/build.gradle,f\4\f4a01d6a4fcb971362ec00a83903fd3902f52164
 <
 build.gradle,f\0\f07866736216be0ee2aba49e392191aeae700a35
-å
-\app/src/main/java/com/openclassrooms/realestatemanager/ui/fragments/FragmentEstateDetails.kt,b\9\b942265427bb7d6d6717bf6813fb573821668d1b
-Ç
-Rapp/src/main/java/com/openclassrooms/realestatemanager/ui/fragments/FragmentMap.kt,d\f\df4c479f53f84cbfe4339d948ac2f6733360b003
 Ä
 Papp/src/main/java/com/openclassrooms/realestatemanager/utils/GPSAccessHandler.kt,e\0\e010db57fb632b02cfd7aaeddac02aa53121e72c
-á
-Wapp/src/main/java/com/openclassrooms/realestatemanager/receiver/GPSBroadcastReceiver.kt,8\4\84434dc375f52597de751c61f1ba9638b82ac097
 Ç
 Rapp/src/main/java/com/openclassrooms/realestatemanager/utils/MediaAccessHandler.kt,2\2\227fc63c896ae3418dd7e5c96343095783534d5a
