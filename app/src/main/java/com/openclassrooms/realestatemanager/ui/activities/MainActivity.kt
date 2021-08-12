@@ -1,6 +1,7 @@
 package com.openclassrooms.realestatemanager.ui.activities
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
@@ -10,10 +11,13 @@ import android.content.res.Configuration
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.text.Editable
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewPropertyAnimator
 import androidx.annotation.IdRes
+import androidx.annotation.LayoutRes
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.edit
@@ -26,16 +30,19 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.widget.Autocomplete
-import com.google.android.libraries.places.widget.AutocompleteActivity
+import com.google.android.material.textfield.TextInputEditText
 import com.openclassrooms.realestatemanager.AppInfo
 import com.openclassrooms.realestatemanager.BuildConfig
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.databinding.ActivityMainBinding
+import com.openclassrooms.realestatemanager.model.Agent
 import com.openclassrooms.realestatemanager.notification.NotificationHandler
 import com.openclassrooms.realestatemanager.receiver.NetworkBroadcastReceiver
 import com.openclassrooms.realestatemanager.ui.fragments.*
+import com.openclassrooms.realestatemanager.utils.CustomTextWatcher
 import com.openclassrooms.realestatemanager.utils.GPSAccessHandler
 import com.openclassrooms.realestatemanager.utils.MediaAccessHandler
+import com.openclassrooms.realestatemanager.utils.StringHandler
 import com.openclassrooms.realestatemanager.viewmodels.CurrencyViewModel
 import com.openclassrooms.realestatemanager.viewmodels.ListEstatesViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -83,6 +90,12 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
 
     lateinit var locationProviderClient: FusedLocationProviderClient
 
+    /** Defines an [AlertDialog] allowing user to enter a new agent */
+    private lateinit var builderAddAgentDialog: AlertDialog
+
+    private var firstNameAgent = ""
+    private var lastNameAgent = ""
+
     companion object {
         const val FAB_STATUS_KEY = "FAB_STATUS_KEY"
     }
@@ -93,6 +106,7 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
         setContentView(binding.root)
         checkScreenProperties()
         initializeFragmentListEstate()
+        initializeDialogAddAgent()
         if (savedInstanceState != null) {
             restoreViews(savedInstanceState)
             fragmentNewEstate = supportFragmentManager.findFragmentByTag(AppInfo.TAG_FRAGMENT_NEW_ESTATE)
@@ -101,6 +115,7 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
             fragmentMap = supportFragmentManager.findFragmentByTag(AppInfo.TAG_FRAGMENT_MAP)
             removeExistingFragments()
             restoreFragments(containerId)
+            restoreDialogs(savedInstanceState)
         }
         initializeToolbar()
         initializeNotificationHandler()
@@ -110,13 +125,8 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
         MediaAccessHandler.initializeNbPermissionRequests(this)
         GPSAccessHandler.initializeNbPermissionRequests(this)
         accessDatabase()
-
-        // To access Places API methods
-        if (!Places.isInitialized())
-                 Places.initialize(applicationContext, BuildConfig.MAPS_API_KEY)
-        val placesClient = Places.createClient(this)
-        locationProviderClient = LocationServices.getFusedLocationProviderClient(applicationContext)
-    }
+        initializeMapClient()
+       }
 
     override fun onResume() {
         super.onResume()
@@ -127,6 +137,13 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
     override fun onPause() {
         super.onPause()
         unregisterReceiver(networkBroadcastReceiver)
+    }
+
+    private fun initializeMapClient() {
+        if (!Places.isInitialized()) Places.initialize(applicationContext, BuildConfig.MAPS_API_KEY)
+        Places.createClient(this)
+        locationProviderClient = LocationServices.getFusedLocationProviderClient(applicationContext)
+
     }
 
     private fun initializeNotificationHandler() {
@@ -149,27 +166,19 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
             fragmentNewEstate != null -> {
                 fragmentNewEstate?.let {
                     supportFragmentManager.beginTransaction().remove(it).commit()
-                    supportFragmentManager.executePendingTransactions()
-                }
-            }
+                    supportFragmentManager.executePendingTransactions() } }
             fragmentEstateDetails != null -> {
                 fragmentEstateDetails?.let {
                     supportFragmentManager.beginTransaction().remove(it).commit()
-                    supportFragmentManager.executePendingTransactions()
-                }
-            }
+                    supportFragmentManager.executePendingTransactions() } }
             fragmentSettings != null -> {
                 fragmentSettings?.let {
                     supportFragmentManager.beginTransaction().remove(it).commit()
-                    supportFragmentManager.executePendingTransactions()
-                }
-            }
+                    supportFragmentManager.executePendingTransactions() } }
             fragmentMap != null -> {
                 fragmentMap?.let {
                     supportFragmentManager.beginTransaction().remove(it).commit()
-                    supportFragmentManager.executePendingTransactions()
-                }
-            }
+                    supportFragmentManager.executePendingTransactions() } }
         }
     }
 
@@ -191,43 +200,37 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
         when {
             fragmentNewEstate != null -> {
                 launchTransaction(typeContainer, fragmentNewEstate as FragmentNewEstate,
-                    AppInfo.TAG_FRAGMENT_NEW_ESTATE)
-            }
+                    AppInfo.TAG_FRAGMENT_NEW_ESTATE) }
             fragmentEstateDetails != null -> {
                 launchTransaction(typeContainer, fragmentEstateDetails as FragmentEstateDetails,
-                    AppInfo.TAG_FRAGMENT_ESTATE_DETAILS)
-            }
+                    AppInfo.TAG_FRAGMENT_ESTATE_DETAILS) }
             fragmentSettings != null -> {
                 launchTransaction(typeContainer, fragmentSettings as FragmentSettings,
-                    AppInfo.TAG_FRAGMENT_SETTINGS)
-            }
+                    AppInfo.TAG_FRAGMENT_SETTINGS) }
             fragmentMap != null -> {
                 launchTransaction(typeContainer, fragmentMap as FragmentMap,
-                    AppInfo.TAG_FRAGMENT_MAP)
-            }
+                    AppInfo.TAG_FRAGMENT_MAP) }
         }
     }
 
     /**
      * Displays [FragmentEstateDetails].
      */
-    fun displayFragmentDetails() {
-        launchTransaction(containerId, FragmentEstateDetails.newInstance(), AppInfo.TAG_FRAGMENT_ESTATE_DETAILS)
-    }
+    fun displayFragmentDetails() = launchTransaction(containerId,
+                           FragmentEstateDetails.newInstance(), AppInfo.TAG_FRAGMENT_ESTATE_DETAILS)
 
     /**
      * Displays [FragmentSettings].
      */
-    fun displayFragmentSettings() {
-        launchTransaction(containerId, FragmentSettings.newInstance(), AppInfo.TAG_FRAGMENT_SETTINGS)
-    }
+    fun displayFragmentSettings() =
+       launchTransaction(containerId, FragmentSettings.newInstance(), AppInfo.TAG_FRAGMENT_SETTINGS)
+
 
     /**
      * Displays [FragmentMap].
      */
-    fun displayFragmentMap() {
-        launchTransaction(containerId, FragmentMap.newInstance(), AppInfo.TAG_FRAGMENT_MAP)
-    }
+    fun displayFragmentMap() =
+                 launchTransaction(containerId, FragmentMap.newInstance(), AppInfo.TAG_FRAGMENT_MAP)
 
     /**
      * Displays [FragmentNewEstate].
@@ -252,8 +255,7 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
             val oldFragmentListEstate: FragmentListEstate =
                 supportFragmentManager.findFragmentByTag(AppInfo.TAG_FRAGMENT_LIST_ESTATE) as FragmentListEstate
             supportFragmentManager.beginTransaction().remove(oldFragmentListEstate).commitNow()
-            supportFragmentManager.popBackStack()
-        }
+            supportFragmentManager.popBackStack() }
         // Display new instance
         launchTransaction(container, FragmentListEstate.newInstance(), AppInfo.TAG_FRAGMENT_LIST_ESTATE)
     }
@@ -304,16 +306,14 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
     override fun updateConnectivityBarNetworkDisplay(status: Boolean) {
         if (status) { // Hide bar - - Wifi/Data network active
             val fadeOutAnim: ViewPropertyAnimator = binding.barConnectivityInfo.animate()
-                .alpha(0.0f)
-                .setDuration(200)
+                .alpha(0.0f).setDuration(200)
             fadeOutAnim.withEndAction { binding.barConnectivityInfo.visibility = View.GONE}
         }
         else { // Display bar No network active
             binding.barConnectivityInfo.visibility = View.VISIBLE
             ViewCompat.setElevation(binding.barConnectivityInfo, 10F)
             val fadeInAnim: ViewPropertyAnimator = binding.barConnectivityInfo.animate()
-                .alpha(1.0f)
-                .setDuration(200)
+                .alpha(1.0f).setDuration(200)
             fadeInAnim.start()
         }
     }
@@ -323,8 +323,7 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
      */
     private fun handleConnectivityBarBtnListener() {
         binding.barConnectivityInfoBtnClose.setOnClickListener {
-            updateConnectivityBarNetworkDisplay(true)
-        }
+            updateConnectivityBarNetworkDisplay(true) }
     }
 
     /**
@@ -335,13 +334,17 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
             listEstatesViewModel.createNewEstate()
             launchTransaction(containerId, FragmentNewEstate.newInstance(), AppInfo.TAG_FRAGMENT_NEW_ESTATE)
             handleFabVisibility(View.INVISIBLE)
-            handleBackgroundGridVisibility(View.INVISIBLE)
-        }
+            handleBackgroundGridVisibility(View.INVISIBLE) }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         binding.fab.let { outState.putInt(FAB_STATUS_KEY, it.visibility) }
+        outState.putBoolean(AppInfo.DIALOG_ADD_AGENT_KEY, builderAddAgentDialog.isShowing)
+        outState.apply {
+            putString(AppInfo.FIRST_NAME_AGENT_KEY, firstNameAgent)
+            putString(AppInfo.LAST_NAME_AGENT_KEY, lastNameAgent)
+        }
     }
 
     /**
@@ -361,8 +364,7 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
     fun handleBackgroundGridVisibility(visibility: Int) {
         binding.apply {
             imgBackground?.visibility = visibility
-            txtBackground?.visibility = visibility
-        }
+            txtBackground?.visibility = visibility }
     }
 
     /**
@@ -435,14 +437,11 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-
         // From camera : Get Uri from saved value in SharedPreferences
         if (resultCode == RESULT_OK && requestCode
             == AppInfo.REQUEST_IMAGE_CAPTURE) handleCameraResult()
-
         // From Gallery : get Uri from data Intent
         if (resultCode == RESULT_OK && data != null) handleGalleryResult(data)
-
         // Autocomplete request result
         if (requestCode == 200) handleAutocompleteResult(resultCode, data)
     }
@@ -484,14 +483,7 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
             Activity.RESULT_OK -> {
                 data?.let {
                     val place = Autocomplete.getPlaceFromIntent(data)
-                    listEstatesViewModel.updateLocationSelectedEstate(place, this)
-                }
-            }
-            AutocompleteActivity.RESULT_ERROR -> {
-                data?.let {
-                    val status = Autocomplete.getStatusFromIntent(data)
-                    status.statusMessage?.let { it1 -> Log.i("AUTOCOMPLETE_RESULT", it1) }
-                }
+                    listEstatesViewModel.updateLocationSelectedEstate(place, this) }
             }
         }
     }
@@ -515,7 +507,6 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
             && grantResults[2] == PackageManager.PERMISSION_GRANTED) {
                 handleMediaPermissionsRequestResult()
         }
-
         if (permissions[0] == android.Manifest.permission.ACCESS_FINE_LOCATION
             && grantResults[0] == PackageManager.PERMISSION_GRANTED
             && isFragmentDisplayed(AppInfo.TAG_FRAGMENT_MAP)) {
@@ -536,9 +527,7 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
         fragment.apply {
             if (GPSAccessHandler.checkLocationPermission(activity as MainActivity)) {
                 initializeMapOptions()
-                initializeCameraPositionOnMap()
-            }
-        }
+                initializeCameraPositionOnMap() } }
         val nbRequestSaved = getSharedPreferences(AppInfo.FILE_SHARED_PREF, Context.MODE_PRIVATE)
         // Reset number of permission requests
         nbRequestSaved.edit { putInt(AppInfo.PREF_PERMISSION_LOCATION, 0).apply() }
@@ -550,7 +539,117 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
     private fun accessDatabase() {
         listEstatesViewModel.repositoryAccess.loadAllEstates().observe(this, {
             listEstatesViewModel.restoreData(it)
-             listEstatesViewModel.test()
+             listEstatesViewModel.test() })
+    }
+
+    /**
+     * Displays an [AlertDialog] for new agent creation.
+     */
+    fun showDialogAddAgent(){
+        builderAddAgentDialog.apply {
+            show()
+            getButton(AlertDialog.BUTTON_POSITIVE).isEnabled= false }
+    }
+
+    /**
+     * Restores displayed dialogs after a configuration change.
+     * @param savedInstanceState : Bundle
+     */
+    private fun restoreDialogs(savedInstanceState: Bundle?) {
+        savedInstanceState?.let {
+            if (it.getBoolean(AppInfo.DIALOG_ADD_AGENT_KEY)) {
+                showDialogAddAgent()
+                restoreAddAgentDialogText(savedInstanceState)
+            }
+        }
+    }
+
+    /**
+     * Initializes an [AlertDialog.Builder] for [builderAddAgentDialog] property.
+     */
+    private fun initializeDialogAddAgent() {
+        val viewAddNewAgent: View? = getViewFromLayoutInflater(R.layout.dialog_agent_creation)
+        val firstNameAgentInputEdit = viewAddNewAgent
+                                  ?.findViewById<TextInputEditText>(R.id.first_name_text_input_edit)
+        val lastNameAgentInputEdit = viewAddNewAgent
+                                   ?.findViewById<TextInputEditText>(R.id.last_name_text_input_edit)
+        handleTextWatchersNameAgent(firstNameAgentInputEdit, lastNameAgentInputEdit)
+        builderAddAgentDialog = AlertDialog.Builder(this)
+            .setTitle(resources.getString(R.string.str_dialog_add_agent_title))
+            .setView(viewAddNewAgent)
+            .setPositiveButton(resources.getString(R.string.str_dialog_add_agent_confirm)) { _, _ ->
+                addNewAgent(firstNameAgentInputEdit, lastNameAgentInputEdit)
+                firstNameAgentInputEdit?.text?.clear()
+                lastNameAgentInputEdit?.text?.clear()
+            }
+            .setNegativeButton(resources.getString(R.string.str_dialog_button_cancel)) { _, _ -> }
+            .create()
+    }
+
+    /**
+     * Gets layout inflater using context
+     * @param layout : layout to inflate
+     * @return : inflated view
+     */
+    private fun getViewFromLayoutInflater(@LayoutRes layout: Int): View? {
+        val inflater: LayoutInflater? = getSystemService(Context.LAYOUT_INFLATER_SERVICE)
+                                        as? LayoutInflater
+        return inflater?.inflate(layout, null)
+    }
+
+    /**
+     * Handles "text changed" catch event for both [firstNameAgentInputEdit] and [lastNameAgentInputEdit]
+     * [TextInputEditText].
+     * @param firstNameAgentInputEdit : [TextInputEditText] containing the first name agent string
+     * @param lastNameAgentInputEdit : [TextInputEditText] containing the last name agent string
+     */
+    private fun handleTextWatchersNameAgent(firstNameAgentInputEdit: TextInputEditText?,
+                                            lastNameAgentInputEdit: TextInputEditText?) {
+        lastNameAgentInputEdit?.addTextChangedListener(object: CustomTextWatcher() {
+            override fun afterTextChanged(sequence: Editable?) {
+                firstNameAgentInputEdit?.let { itFirstName ->
+                    sequence?.let { itSequence ->
+                        lastNameAgent = sequence.toString()
+                        builderAddAgentDialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled =
+                            itFirstName.length() > 0 && itSequence.isNotEmpty() } } }
         })
+        firstNameAgentInputEdit?.addTextChangedListener(object: CustomTextWatcher() {
+            override fun afterTextChanged(sequence: Editable?) {
+                lastNameAgentInputEdit?.let { itLastName ->
+                    sequence?.let { itSequence ->
+                        firstNameAgent = itSequence.toString()
+                        builderAddAgentDialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled =
+                            itLastName.length() > 0 && itSequence.isNotEmpty() } } }
+        })
+    }
+
+    /**
+     * Sends new created agent to [ListEstatesViewModel] for database insertion.
+     * @param firstNameAgentInputEdit : [TextInputEditText] containing the first name agent string
+     * @param lastNameAgentInputEdit : [TextInputEditText] containing the last name agent string
+     */
+    private fun addNewAgent(firstNameAgentInputEdit: TextInputEditText?,
+                            lastNameAgentInputEdit: TextInputEditText?) {
+        if (firstNameAgentInputEdit != null && lastNameAgentInputEdit != null) {
+            val agent = Agent(id = 0, firstName = firstNameAgent, lastName = lastNameAgent)
+            listEstatesViewModel.insertAgentInDatabase(agent) }
+    }
+
+    /**
+     * Restores first and last name displayed in [builderAddAgentDialog], after a configuration
+     * change.
+     * @param savedInstanceState : Bundle
+     */
+    private fun restoreAddAgentDialogText(savedInstanceState: Bundle?) {
+        builderAddAgentDialog.apply {
+            val firstNameAgentInputEdit = this
+                .findViewById<TextInputEditText>(R.id.first_name_text_input_edit)
+            val lastNameAgentInputEdit = this
+                .findViewById<TextInputEditText>(R.id.last_name_text_input_edit)
+            savedInstanceState?.getString(AppInfo.FIRST_NAME_AGENT_KEY)?.let {
+                firstNameAgentInputEdit?.text = StringHandler.convertStringToEditable(it) }
+            savedInstanceState?.getString(AppInfo.LAST_NAME_AGENT_KEY)?.let {
+                lastNameAgentInputEdit?.text = StringHandler.convertStringToEditable(it) }
+        }
     }
 }

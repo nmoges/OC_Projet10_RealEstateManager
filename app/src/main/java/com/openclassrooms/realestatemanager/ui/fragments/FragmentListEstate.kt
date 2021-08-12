@@ -109,6 +109,7 @@ class FragmentListEstate : Fragment() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId) {
+            R.id.add_agent -> { (activity as MainActivity).showDialogAddAgent() }
             R.id.search -> { }
             R.id.settings -> {
                 (activity as MainActivity).apply {

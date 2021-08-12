@@ -296,6 +296,14 @@ class ListEstatesViewModel @Inject constructor(
             repositoryAccess.insertLocation(locationData)
         }
     }
+
+    fun insertAgentInDatabase(agent: Agent) {
+        viewModelScope.launch {
+            val agentData = agent.toAgentData()
+            repositoryAccess.insertAgent(agentData)
+        }
+    }
+
     // -------------------- Data update --------------------
     /**
      * Determines if database operation is an insertion or an update.

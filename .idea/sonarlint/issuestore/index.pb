@@ -55,8 +55,6 @@ z
 Japp/src/main/java/com/openclassrooms/realestatemanager/model/date/Dates.kt,b\6\b6a2bcbaeab6e6f243d06fd86f99b6e68edf8493
 p
 @data/src/main/java/com/openclassrooms/data/entities/AgentData.kt,1\a\1abeb1e4c310f94b5881840af6c97b2bad56f91a
-u
-Eapp/src/main/java/com/openclassrooms/realestatemanager/model/Agent.kt,a\4\a43a26428b5a2f03239bcf8d470db7639959a4f8
 j
 :data/src/main/java/com/openclassrooms/data/dao/DatesDao.kt,9\3\93c2ff06aa6101fd97c0adfe22c91cecb7f19391
 s
@@ -108,8 +106,6 @@ p
 Zapp/src/main/java/com/openclassrooms/realestatemanager/notification/NotificationHandler.kt,2\c\2cc36cd1c42d9255e61d09bf4e69efc809953ff7
 ‚
 Rapp/src/main/java/com/openclassrooms/realestatemanager/utils/ProgressBarHandler.kt,d\b\dbe63d1314d52afb625fb7b1d1fe2ca7ab7490a0
-}
-Mapp/src/main/java/com/openclassrooms/realestatemanager/utils/StringHandler.kt,e\2\e260499a1b93021bbd8b2e5de5a992969733878f
 ?
 settings.gradle,0\5\05efc8b1657769a27696d478ded1e95f38737233
 A
@@ -120,3 +116,19 @@ Vapp/src/main/java/com/openclassrooms/realestatemanager/ui/activities/SignInActi
 [app/src/main/java/com/openclassrooms/realestatemanager/receiver/NetworkBroadcastReceiver.kt,f\1\f117ec76d658633e3629a8628f6a9bf4340324de
 ˆ
 Xapp/src/main/java/com/openclassrooms/realestatemanager/ui/adapters/ListEstatesAdapter.kt,d\0\d06173742ed2234766d9661946f87a9e6e2a544f
+P
+ app/src/main/AndroidManifest.xml,8\c\8c55c3ccc257e5907959013f99656e4c8ec3903e
+@
+app/build.gradle,f\4\f4a01d6a4fcb971362ec00a83903fd3902f52164
+<
+build.gradle,f\0\f07866736216be0ee2aba49e392191aeae700a35
+Œ
+\app/src/main/java/com/openclassrooms/realestatemanager/ui/fragments/FragmentEstateDetails.kt,b\9\b942265427bb7d6d6717bf6813fb573821668d1b
+‚
+Rapp/src/main/java/com/openclassrooms/realestatemanager/ui/fragments/FragmentMap.kt,d\f\df4c479f53f84cbfe4339d948ac2f6733360b003
+€
+Papp/src/main/java/com/openclassrooms/realestatemanager/utils/GPSAccessHandler.kt,e\0\e010db57fb632b02cfd7aaeddac02aa53121e72c
+‡
+Wapp/src/main/java/com/openclassrooms/realestatemanager/receiver/GPSBroadcastReceiver.kt,8\4\84434dc375f52597de751c61f1ba9638b82ac097
+‚
+Rapp/src/main/java/com/openclassrooms/realestatemanager/utils/MediaAccessHandler.kt,2\2\227fc63c896ae3418dd7e5c96343095783534d5a

@@ -9,6 +9,12 @@
         android:title="@string/str_item_search"
         app:showAsAction="ifRoom"/>
     <item
+        android:id="@+id/add_agent"
+        android:enabled="true"
+        android:icon="@drawable/ic_baseline_person_add_24dp_dark_blue"
+        android:title="@string/str_item_add_agent"
+        app:showAsAction="collapseActionView"/>
+    <item
         android:id="@+id/map"
         android:enabled="true"
         android:icon="@drawable/ic_baseline_map_24dp_dark_blue"

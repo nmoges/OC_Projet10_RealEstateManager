@@ -11,9 +11,11 @@
     <string name="str_no_estate_selected">No estate selected</string>
     <string name="str_no_network">No network detected</string>
     <string name="str_connectivity_bar_btn_close">Close</string>
-
+    <string name="str_dialog_add_agent_title">Add new agent</string>
+    <string name="str_dialog_add_agent_confirm">Confirm</string>
     <!-- menu_fragment_list_estate.xml -->
     <string name="str_toolbar_fragment_list_estate_title">Real Estate Manager</string>
+    <string name="str_item_add_agent">Add agent</string>
     <string name="str_item_map">Map</string>
     <string name="str_item_search">Search</string>
     <string name="str_item_settings">Settings</string>
