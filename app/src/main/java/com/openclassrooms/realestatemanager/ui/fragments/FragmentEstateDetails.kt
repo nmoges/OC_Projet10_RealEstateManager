@@ -193,7 +193,7 @@ class FragmentEstateDetails : Fragment() {
     private fun updatePublishDateToDisplay() {
         //TODO() : utiliser parametre string
         selectedEstateToDisplay?.run {
-            val publishDateText = ": " + getDate(mutableListOf(dates.entryDate.day,
+            val publishDateText = getDate(mutableListOf(dates.entryDate.day,
                                                                dates.entryDate.month,
                                                                dates.entryDate.year))
             val textToDisplay = resources.getString(R.string.str_published_on) + ": $publishDateText"

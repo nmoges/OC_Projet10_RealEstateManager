@@ -54,6 +54,7 @@ class FragmentListEstate : Fragment() {
             .setToolbarProperties(R.string.str_toolbar_fragment_list_estate_title, false)
         initializeRecyclerView()
         addObserversToViewModels()
+        handleFloatingActionButton()
     }
 
     /**
@@ -76,7 +77,7 @@ class FragmentListEstate : Fragment() {
             val status: Boolean = updateItemSelectionStatus(position)
             notifyDataSetChanged()
             if (status) {
-                activity.handleFabVisibility(View.INVISIBLE)
+                handleFabVisibility(View.INVISIBLE)
                 activity.handleBackgroundGridVisibility(View.INVISIBLE)
                 // Add current selected item to view model
                 listEstatesViewModel.setSelectedEstate(position)
@@ -179,4 +180,23 @@ class FragmentListEstate : Fragment() {
         }
         else { for (i in listEstate.indices) { listEstate[i].selected = false } }
     }
+
+    /**
+     * Handles click event on Floating Action Button.
+     */
+    private fun handleFloatingActionButton() {
+        binding.fab.setOnClickListener {
+            listEstatesViewModel.createNewEstate()
+            (activity as MainActivity).displayFragmentNewEstate(false)
+            handleFabVisibility(View.INVISIBLE)
+            (activity as MainActivity).handleBackgroundGridVisibility(View.INVISIBLE)
+        }
+    }
+
+    /**
+     * Handle floating action button visibility.
+     * @param visibility : Visibility status of the floating action button
+     */
+    fun handleFabVisibility(visibility: Int) =
+        binding.fab.apply { if (visibility == View.VISIBLE) show() else hide() }
 }

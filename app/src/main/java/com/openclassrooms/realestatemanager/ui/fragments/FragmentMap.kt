@@ -109,6 +109,7 @@ class FragmentMap : Fragment(), OnMapReadyCallback {
      * displayed (distance < 1000m).
      * @param map : Google map
      */
+    // TODO() : Add observer on listEstatesViewModel
     private fun displayEstatesMarkersOnMap(map: GoogleMap) {
         currentPosition?.let { itPosition ->
             listEstatesViewModel.listEstates.value?.forEach { itEstate ->
@@ -124,7 +125,6 @@ class FragmentMap : Fragment(), OnMapReadyCallback {
                 if (results[0] < 1000) map.addMarker(MarkerOptions()
                     .position(LatLng(itEstate.location.latitude, itEstate.location.longitude))
                     .title(itEstate.type))
-
             }
         }
     }

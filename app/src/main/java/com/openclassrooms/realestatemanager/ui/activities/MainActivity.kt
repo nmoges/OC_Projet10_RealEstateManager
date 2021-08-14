@@ -112,7 +112,6 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
         initializeDialogAddAgent()
         initializeDialogLogout()
         if (savedInstanceState != null) {
-            restoreViews(savedInstanceState)
             fragmentNewEstate = supportFragmentManager.findFragmentByTag(AppInfo.TAG_FRAGMENT_NEW_ESTATE)
             fragmentEstateDetails =
                        supportFragmentManager.findFragmentByTag(AppInfo.TAG_FRAGMENT_ESTATE_DETAILS)
@@ -123,7 +122,6 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
             restoreDialogs(savedInstanceState) }
         initializeToolbar()
         initializeNotificationHandler()
-        handleFloatingActionButton()
         handleConnectivityBarBtnListener()
         initializeViewModels()
         MediaAccessHandler.initializeNbPermissionRequests(this)
@@ -330,35 +328,15 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
             updateConnectivityBarNetworkDisplay(true) }
     }
 
-    /**
-     * Handles click event on Floating Action Button.
-     */
-    private fun handleFloatingActionButton() {
-        binding.fab.setOnClickListener {
-            listEstatesViewModel.createNewEstate()
-            launchTransaction(containerId, FragmentNewEstate.newInstance(), AppInfo.TAG_FRAGMENT_NEW_ESTATE)
-            handleFabVisibility(View.INVISIBLE)
-            handleBackgroundGridVisibility(View.INVISIBLE) }
-    }
-
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        binding.fab.let { outState.putInt(FAB_STATUS_KEY, it.visibility) }
+     //   binding.fab.let { outState.putInt(FAB_STATUS_KEY, it.visibility) }
         outState.apply {
             putBoolean(AppInfo.DIALOG_ADD_AGENT_KEY, builderAddAgentDialog.isShowing)
             putBoolean(AppInfo.DIALOG_LOGOUT_KEY, builderLogoutDialog.isShowing)
             putString(AppInfo.FIRST_NAME_AGENT_KEY, firstNameAgent)
             putString(AppInfo.LAST_NAME_AGENT_KEY, lastNameAgent)
         }
-    }
-
-    /**
-     * Restore all [MainActivity] views states after a configuration change.
-     * @param savedInstanceState: [Bundle]
-     */
-    private fun restoreViews(savedInstanceState: Bundle) {
-        handleFabVisibility(savedInstanceState.getInt(FAB_STATUS_KEY))
-        if (typeOrientation && typeLayout) handleBackgroundGridVisibility(binding.fab.visibility)
     }
 
     /**
@@ -428,17 +406,13 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
      * Restores all views in [FragmentNewEstate] when another fragment has been removed from stack.
      */
     private fun restoreViewsInFragmentListEstate() {
-        handleFabVisibility(View.VISIBLE)
-        handleBackgroundGridVisibility(View.VISIBLE)
-        setToolbarProperties(R.string.str_toolbar_fragment_list_estate_title, false)
+        val fragment = supportFragmentManager.findFragmentByTag(AppInfo.TAG_FRAGMENT_LIST_ESTATE)
+        if (fragment != null) {
+            (fragment as FragmentListEstate).handleFabVisibility(View.VISIBLE)
+            handleBackgroundGridVisibility(View.VISIBLE)
+            setToolbarProperties(R.string.str_toolbar_fragment_list_estate_title, false)
+        }
     }
-
-    /**
-     * Handle floating action button visibility.
-     * @param visibility : Visibility status of the floating action button
-     */
-    fun handleFabVisibility(visibility: Int) =
-        binding.fab.apply { if (visibility == View.VISIBLE) show() else hide() }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)

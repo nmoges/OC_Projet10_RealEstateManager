@@ -106,7 +106,7 @@
     <string name="str_sold_status">Sold on</string>
     <string name="str_available_status">Available</string>
     <string name="str_sale_button_text">Sold</string>
-    <string name="str_published_on">Published on : %1$d/%2$d/%3$d</string>
+    <string name="str_published_on">Published on </string>
 
     <!-- custom_auth_layout.xml -->
     <string name="content_desc_logo_app">Logo application</string>
