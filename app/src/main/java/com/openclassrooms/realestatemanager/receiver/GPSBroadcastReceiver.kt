@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.location.LocationManager
+import com.openclassrooms.realestatemanager.utils.GPSAccessHandler
 
 class GPSBroadcastReceiver(private val onGpsEventDetected: (Boolean) -> Unit ): BroadcastReceiver() {
 
@@ -11,7 +12,7 @@ class GPSBroadcastReceiver(private val onGpsEventDetected: (Boolean) -> Unit ): 
         context?.let {
             val locationManager: LocationManager = context.getSystemService(Context.LOCATION_SERVICE)
                     as LocationManager
-            onGpsEventDetected(locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER))
+            onGpsEventDetected(GPSAccessHandler.isGPSEnabled(locationManager))
         }
     }
 }

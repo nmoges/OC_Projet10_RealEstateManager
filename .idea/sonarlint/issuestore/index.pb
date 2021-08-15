@@ -110,8 +110,6 @@ Vapp/src/main/java/com/openclassrooms/realestatemanager/ui/activities/SignInActi
 app/build.gradle,f\4\f4a01d6a4fcb971362ec00a83903fd3902f52164
 <
 build.gradle,f\0\f07866736216be0ee2aba49e392191aeae700a35
-€
-Papp/src/main/java/com/openclassrooms/realestatemanager/utils/GPSAccessHandler.kt,e\0\e010db57fb632b02cfd7aaeddac02aa53121e72c
 ‚
 Rapp/src/main/java/com/openclassrooms/realestatemanager/utils/MediaAccessHandler.kt,2\2\227fc63c896ae3418dd7e5c96343095783534d5a
 u
@@ -126,11 +124,15 @@ Wapp/src/main/java/com/openclassrooms/realestatemanager/ui/fragments/FragmentSet
 Zapp/src/main/java/com/openclassrooms/realestatemanager/notification/NotificationHandler.kt,2\c\2cc36cd1c42d9255e61d09bf4e69efc809953ff7
 ‰
 Yapp/src/main/java/com/openclassrooms/realestatemanager/viewmodels/ListEstatesViewModel.kt,8\d\8d3506763d1ff2b95ae40f6e3100f51b8a61dcf4
-q
-Aapp/src/main/java/com/openclassrooms/realestatemanager/AppInfo.kt,f\8\f8e7cae62fac8f3581a3f05de0e89e15f032b39e
 
 _app/src/main/java/com/openclassrooms/realestatemanager/authentication/AuthenticationFirebase.kt,9\8\9820f7fff159c3e32429108379dc140cbf00fcfc
-‡
-Wapp/src/main/java/com/openclassrooms/realestatemanager/receiver/GPSBroadcastReceiver.kt,8\4\84434dc375f52597de751c61f1ba9638b82ac097
 z
 Japp/src/main/java/com/openclassrooms/realestatemanager/utils/MapHandler.kt,1\e\1ef5bd633c8d156fa1dfbbbf2a3511cbe07732d3
+A
+gradle.properties,2\a\2afbb999f001938c88fa43fc2ef52abf0f8213e4
+Œ
+\app/src/main/java/com/openclassrooms/realestatemanager/ui/fragments/FragmentEstateDetails.kt,b\9\b942265427bb7d6d6717bf6813fb573821668d1b
+‰
+Yapp/src/main/java/com/openclassrooms/realestatemanager/ui/fragments/FragmentListEstate.kt,0\b\0b357c8f4a12d1fd6b84157cb7f44cffd452c782
+„
+Tapp/src/main/java/com/openclassrooms/realestatemanager/ui/activities/MainActivity.kt,c\b\cbf2ccaf6756210c5c05ca63a07eba971bc8b792

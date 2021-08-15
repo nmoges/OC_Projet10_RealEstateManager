@@ -5,9 +5,11 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.location.Location
+import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Bundle
 import android.provider.Settings
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
@@ -20,6 +22,7 @@ import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import com.openclassrooms.realestatemanager.AppInfo
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.databinding.FragmentMapBinding
 import com.openclassrooms.realestatemanager.receiver.GPSBroadcastReceiver
@@ -51,6 +54,14 @@ class FragmentMap : Fragment(), OnMapReadyCallback {
 
     /** Contains current user position */
     private var currentPosition: LatLng? = null
+
+    private var locationListener = LocationListener {
+        map.let { itMap ->
+            itMap.clear()
+            displayEstatesMarkersOnMap(itMap)
+        }
+    }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -86,14 +97,28 @@ class FragmentMap : Fragment(), OnMapReadyCallback {
 
     override fun onResume() {
         super.onResume()
-        (activity as MainActivity).registerReceiver(gpsBroadcastReceiver, IntentFilter(LocationManager.PROVIDERS_CHANGED_ACTION))
+        (activity as MainActivity).registerReceiver(gpsBroadcastReceiver,
+                                             IntentFilter(LocationManager.PROVIDERS_CHANGED_ACTION))
         updateFloatingButtonIconDisplay(locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER))
-
+        handleLocationListener(true)
     }
 
     override fun onPause() {
         super.onPause()
         (activity as MainActivity).unregisterReceiver(gpsBroadcastReceiver)
+        handleLocationListener(false)
+    }
+
+    private fun handleLocationListener(status: Boolean) {
+        if (GPSAccessHandler.checkLocationPermission(activity as MainActivity)
+            && GPSAccessHandler.isGPSEnabled(locationManager)) {
+                if (status)  locationManager.requestLocationUpdates(
+                    LocationManager.GPS_PROVIDER,
+                    AppInfo.LOCATION_REFRESH_TIME,
+                    AppInfo.LOCATION_REFRESH_DISTANCE,
+                    locationListener)
+                else locationManager.removeUpdates(locationListener)
+        }
     }
 
     /**
@@ -112,20 +137,17 @@ class FragmentMap : Fragment(), OnMapReadyCallback {
     // TODO() : Add observer on listEstatesViewModel
     private fun displayEstatesMarkersOnMap(map: GoogleMap) {
         currentPosition?.let { itPosition ->
-            listEstatesViewModel.listEstates.value?.forEach { itEstate ->
-                val results = FloatArray(1)
-                Location.distanceBetween(
-                    itPosition.latitude,
-                    itPosition.longitude,
-                    itEstate.location.latitude,
-                    itEstate.location.longitude,
-                    results
-                )
-                // Display estates which distance is < 1000m from user location
-                if (results[0] < 1000) map.addMarker(MarkerOptions()
-                    .position(LatLng(itEstate.location.latitude, itEstate.location.longitude))
-                    .title(itEstate.type))
-            }
+            listEstatesViewModel.listEstates.observe(viewLifecycleOwner, {
+                it.forEach { itEstate ->
+                    if (GPSAccessHandler.checkDistanceEstateFromGPSLocation(
+                            LatLng(itPosition.latitude, itPosition.longitude),
+                            itPosition)) {
+                        map.addMarker(MarkerOptions()
+                            .position(LatLng(itEstate.location.latitude, itEstate.location.longitude))
+                            .title(itEstate.type))
+                    }
+                }
+            })
         }
     }
 
@@ -134,14 +156,18 @@ class FragmentMap : Fragment(), OnMapReadyCallback {
      */
     @RequiresPermission(android.Manifest.permission.ACCESS_FINE_LOCATION)
     fun initializeCameraPositionOnMap() {
-        (activity as MainActivity).locationProviderClient.getCurrentLocation(
-            LocationRequest.PRIORITY_HIGH_ACCURACY, null)
-            .addOnSuccessListener {
-                currentPosition = LatLng(it.latitude, it.longitude)
-                val cameraUpdate = CameraUpdateFactory.newLatLngZoom(currentPosition, 18.0f)
-                map.moveCamera(cameraUpdate)
-                displayEstatesMarkersOnMap(map)
-            }
+        if (GPSAccessHandler.isGPSEnabled(locationManager)) {
+            (activity as MainActivity).locationProviderClient.getCurrentLocation(
+                LocationRequest.PRIORITY_HIGH_ACCURACY, null)
+                .addOnSuccessListener { itLoc ->
+                    currentPosition = LatLng(itLoc.latitude, itLoc.longitude)
+                    currentPosition?.let { itLatLng ->
+                        val cameraUpdate = CameraUpdateFactory.newLatLngZoom(itLatLng, 18.0f)
+                        map.moveCamera(cameraUpdate)
+                        displayEstatesMarkersOnMap(map)
+                    }
+                }
+        }
     }
 
     /**
@@ -199,7 +225,7 @@ class FragmentMap : Fragment(), OnMapReadyCallback {
                 GPSAccessHandler.requestPermissionLocation(activity as MainActivity)
             }
             else { // Else enabled
-                if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                if (GPSAccessHandler.isGPSEnabled(locationManager)) {
                     // GPS activated
                     centerCursorInCurrentUserLocation()
                 }
@@ -234,8 +260,10 @@ class FragmentMap : Fragment(), OnMapReadyCallback {
      * Catches a GPS activation/deactivation event.
      * @param status : GPS status.
      */
+    @RequiresPermission(android.Manifest.permission.ACCESS_FINE_LOCATION)
     private fun onGpsEventDetected(status: Boolean) {
         updateFloatingButtonIconDisplay(status)
+        initializeCameraPositionOnMap()
     }
 
     /**

@@ -5,10 +5,13 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
+import android.location.Location
+import android.location.LocationManager
 import android.net.Uri
 import android.provider.Settings
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.google.android.gms.maps.model.LatLng
 import com.openclassrooms.realestatemanager.AppInfo
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.ui.activities.MainActivity
@@ -90,4 +93,19 @@ object GPSAccessHandler {
         builderAccessLocationDialog.show()
     }
 
+    fun checkDistanceEstateFromGPSLocation(estateLatLng: LatLng, gpsPosition: LatLng): Boolean {
+        val result = FloatArray(1)
+        Location.distanceBetween(gpsPosition.latitude,
+                                 gpsPosition.longitude,
+                                 estateLatLng.latitude,
+                                 estateLatLng.longitude,
+                                 result)
+
+        // Display estates which distance is < 1000m from user location
+        if (result[0] < 1000) return true
+        return false
+    }
+
+    fun isGPSEnabled(locationManager: LocationManager): Boolean =
+        locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
 }
