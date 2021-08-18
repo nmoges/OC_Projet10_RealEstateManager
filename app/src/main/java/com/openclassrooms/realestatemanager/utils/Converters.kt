@@ -15,12 +15,13 @@ fun Estate.toEstateData() = EstateData(type = this.type, price = this.price,
                                        status = this.status, idAgent = this.agent.id)
 
 fun EstateData.toEstate(interior: Interior, listPhoto: MutableList<Photo>, agent: Agent,
-                        dates: Dates, location: Location) = Estate(
+                        dates: Dates, location: Location, listPointOfInterest: MutableList<PointOfInterest>) = Estate(
                             id = this.idEstate, type = this.type, price = this.price,
                             description = this.description,
                             status = this.status, agent = agent,
                             selected = false, interior = interior,
-                            listPhoto = listPhoto, dates= dates, location = location)
+                            listPhoto = listPhoto, dates= dates, location = location,
+                            listPointOfInterest = listPointOfInterest)
 
 
 // Photo converters
@@ -55,6 +56,18 @@ fun LocationData.toLocation() = Location(
     longitude = longitude,
     address = address,
     district = district
+)
+
+
+// PointOfInterest converters
+fun PointOfInterest.toPointOfInterestData(associatedId: Long) = PointOfInterestData(
+    name = name,
+    associatedId = associatedId
+)
+
+fun PointOfInterestData.toPointOfInterest() = PointOfInterest(
+    id = idPoi,
+    name = name
 )
 
 // Agent converters

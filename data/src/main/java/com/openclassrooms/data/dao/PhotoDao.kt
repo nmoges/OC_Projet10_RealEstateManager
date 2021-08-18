@@ -5,9 +5,10 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.openclassrooms.data.entities.PhotoData
+import com.openclassrooms.data.database.RealEstateManagerDatabase
 
 /**
- * Data access object interface to [com.openclassrooms.data.database.RealEstateManagerDatabase]
+ * Data access object interface to [RealEstateManagerDatabase]
  * table_photos.
  */
 @Dao

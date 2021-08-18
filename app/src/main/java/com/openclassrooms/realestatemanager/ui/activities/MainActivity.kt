@@ -95,13 +95,12 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
     /** Defines an [AlertDialog] allowing user to enter a new agent */
     private lateinit var builderAddAgentDialog: AlertDialog
 
+    /** Contains fields temporary value for an [Agent] object */
     private var firstNameAgent = ""
     private var lastNameAgent = ""
 
     /** Defines an [AlertDialog] for logout */
     private lateinit var builderLogoutDialog: AlertDialog
-
-    companion object { const val FAB_STATUS_KEY = "FAB_STATUS_KEY" }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -330,7 +329,6 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-     //   binding.fab.let { outState.putInt(FAB_STATUS_KEY, it.visibility) }
         outState.apply {
             putBoolean(AppInfo.DIALOG_ADD_AGENT_KEY, builderAddAgentDialog.isShowing)
             putBoolean(AppInfo.DIALOG_LOGOUT_KEY, builderLogoutDialog.isShowing)
@@ -460,7 +458,10 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
             Activity.RESULT_OK -> {
                 data?.let {
                     val place = Autocomplete.getPlaceFromIntent(data)
-                    listEstatesViewModel.updateLocationSelectedEstate(place, this) } }
+                    val fragment = supportFragmentManager.findFragmentByTag(AppInfo.TAG_FRAGMENT_NEW_ESTATE)
+                            as FragmentNewEstate
+                    listEstatesViewModel.updateLocationSelectedEstate(place, this)
+                    fragment.updateLocationDisplayed()} }
         }
     }
 
@@ -488,6 +489,10 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
                 handleLocationPermissionRequestResult()
     }
 
+    /**
+     * Handles storage of [SharedPreferences] value associated to the number of permissions
+     * requests for media access.
+     */
     private fun handleMediaPermissionsRequestResult() {
         val nbRequestsSaved = getSharedPreferences(AppInfo.FILE_SHARED_PREF,
             Context.MODE_PRIVATE)
@@ -495,6 +500,10 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
         nbRequestsSaved.edit { putInt(AppInfo.PREF_PERMISSIONS, 0).apply() }
     }
 
+    /**
+     * Handles storage of [SharedPreferences] value associated to the number of permission
+     * requests for location access, and updates displayed [FragmentMap] instance.
+     */
     private fun handleLocationPermissionRequestResult() {
         val fragment = supportFragmentManager.findFragmentByTag(AppInfo.TAG_FRAGMENT_MAP)
                 as FragmentMap
@@ -578,7 +587,7 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
     }
 
     /**
-     * Displays a scnkbar for log out information.
+     * Displays a [Snackbar] for log out information.
      * @param status : status of the logout operation
      */
     private fun onLogout(status: Boolean) {

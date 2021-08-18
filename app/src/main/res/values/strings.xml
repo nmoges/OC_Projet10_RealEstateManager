@@ -16,6 +16,7 @@
     <string name="str_dialog_logout_title">Logout</string>
     <string name="str_dialog_logout_message">Do you want to logout ?</string>
     <string name="str_error_logout">Error while logging out</string>
+
     <!-- menu_fragment_list_estate.xml -->
     <string name="str_toolbar_fragment_list_estate_title">Real Estate Manager</string>
     <string name="str_item_add_agent">Add agent</string>
@@ -91,11 +92,13 @@
     <string name="str_dialog_button_yes">Yes</string>
     <string name="str_dialog_button_no">No</string>
     <string name="str_dialog_button_cancel">Cancel</string>
+    <string name="str_dialog_button_close">Close</string>
     <string name="str_dialog_add_media_title">Import media</string>
     <string name="str_dialog_add_media_option_take_picture">Take picture</string>
     <string name="str_dialog_add_media_option_import_from_gallery">Import from gallery</string>
     <string name="str_dialog_name_media_title">Name photo</string>
     <string name="str_dialog_select_agent_title">Select agent</string>
+    <string name="str_dialog_ad_poi_title">Add points of interest</string>
     <string name="str_toast_missing_information">Can\'t create Estate, missing information</string>
     <string name="str_toast_new_estate_created">New estate created</string>
     <string name="str_toast_estate_modified">Modifications saved</string>

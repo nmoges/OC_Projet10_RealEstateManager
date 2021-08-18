@@ -6,7 +6,12 @@ import com.openclassrooms.data.dao.*
 import com.openclassrooms.data.entities.*
 import com.openclassrooms.data.entities.date.DatesData
 import com.openclassrooms.data.service.AutocompleteService
+import com.openclassrooms.data.service.RetrofitBuilder
+import retrofit2.Retrofit
 
+/**
+ * Repository class interface.
+ */
 interface RealEstateRepositoryAccess {
 
     // EstateDao
@@ -43,11 +48,21 @@ interface RealEstateRepositoryAccess {
 
     suspend fun updateLocation(locationData: LocationData)
 
+    // PointOfInterestDao
+    suspend fun insertPointOfInterest(pointOfInterestData: PointOfInterestData)
+
+    suspend fun deletePointOfInterest(pointOfInterestData: PointOfInterestData)
+
+    suspend fun getPointsOfInterest(id: Long): List<PointOfInterestData>
+
     // EstateWithPhotosAndInteriorDao
     fun loadAllEstates(): LiveData<List<EstateDataWithPhotosAndInterior>>
 
     // Autocomplete service
     fun performAutocompleteRequest(activity: Activity)
+
+    // Retrofit
+    fun getRetrofit(): Retrofit
 }
 
 /**
@@ -60,6 +75,7 @@ class RealEstateRepository(
     private val locationDao: LocationDao,
     private val agentDao: AgentDao,
     private val datesDao: DatesDao,
+    private val pointOfInterestDao: PointOfInterestDao,
     private val estateWithPhotosAndInteriorDao: EstateWithPhotosAndInteriorDao):
     RealEstateRepositoryAccess {
 
@@ -109,11 +125,27 @@ class RealEstateRepository(
 
     override suspend fun updateLocation(locationData: LocationData) =
                                                         locationDao.updateLocationData(locationData)
+
+    // PointOfInterestDao
+    override suspend fun insertPointOfInterest(pointOfInterestData: PointOfInterestData) =
+        pointOfInterestDao.insertPointOfInterestData(pointOfInterestData)
+
+
+    override suspend fun deletePointOfInterest(pointOfInterestData: PointOfInterestData) =
+        pointOfInterestDao.deletePointOfInterestData(pointOfInterestData)
+
+    override suspend fun getPointsOfInterest(id: Long): List<PointOfInterestData>
+    = pointOfInterestDao.getPointsOfInterest(id)
+
     // EstateWithPhotosAndInteriorDao
     override fun loadAllEstates(): LiveData<List<EstateDataWithPhotosAndInterior>> =
                                                      estateWithPhotosAndInteriorDao.loadAllEstates()
 
+    // Autocomplete Service
     override fun performAutocompleteRequest(activity: Activity) {
         AutocompleteService.performAutocompleteRequest(activity)
     }
+
+    // Retrofit
+    override fun getRetrofit(): Retrofit = RetrofitBuilder.retrofit
 }

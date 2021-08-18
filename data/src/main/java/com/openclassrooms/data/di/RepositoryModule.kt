@@ -24,9 +24,11 @@ object RepositoryModule {
                          locationDao: LocationDao,
                          agentDao: AgentDao,
                          datesDao: DatesDao,
+                         pointOfInterestDao: PointOfInterestDao,
                          estateWithPhotosAndInteriorDao: EstateWithPhotosAndInteriorDao
     ): RealEstateRepositoryAccess {
         return RealEstateRepository(estateDao, photoDao, interiorDao, locationDao,
-                                    agentDao, datesDao, estateWithPhotosAndInteriorDao)
+                                    agentDao, datesDao, pointOfInterestDao,
+                                    estateWithPhotosAndInteriorDao)
     }
 }

@@ -25,6 +25,7 @@ import com.openclassrooms.realestatemanager.ui.MediaDisplayHandler
 import com.openclassrooms.realestatemanager.ui.activities.MainActivity
 import com.openclassrooms.realestatemanager.utils.CustomTextWatcher
 import com.openclassrooms.realestatemanager.utils.MediaAccessHandler
+import com.openclassrooms.realestatemanager.utils.POIProvider
 import com.openclassrooms.realestatemanager.utils.StringHandler
 import com.openclassrooms.realestatemanager.viewmodels.ListEstatesViewModel
 
@@ -42,6 +43,12 @@ class FragmentNewEstate : Fragment() {
 
     /** Defines new estate creation (false) or to modification of an existing one (true). */
     var updateEstate: Boolean = false
+
+    /** Defines [AlertDialog] for "Add point of interest" functionality */
+    private lateinit var builderAddPOIDialog: AlertDialog
+
+    /** Defines [AlertDialog] for list of agents access */
+    private lateinit var builderListAgentsDialog: AlertDialog
 
     /** Defines an [AlertDialog] allowing user to reset [Estate] information. */
     private lateinit var builderResetEstateDialog: AlertDialog
@@ -75,11 +82,11 @@ class FragmentNewEstate : Fragment() {
         }
     }
 
-    /** Defines [AlertDialog] for list of agents access */
-    private lateinit var builderListAgentsDialog: AlertDialog
-
     /** Contains temporary value of a selected agent */
     private var agentSelected = 1
+
+    /** Contains temporary values of selected points of interest */
+    private var listPOI = mutableListOf<String>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -95,6 +102,8 @@ class FragmentNewEstate : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        initializeListPOI()
+        updateTagsDisplay()
         initializeDialogs()
         if (savedInstanceState != null) {
             confirmExit = savedInstanceState.getBoolean(AppInfo.CONFIRM_EXIT_KEY, false)
@@ -116,7 +125,7 @@ class FragmentNewEstate : Fragment() {
         handleEditTextWatchers()
         handleNameAgentEditListener()
         editLocation()
-        updateLocation()
+        handleAddPOIButton()
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -150,6 +159,9 @@ class FragmentNewEstate : Fragment() {
                 restoreBuildNameMediaDialogProperties() }
             savedInstanceState?.getBoolean(AppInfo.DIALOG_LIST_AGENTS_KEY) == true -> {
                 builderListAgentsDialog.show() }
+            savedInstanceState?.getBoolean(AppInfo.DIALOG_ADD_POI_KEY) == true -> {
+                builderAddPOIDialog.show()
+            }
         }
     }
 
@@ -173,6 +185,7 @@ class FragmentNewEstate : Fragment() {
         initializeDialogAddMedia()
         initializeDialogNameMedia()
         initializeDialogListAgents()
+        initializeDialogAddPOI()
     }
 
     /**
@@ -202,6 +215,28 @@ class FragmentNewEstate : Fragment() {
                     .setAdapter(adapter) { _, which ->
                         updateNameAgentEditText(which+1, adapter.getItem(which)) }.create() }
         }
+    }
+
+    /**
+     * Initializes an [AlertDialog.Builder] for [builderAddPOIDialog] property.
+     */
+    private fun initializeDialogAddPOI() {
+        val itemsBoolean = BooleanArray(8)
+        listPOI.forEach {
+            val index = POIProvider.provideIndexFromPointOfInterest(it)
+            itemsBoolean[index] = true
+        }
+        builderAddPOIDialog = AlertDialog.Builder(activity)
+            .setTitle(resources.getString(R.string.str_dialog_ad_poi_title))
+            .setMultiChoiceItems(R.array.poi, itemsBoolean) { _, which, isChecked ->
+                val pointOfInterest = POIProvider.providePointOfInterest(which)
+                if (isChecked) listPOI.add(pointOfInterest)
+                else { if (listPOI.contains(pointOfInterest)) listPOI.remove(pointOfInterest) }
+                listEstatesViewModel.updatePointOfInterestSelectedEstate(listPOI)
+                updateTagsDisplay()
+            }
+            .setPositiveButton(resources.getString(R.string.str_dialog_button_close)) { _, _ -> }
+            .create()
     }
 
     /**
@@ -251,6 +286,9 @@ class FragmentNewEstate : Fragment() {
             .create()
     }
 
+    /**
+     * Initializes the sliders values associated with the current estate.
+     */
     private fun initializeSlidersValues() {
         binding.apply {
             val interior = listEstatesViewModel.selectedEstate?.interior
@@ -262,6 +300,9 @@ class FragmentNewEstate : Fragment() {
         }
     }
 
+    /**
+     * Initializes the sliders associated texts.
+     */
     private fun initializeSliderMaterialText() {
         binding.apply {
             sliderSurfaceValue.text = StringHandler.getSliderString(5000,
@@ -401,6 +442,7 @@ class FragmentNewEstate : Fragment() {
             putBoolean(AppInfo.DIALOG_CONFIRM_MEDIA_KEY, builderNameMediaDialog.isShowing)
             putBoolean(AppInfo.DIALOG_LIST_AGENTS_KEY, builderListAgentsDialog.isShowing)
             putBoolean(AppInfo.UPDATE_ESTATE_KEY, updateEstate)
+            putBoolean(AppInfo.DIALOG_ADD_POI_KEY, builderAddPOIDialog.isShowing)
             putInt(AppInfo.ESTATE_AGENT_KEY, agentSelected)
             putString(AppInfo.TEXT_DIALOG_CONFIRM_MEDIA_KEY, textNameMediaDialog)
             putInt(AppInfo.NUMBER_PHOTO_KEY, numberPhotosAdded)
@@ -426,10 +468,14 @@ class FragmentNewEstate : Fragment() {
         }
     }
 
-    private fun updateLocation() {
-        listEstatesViewModel.locationEstate.observe(viewLifecycleOwner, {
-            binding.locationSectionEdit.text = StringHandler.convertStringToEditable(it)
-        })
+    /**
+     * Updates location estate displayed in the "Location" edit text view.
+     */
+    fun updateLocationDisplayed() {
+        listEstatesViewModel.selectedEstate?.let {
+            binding.locationSectionEdit.text =
+                StringHandler.convertStringToEditable(it.location.address)
+        }
     }
 
     /**
@@ -502,7 +548,8 @@ class FragmentNewEstate : Fragment() {
                     && listEstatesViewModel.selectedEstate?.listPhoto?.isNotEmpty() == true) {
                     displayToastEstate(false)
                     (activity as MainActivity).notificationHandler.createNotification(updateEstate)
-                    updateSelectedEstateFromViewModel(name, description, price) }
+                    updateSelectedEstateFromViewModel(name, description, price)
+                }
                 else {
                     displayToastEstate(true)
                     displayErrorBoxMessage() }
@@ -541,7 +588,8 @@ class FragmentNewEstate : Fragment() {
                                              numberBedrooms = binding.sliderBedrooms.value.toInt(),
                                              surface = binding.sliderSurface.value.toInt())
                 updateDateSelectedEstate(false)
-                updateAgentSelectedEstate(agentSelected, updateEstate) }
+                updateAgentSelectedEstate(agentSelected, updateEstate)
+                updatePointOfInterestSelectedEstate(this@FragmentNewEstate.listPOI)}
              }
         confirmExit = true
         (activity as MainActivity).onBackPressed()
@@ -602,5 +650,31 @@ class FragmentNewEstate : Fragment() {
     private fun updateNameAgentEditText(position: Int, nameAgent: String?) {
         agentSelected = position
         binding.agentSectionEdit.text = Editable.Factory.getInstance().newEditable(nameAgent)
+    }
+
+    /**
+     * Handles click events on "Points of interest" button.
+     */
+    private fun handleAddPOIButton() {
+        binding.buttonAddPoi.setOnClickListener { builderAddPOIDialog.show() }
+    }
+
+    /**
+     * Update "Point of interest" tags displayed in container.
+     */
+    private fun updateTagsDisplay() {
+        binding.tagContainerLayout.let {  itContainer ->
+            itContainer.removeAllTags()
+            listPOI.forEach { itPOI -> itContainer.addTag(itPOI) }
+        }
+    }
+
+    /**
+     * Initializes the list of POI used for container updates.
+     */
+    private fun initializeListPOI() {
+        listEstatesViewModel.selectedEstate?.let { it ->
+            it.listPointOfInterest.forEach { itPOI -> listPOI.add(itPOI.name) }
+        }
     }
 }

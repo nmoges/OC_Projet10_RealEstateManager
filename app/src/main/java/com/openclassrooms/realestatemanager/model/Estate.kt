@@ -13,6 +13,8 @@ import com.openclassrooms.realestatemanager.model.date.Dates
  * @param dates : associated entry and sell dates
  * @param status : Real estate status (sold, or for sale)
  * @param selected : Define if a estate is currently being consulted (true) or not (false)
+ * @param listPhoto : List of photos
+ * @param listPointOfInterest : List of points of interest
  */
 data class Estate(
     var id: Long,
@@ -25,5 +27,6 @@ data class Estate(
     var dates: Dates,
     var status: Boolean = false,
     var selected: Boolean = false,
-    var listPhoto: MutableList<Photo> = mutableListOf()
+    var listPhoto: MutableList<Photo> = mutableListOf(),
+    var listPointOfInterest: MutableList<PointOfInterest> = mutableListOf()
 )

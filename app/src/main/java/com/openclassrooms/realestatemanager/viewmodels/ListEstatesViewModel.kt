@@ -3,12 +3,14 @@ package com.openclassrooms.realestatemanager.viewmodels
 import android.app.Activity
 import android.content.Context
 import android.location.Geocoder
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.libraries.places.api.model.Place
 import com.openclassrooms.data.entities.EstateDataWithPhotosAndInterior
+import com.openclassrooms.data.entities.PointOfInterestData
 import com.openclassrooms.data.repository.RealEstateRepositoryAccess
 import com.openclassrooms.realestatemanager.model.*
 import com.openclassrooms.realestatemanager.model.date.Dates
@@ -44,11 +46,6 @@ class ListEstatesViewModel @Inject constructor(
     val listAgents: LiveData<List<Agent>>
         get() = _listAgents
 
-    /** Contains a temporary location string value. */
-    private val _locationEstate: MutableLiveData<String> = MutableLiveData()
-    val locationEstate: LiveData<String>
-        get()= _locationEstate
-
     /** Contains selected [Estate]. */
     var selectedEstate: Estate? = null
 
@@ -62,16 +59,10 @@ class ListEstatesViewModel @Inject constructor(
         selectedEstate =
             Estate(
                 id = 1, type = "", price = 0, description = "", status = false, selected = false,
-                location = Location(id = 1,
-                    address = "",
-                    district = "",
-                    latitude = 0.0,
-                    longitude = 0.0),
-                interior = Interior(id= 1,
-                    numberRooms = 5,
-                    numberBathrooms = 1,
-                    numberBedrooms = 1,
-                    surface = 200),
+                location = Location(id = 1, address = "", district = "",
+                                    latitude = 0.0, longitude = 0.0),
+                interior = Interior(id= 1, numberRooms = 5, numberBathrooms = 1,
+                                    numberBedrooms = 1, surface = 200),
                 agent = Agent(id = 1, firstName = "", lastName = ""),
                 dates = Dates(id = 1, entryDate = EntryDate(), saleDate = SaleDate())
             )
@@ -148,6 +139,11 @@ class ListEstatesViewModel @Inject constructor(
             day = date[0], month = date[1], year = date[2])
     }
 
+    /**
+     * Updates [selectedEstate] location field value.
+     * @param place : Place returned from an autocomplete request
+     * @param context : Context
+     */
     fun updateLocationSelectedEstate(place : Place, context: Context) {
         val geocoder = Geocoder(context, Locale.getDefault())
         place.latLng?.let {
@@ -159,7 +155,21 @@ class ListEstatesViewModel @Inject constructor(
                 location.longitude = it.longitude
                 location.address = place.address ?: ""
                 location.district = district
-                _locationEstate.value = location.address
+            }
+        }
+    }
+
+    /**
+     * Updates [selectedEstate] point of interest field value.
+     * @param list : new point of interest list
+     */
+    fun updatePointOfInterestSelectedEstate(list: MutableList<String>) {
+        selectedEstate?.apply {
+            listPointOfInterest.apply {
+                clear()
+                for (i in 0 until list.size) {
+                    add(PointOfInterest((i+1).toLong(), list[i]))
+                }
             }
         }
     }
@@ -208,13 +218,18 @@ class ListEstatesViewModel @Inject constructor(
                 val interior = it.interiorData.toInterior()
                 val listPhoto: MutableList<Photo> = mutableListOf()
                 it.listPhotosData.forEach { listPhoto.add(it.toPhoto()) }
+                val listPointOfInterest: MutableList<PointOfInterest> = mutableListOf()
+                it.listPointOfInterestData.forEach {
+                    listPointOfInterest.add(it.toPointOfInterest())
+                }
                 val agentData = repositoryAccess.getAgentById(it.estateData.idAgent)
                 val datesData = repositoryAccess.getDatesById(it.estateData.idEstate)
                 val locationData = it.locationData.toLocation()
                 val estate = it.estateData.toEstate(interior, listPhoto,
                                                     agentData.toAgent(),
                                                     datesData.toDates(),
-                                                    locationData)
+                                                    locationData,
+                                                    listPointOfInterest)
                 listEstateRestored.add(estate)
             }
             _listEstates.postValue(listEstateRestored)
@@ -249,6 +264,9 @@ class ListEstatesViewModel @Inject constructor(
             insertLocationInDatabase(estate.location, id)
             estate.listPhoto.forEach {
                 insertPhotoInDatabase(it, id)
+            }
+            estate.listPointOfInterest.forEach {
+                insertPointOfInterestInDatabase(it, id)
             }
         }
     }
@@ -289,7 +307,11 @@ class ListEstatesViewModel @Inject constructor(
         }
     }
 
-
+    /**
+     * Access insert location method from repository interface.
+     * @param location : location to store in table_locations
+     * @param associatedId : associated estate id
+     */
     private fun insertLocationInDatabase(location: Location, associatedId: Long) {
         viewModelScope.launch {
             val locationData = location.toLocationData(associatedId)
@@ -297,12 +319,29 @@ class ListEstatesViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Access insert agent method from repository interface.
+     * @param agent : agent to store in table_agents
+     */
     fun insertAgentInDatabase(agent: Agent) {
         viewModelScope.launch {
             val agentData = agent.toAgentData()
             repositoryAccess.insertAgent(agentData)
         }
     }
+
+    /**
+     * Access insert point of interest method from repository interface.
+     * @param pointOfInterest : point of interest to store in table_poi
+     * @param associatedId : associated estate id
+     */
+    private fun insertPointOfInterestInDatabase(pointOfInterest: PointOfInterest, associatedId: Long) {
+        viewModelScope.launch {
+            val pointOfInterestData = pointOfInterest.toPointOfInterestData(associatedId)
+            repositoryAccess.insertPointOfInterest(pointOfInterestData)
+        }
+    }
+
 
     // -------------------- Data update --------------------
     /**
@@ -323,21 +362,12 @@ class ListEstatesViewModel @Inject constructor(
         viewModelScope.launch {
             val estateData = estate.toEstateData()
             estateData.idEstate = estate.id
-            // Update table_estates
-            repositoryAccess.updateEstate(estateData)
-            // Update table_interiors
-            updateInteriorInDatabase(estate.interior, estate.id)
-            // Update table_photos
-            val listPhotosInDb = repositoryAccess.getPhotos(estate.id)
-            if (estate.listPhoto.size > listPhotosInDb.size) { // At least one new photo added
-                for (i in listPhotosInDb.size until estate.listPhoto.size) {
-                    insertPhotoInDatabase(estate.listPhoto[i], estate.id)
-                }
-            }
-            // Update table_dates
-            updateDatesInDatabase(estate.dates, estate.id)
-            // Update table_locations
-            updateLocationInDatabase(estate.location, estate.id)
+            repositoryAccess.updateEstate(estateData)             // Update table_estates
+            updateInteriorInDatabase(estate.interior, estate.id)  // Update table_interiors
+            updatePhotosInDatabase(estate)                        // Update table_photos
+            updateDatesInDatabase(estate.dates, estate.id)        // Update table_dates
+            updateLocationInDatabase(estate.location, estate.id)  // Update table_locations
+            updatePointsOfInterestInDatabase(estate)              // Update table_poi
         }
     }
 
@@ -367,6 +397,11 @@ class ListEstatesViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Updates table_locations from database.
+     * @param location : updated location
+     * @param idAssociatedEstate : estate associated id
+     */
     private fun updateLocationInDatabase(location: Location, idAssociatedEstate: Long) {
         viewModelScope.launch {
             val locationData = location.toLocationData(idAssociatedEstate)
@@ -374,7 +409,63 @@ class ListEstatesViewModel @Inject constructor(
             repositoryAccess.updateLocation(locationData)
         }
     }
+
+    /**
+     * Updates table_photos from database.
+     * @param estate : estate containing updated photos
+     */
+    private suspend fun updatePhotosInDatabase(estate: Estate) {
+        val listPhotosInDb = repositoryAccess.getPhotos(estate.id)
+        if (estate.listPhoto.size > listPhotosInDb.size) { // At least one new photo added
+            for (i in listPhotosInDb.size until estate.listPhoto.size) {
+                insertPhotoInDatabase(estate.listPhoto[i], estate.id)
+            }
+        }
+    }
+
+    /**
+     * Updates table_poi from database.
+     * @param estate : estate containing updated point of interest
+     */
+    private suspend fun updatePointsOfInterestInDatabase(estate: Estate) {
+        val listPOIInDb: MutableList<PointOfInterest> = mutableListOf()
+        repositoryAccess.getPointsOfInterest(estate.id).forEach {
+            listPOIInDb.add(it.toPointOfInterest())
+        }
+        when {
+            estate.listPointOfInterest.size > listPOIInDb.size -> {
+                for (i in 0 until estate.listPointOfInterest.size) {
+                    if (!POIComparator.containsPOI(estate.listPointOfInterest[i], listPOIInDb)) {
+                        insertPointOfInterestInDatabase(estate.listPointOfInterest[i], estate.id)
+                    }
+                }
+            }
+            estate.listPointOfInterest.size < listPOIInDb.size -> {
+                for (i in 0 until listPOIInDb.size) {
+                    if (!POIComparator.containsPOI(listPOIInDb[i], estate.listPointOfInterest)) {
+                        val pointOfInterestData = listPOIInDb[i].toPointOfInterestData(estate.id)
+                        pointOfInterestData.idPoi = listPOIInDb[i].id
+                        deletePointOfInterestFromDatabase(pointOfInterestData)
+                    }
+                }
+            }
+        }
+
+    }
+    // -------------------- Data removal --------------------
+    /**
+     * Removes a row in table_poi associated corresponding to a given [PointOfInterestData]
+     * @param pointOfInterestData : data to remove
+     */
+    private suspend fun deletePointOfInterestFromDatabase(pointOfInterestData: PointOfInterestData) {
+        repositoryAccess.deletePointOfInterest(pointOfInterestData)
+    }
+
     // -------------------- Autocomplete --------------------
+    /**
+     * Performs an autocomplete request.
+     * @param activity : Main activity
+     */
     fun performAutocompleteRequest(activity: Activity) {
         repositoryAccess.performAutocompleteRequest(activity)
     }
@@ -389,5 +480,6 @@ class ListEstatesViewModel @Inject constructor(
             restoreListAgents()
         }
     }
+
 }
 

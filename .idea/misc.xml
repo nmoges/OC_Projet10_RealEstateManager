@@ -4,6 +4,7 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/Users/nicol/OneDrive/Documents/Formation/OpenClassrooms/Projet 9/App/RealEstateManager/RealEstateManager/app/src/main/res/drawable/background_img_button_behavior.xml" value="0.189453125" />
+        <entry key="..\:/Users/nicol/OneDrive/Documents/Formation/OpenClassrooms/Projet 9/App/RealEstateManager/RealEstateManager/app/src/main/res/drawable/border_constraint_layout_poi.xml" value="0.11171875" />
         <entry key="..\:/Users/nicol/OneDrive/Documents/Formation/OpenClassrooms/Projet 9/App/RealEstateManager/RealEstateManager/app/src/main/res/drawable/button_shape.xml" value="0.18671875" />
         <entry key="..\:/Users/nicol/OneDrive/Documents/Formation/OpenClassrooms/Projet 9/App/RealEstateManager/RealEstateManager/app/src/main/res/drawable/dotted_border_background_clicked.xml" value="0.15416666666666667" />
         <entry key="..\:/Users/nicol/OneDrive/Documents/Formation/OpenClassrooms/Projet 9/App/RealEstateManager/RealEstateManager/app/src/main/res/drawable/ic_baseline_map_24dp_dark_blue.xml" value="0.128515625" />
@@ -17,7 +18,8 @@
         <entry key="..\:/Users/nicol/OneDrive/Documents/Formation/OpenClassrooms/Projet 9/App/RealEstateManager/RealEstateManager/app/src/main/res/layout/fragment_estate_details.xml" value="0.2" />
         <entry key="..\:/Users/nicol/OneDrive/Documents/Formation/OpenClassrooms/Projet 9/App/RealEstateManager/RealEstateManager/app/src/main/res/layout/fragment_list_estate.xml" value="0.1" />
         <entry key="..\:/Users/nicol/OneDrive/Documents/Formation/OpenClassrooms/Projet 9/App/RealEstateManager/RealEstateManager/app/src/main/res/layout/fragment_map.xml" value="0.137109375" />
-        <entry key="..\:/Users/nicol/OneDrive/Documents/Formation/OpenClassrooms/Projet 9/App/RealEstateManager/RealEstateManager/app/src/main/res/layout/fragment_new_estate.xml" value="0.174609375" />
+        <entry key="..\:/Users/nicol/OneDrive/Documents/Formation/OpenClassrooms/Projet 9/App/RealEstateManager/RealEstateManager/app/src/main/res/layout/fragment_new_estate.xml" value="0.264" />
+        <entry key="..\:/Users/nicol/OneDrive/Documents/Formation/OpenClassrooms/Projet 9/App/RealEstateManager/RealEstateManager/app/src/main/res/layout/test.xml" value="0.111328125" />
         <entry key="..\:/Users/nicol/OneDrive/Documents/Formation/OpenClassrooms/Projet 9/App/RealEstateManager/RealEstateManager/app/src/main/res/menu/menu_fragment_list_estate.xml" value="0.174609375" />
       </map>
     </option>
