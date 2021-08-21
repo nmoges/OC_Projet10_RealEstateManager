@@ -71,7 +71,7 @@ class FragmentListEstate : Fragment() {
      * Handles click events on recycler view items.
      * @param position : position of the clicked item
      */
-    private fun handleClickOnEstateItem(position: Int) {
+    fun handleClickOnEstateItem(position: Int) {
         (binding.recyclerViewListEstates.adapter as ListEstatesAdapter).apply {
             clearPreviousSelection(position)
             val status: Boolean = updateItemSelectionStatus(position)
@@ -87,7 +87,6 @@ class FragmentListEstate : Fragment() {
             else activity.onBackPressed()
         }
     }
-
 
     /**
      * Clear "selected" status of the current selected item.

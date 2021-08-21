@@ -1,10 +1,11 @@
 package com.openclassrooms.realestatemanager.ui.fragments
 
+import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.location.Location
+import android.content.SharedPreferences
 import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Bundle
@@ -25,6 +26,7 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.openclassrooms.realestatemanager.AppInfo
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.databinding.FragmentMapBinding
+import com.openclassrooms.realestatemanager.model.Estate
 import com.openclassrooms.realestatemanager.receiver.GPSBroadcastReceiver
 import com.openclassrooms.realestatemanager.ui.activities.MainActivity
 import com.openclassrooms.realestatemanager.utils.GPSAccessHandler
@@ -55,12 +57,16 @@ class FragmentMap : Fragment(), OnMapReadyCallback {
     /** Contains current user position */
     private var currentPosition: LatLng? = null
 
+    /** Location listener for user location updates */
     private var locationListener = LocationListener {
         map.let { itMap ->
             itMap.clear()
             displayEstatesMarkersOnMap(itMap)
         }
     }
+
+    /** Shared preferences for saving user location */
+    private var sharedPrefLocation: SharedPreferences? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -83,6 +89,7 @@ class FragmentMap : Fragment(), OnMapReadyCallback {
         (activity as MainActivity).setToolbarProperties(
             R.string.str_toolbar_fragment_list_estate_title, true)
         locationManager = requireActivity().getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        initializeSharedPrefLocation()
         initializeMap()
         initializeGPSBroadcast()
         handleFloatingButtonClickEvents()
@@ -107,6 +114,7 @@ class FragmentMap : Fragment(), OnMapReadyCallback {
         super.onPause()
         (activity as MainActivity).unregisterReceiver(gpsBroadcastReceiver)
         handleLocationListener(false)
+        saveCurrentLocation()
     }
 
     private fun handleLocationListener(status: Boolean) {
@@ -125,7 +133,8 @@ class FragmentMap : Fragment(), OnMapReadyCallback {
      * Initializes a [SupportMapFragment] containing a [GoogleMap].
      */
     private fun initializeMap() {
-        val mapFragment: SupportMapFragment = childFragmentManager.findFragmentById(R.id.google_map) as SupportMapFragment
+        val mapFragment: SupportMapFragment = childFragmentManager.findFragmentById(R.id.google_map)
+                                              as SupportMapFragment
         mapFragment.getMapAsync(this)
     }
 
@@ -134,7 +143,6 @@ class FragmentMap : Fragment(), OnMapReadyCallback {
      * displayed (distance < 1000m).
      * @param map : Google map
      */
-    // TODO() : Add observer on listEstatesViewModel
     private fun displayEstatesMarkersOnMap(map: GoogleMap) {
         currentPosition?.let { itPosition ->
             listEstatesViewModel.listEstates.observe(viewLifecycleOwner, {
@@ -147,6 +155,7 @@ class FragmentMap : Fragment(), OnMapReadyCallback {
                             .title(itEstate.type))
                     }
                 }
+                handleClicksOnMarkers(it)
             })
         }
     }
@@ -162,9 +171,9 @@ class FragmentMap : Fragment(), OnMapReadyCallback {
                 .addOnSuccessListener { itLoc ->
                     currentPosition = LatLng(itLoc.latitude, itLoc.longitude)
                     currentPosition?.let { itLatLng ->
-                        val cameraUpdate = CameraUpdateFactory.newLatLngZoom(itLatLng, 18.0f)
+                        val cameraUpdate = CameraUpdateFactory.newLatLngZoom(itLatLng,
+                                                                        AppInfo.DEFAULT_CAMERA_ZOOM)
                         map.moveCamera(cameraUpdate)
-                        displayEstatesMarkersOnMap(map)
                     }
                 }
         }
@@ -179,7 +188,9 @@ class FragmentMap : Fragment(), OnMapReadyCallback {
             map = googleMap
             if (GPSAccessHandler.checkLocationPermission(activity as MainActivity)) {
                 initializeMapOptions()
+                displayOldUserLocation()
                 initializeCameraPositionOnMap()
+                displayEstatesMarkersOnMap(it)
             }
             else GPSAccessHandler.requestPermissionLocation(activity as MainActivity)
         }
@@ -250,10 +261,9 @@ class FragmentMap : Fragment(), OnMapReadyCallback {
     /**
      * Initializes a [GPSBroadcastReceiver] for GPS activation/deactivation events.
      */
+    @SuppressLint("MissingPermission")
     private fun initializeGPSBroadcast() {
-        gpsBroadcastReceiver = GPSBroadcastReceiver {
-            onGpsEventDetected(it)
-        }
+        gpsBroadcastReceiver = GPSBroadcastReceiver { onGpsEventDetected(it) }
     }
 
     /**
@@ -267,7 +277,7 @@ class FragmentMap : Fragment(), OnMapReadyCallback {
     }
 
     /**
-     * Displayes an [AlertDialog] for GPS activation.
+     * Displays an [AlertDialog] for GPS activation.
      */
     private fun displayGPSEnableDialog() {
         val builderGPSEnableDialog = AlertDialog.Builder(activity as MainActivity)
@@ -282,5 +292,77 @@ class FragmentMap : Fragment(), OnMapReadyCallback {
             .setNegativeButton(resources.getString(R.string.str_dialog_button_cancel)) { _, _ -> }
             .create()
         builderGPSEnableDialog.show()
+    }
+
+    /**
+     * Handles click events on markers.
+     * @param list : List of [Estate] used to display markers in map.
+     */
+    @SuppressLint("PotentialBehaviorOverride")
+    private fun handleClicksOnMarkers(list: List<Estate>) {
+        map.let { itMap ->
+            itMap.setOnInfoWindowClickListener { itMarker ->
+                var index = 0
+                var found = false
+                var position = 0
+                while (index < list.size && !found) {
+                    if (list[index].type == itMarker.title) {
+                        found = true
+                        position = index
+                    } else index++
+                }
+                launchFragmentDetails(position)
+            }
+        }
+    }
+
+    /**
+     * Displays [FragmentEstateDetails] for the selected marker.
+     * @param position : position of the associated [Estate] object in the list of estates.
+     */
+    private fun launchFragmentDetails(position: Int) {
+        listEstatesViewModel.setSelectedEstate(position)
+        (activity as MainActivity).apply { handleClickOnEstateView(position) }
+    }
+
+    /**
+     * Initializes a [SharedPreferences] file for user location.
+     */
+    private fun initializeSharedPrefLocation() {
+        context?.let { sharedPrefLocation = it.getSharedPreferences(AppInfo.FILE_SHARED_PREF,
+                                                                    Context.MODE_PRIVATE)
+        }
+    }
+
+    /**
+     * Saves current location in [SharedPreferences] file.
+     */
+    private fun saveCurrentLocation() {
+        val latitude = currentPosition?.latitude
+        val longitude = currentPosition?.longitude
+        if (latitude != null && longitude != null)
+            sharedPrefLocation?.let {
+                with(it.edit()) {
+                    putLong(AppInfo.PREF_USER_LOC_LATITUDE, latitude.toLong())
+                    putLong(AppInfo.PREF_USER_LOC_LONGITUDE, longitude.toLong())
+                }
+            }
+    }
+
+    /**
+     * Restores old user location on map.
+     */
+    private fun displayOldUserLocation() {
+        if (GPSAccessHandler.isGPSEnabled(locationManager)) {
+            val latitude = sharedPrefLocation
+                                   ?.getLong(AppInfo.PREF_USER_LOC_LATITUDE, 0L)?.toDouble()
+            val longitude = sharedPrefLocation
+                                  ?.getLong(AppInfo.PREF_USER_LOC_LONGITUDE, 0L)?.toDouble()
+            if (latitude != null && longitude != null) {
+                val cameraUpdate = CameraUpdateFactory.newLatLngZoom(LatLng(latitude, longitude),
+                                                                        AppInfo.DEFAULT_CAMERA_ZOOM)
+                map.moveCamera(cameraUpdate)
+            }
+        }
     }
 }

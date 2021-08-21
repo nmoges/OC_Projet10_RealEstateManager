@@ -668,4 +668,10 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
                 lastNameAgentInputEdit?.text = StringHandler.convertStringToEditable(it) }
         }
     }
+
+    fun handleClickOnEstateView(position: Int) {
+        val fragmentListEstate = supportFragmentManager
+                          .findFragmentByTag(AppInfo.TAG_FRAGMENT_LIST_ESTATE) as FragmentListEstate
+        fragmentListEstate.let { it.handleClickOnEstateItem(position) }
+    }
 }

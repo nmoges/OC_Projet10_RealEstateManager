@@ -11,6 +11,8 @@ object AppInfo {
     const val PREF_PERMISSION_LOCATION = "PREF_PERMISSION_LOCATION"
     const val PREF_CURRENCY = "PREF_CURRENCY"
     const val PREF_CURRENT_URI = "PREF_CURRENT_URI"
+    const val PREF_USER_LOC_LATITUDE = "PREF_USER_LOC_LATITUDE"
+    const val PREF_USER_LOC_LONGITUDE = "PREF_USER_LOC_LONGITUDE"
 
     // Request codes
     const val REQUEST_PERMISSIONS_CODE = 101
@@ -52,4 +54,7 @@ object AppInfo {
     // LocationListener parameters
     const val LOCATION_REFRESH_TIME: Long = 15000
     const val LOCATION_REFRESH_DISTANCE: Float = 10f
+
+    // Map parameters
+    const val DEFAULT_CAMERA_ZOOM = 18.0f
 }
