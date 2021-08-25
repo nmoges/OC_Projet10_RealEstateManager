@@ -1,9 +1,7 @@
 package com.openclassrooms.data.dao
 
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Update
+import android.database.Cursor
+import androidx.room.*
 import com.openclassrooms.data.entities.EstateData
 
 /**
@@ -18,4 +16,9 @@ interface EstateDao {
 
     @Update
     suspend fun updateEstateData(estateData: EstateData)
+
+    // ---------------------------------- TEST -------------------------
+    // TODO() : Add suspend
+    @Query("SELECT * FROM table_estates WHERE id_estate = :id") // TODO() : Add jointure
+    fun getEstateWithId(id: Long): Cursor
 }

@@ -61,10 +61,8 @@ class FragmentListEstate : Fragment() {
      * Initializes both view model instances.
      */
     private fun initializeViewModels() {
-        listEstatesViewModel = ViewModelProvider(requireActivity())
-            .get(ListEstatesViewModel::class.java)
-        currencyViewModel = ViewModelProvider(requireActivity())
-            .get(CurrencyViewModel::class.java)
+        listEstatesViewModel = ViewModelProvider(requireActivity())[ListEstatesViewModel::class.java]
+        currencyViewModel = ViewModelProvider(requireActivity())[CurrencyViewModel::class.java]
     }
 
     /**
@@ -110,7 +108,7 @@ class FragmentListEstate : Fragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId) {
             R.id.add_agent -> { (activity as MainActivity).showDialogAddAgent() }
-            R.id.search -> { }
+            R.id.search -> { (activity as MainActivity).displayFragmentSearch() }
             R.id.settings -> {
                 (activity as MainActivity).apply {
                     handleFabVisibility(View.INVISIBLE)

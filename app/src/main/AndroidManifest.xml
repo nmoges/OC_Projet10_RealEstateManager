@@ -37,6 +37,12 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
+        <!-- Content provider -->
+        <provider
+            android:authorities="com.openclassrooms.data.provider"
+            android:name="com.openclassrooms.data.provider.RealEstateProvider"
+            android:exported="true"/>
+
         <activity
             android:name=".ui.activities.SignInActivity"
             android:theme="@style/SignInTheme"

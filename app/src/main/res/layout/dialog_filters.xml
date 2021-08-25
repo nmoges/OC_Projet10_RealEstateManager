@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <!-- Price -->
+        <CheckBox
+            android:id="@+id/checkbox_price"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_marginStart="20dp"
+            android:text="Price"
+            android:textSize="18sp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/min_price"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="$0"
+            android:layout_marginStart="20dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/checkbox_price"
+            app:layout_constraintBottom_toTopOf="@id/range_slider_price"/>
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/max_price"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="$2000000"
+            android:layout_marginEnd="20dp"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/checkbox_price"
+            app:layout_constraintBottom_toTopOf="@id/range_slider_price"/>
+
+        <com.google.android.material.slider.RangeSlider
+            android:id="@+id/range_slider_price"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:valueFrom="0.0"
+            android:valueTo="2000000.0"
+            android:enabled="false"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/min_price"/>
+
+        <!-- Surface -->
+        <CheckBox
+            android:id="@+id/checkbox_surface"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:text="Surface"
+            android:textSize="18sp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/range_slider_price"/>
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/min_surface"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0 sqm"
+            android:layout_marginStart="20dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/checkbox_surface"
+            app:layout_constraintBottom_toTopOf="@id/range_slider_surface"/>
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/max_surface"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="500 sqm"
+            android:layout_marginEnd="20dp"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/checkbox_surface"
+            app:layout_constraintBottom_toTopOf="@id/range_slider_surface"/>
+
+        <com.google.android.material.slider.RangeSlider
+            android:id="@+id/range_slider_surface"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:valueFrom="0.0"
+            android:valueTo="500.0"
+            android:enabled="false"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/checkbox_surface"/>
+
+        <!-- Date -->
+        <CheckBox
+            android:id="@+id/checkbox_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:text="Date"
+            android:textSize="18sp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/range_slider_surface"/>
+
+        <GridLayout
+            android:id="@+id/grid_layout_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:columnCount="2"
+            android:rowCount="1"
+            android:useDefaultMargins="true"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/checkbox_date"
+            app:layout_constraintRight_toRightOf="parent">
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/text_layout_date_start"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:layout_row="0"
+                android:layout_column="0"
+                android:hint="From :"
+                app:boxBackgroundColor="@color/white"
+                app:boxStrokeColor="@color/colorPrimary"
+                app:startIconTint="@color/colorPrimary"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/text_input_date_start"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="datetime"
+                    android:clickable="false"
+                    android:focusableInTouchMode="false"
+                    android:cursorVisible="false"/>
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/text_layout_date_end"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:layout_row="0"
+                android:layout_column="1"
+                android:hint="To :"
+                app:boxBackgroundColor="@color/white"
+                app:boxStrokeColor="@color/colorPrimary"
+                app:startIconTint="@color/colorPrimary"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/text_input_date_end"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="datetime"
+                    android:clickable="false"
+                    android:focusableInTouchMode="false"
+                    android:cursorVisible="false"/>
+            </com.google.android.material.textfield.TextInputLayout>
+        </GridLayout>
+
+        <!-- Status -->
+        <CheckBox
+            android:id="@+id/checkbox_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:text="Status"
+            android:textSize="18sp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/grid_layout_date"/>
+
+        <GridLayout
+            android:id="@+id/grid_status_buttons"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:columnCount="2"
+            android:rowCount="1"
+            android:useDefaultMargins="true"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/checkbox_status"
+            app:layout_constraintRight_toRightOf="parent">
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/button_available"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_gravity="center"
+                android:text="Available"
+                android:clickable="false"
+                android:textAllCaps="false"
+                android:layout_row="0"
+                android:layout_column="0"
+                android:textColor="@color/grey41"
+                app:backgroundTint="@color/grey93"
+                style="Widget.MaterialComponents.Button.OutlinedButton"/>
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/button_sold"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_gravity="center"
+                android:text="Sold"
+                android:clickable="false"
+                android:textAllCaps="false"
+                android:layout_row="0"
+                android:layout_column="1"
+                android:textColor="@color/grey41"
+                app:backgroundTint="@color/grey93"
+                style="Widget.MaterialComponents.Button.OutlinedButton"/>
+        </GridLayout>
+
+        <!-- Point of interest -->
+        <CheckBox
+            android:id="@+id/checkbox_poi"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:text="Points of interest"
+            android:textSize="18sp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/grid_status_buttons"/>
+
+        <HorizontalScrollView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:scrollbars="none"
+            android:layout_gravity="center"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/checkbox_poi"
+            app:layout_constraintRight_toRightOf="parent">
+            <LinearLayout
+                android:id="@+id/linear_layout_tags_filter"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+            </LinearLayout>
+        </HorizontalScrollView>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

@@ -1,7 +1,6 @@
 package com.openclassrooms.realestatemanager.ui.fragments
 
 import android.app.AlertDialog
-import android.content.Context
 import android.net.Uri
 import android.os.Bundle
 import android.text.Editable
@@ -10,7 +9,6 @@ import android.view.*
 import android.widget.ArrayAdapter
 import android.widget.FrameLayout
 import android.widget.Toast
-import androidx.annotation.LayoutRes
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -21,12 +19,13 @@ import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.databinding.FragmentNewEstateBinding
 import com.openclassrooms.realestatemanager.model.Estate
 import com.openclassrooms.realestatemanager.model.Photo
+import com.openclassrooms.realestatemanager.ui.LayoutInflaterProvider
 import com.openclassrooms.realestatemanager.ui.MediaDisplayHandler
 import com.openclassrooms.realestatemanager.ui.activities.MainActivity
 import com.openclassrooms.realestatemanager.utils.CustomTextWatcher
 import com.openclassrooms.realestatemanager.utils.MediaAccessHandler
-import com.openclassrooms.realestatemanager.utils.POIProvider
 import com.openclassrooms.realestatemanager.utils.StringHandler
+import com.openclassrooms.realestatemanager.utils.poi.POIProvider
 import com.openclassrooms.realestatemanager.viewmodels.ListEstatesViewModel
 
 /**
@@ -261,7 +260,8 @@ class FragmentNewEstate : Fragment() {
      * Initializes an [AlertDialog.Builder] for [builderAddMediaDialog] property.
      */
     private fun initializeDialogAddMedia() {
-        val viewAddMediaDialog: View? = getViewFromLayoutInflater(R.layout.dialog_media_selection)
+        val viewAddMediaDialog: View? = LayoutInflaterProvider
+                                .getViewFromLayoutInflater(R.layout.dialog_media_selection, context)
         builderAddMediaDialog = AlertDialog.Builder(activity)
             .setTitle(resources.getString(R.string.str_dialog_add_media_title))
             .setView(viewAddMediaDialog).create()
@@ -272,7 +272,8 @@ class FragmentNewEstate : Fragment() {
      * Initializes an [AlertDialog.Builder] for [builderNameMediaDialog] property.
      */
     private fun initializeDialogNameMedia() {
-        val viewNameMediaDialog: View? = getViewFromLayoutInflater(R.layout.dialog_media_confirmation)
+        val viewNameMediaDialog: View? = LayoutInflaterProvider
+                             .getViewFromLayoutInflater(R.layout.dialog_media_confirmation, context)
         val textInputEditText: TextInputEditText? =
             viewNameMediaDialog?.findViewById(R.id.new_media_text_input_edit)
         textInputEditText?.addTextChangedListener(textWatcher)
@@ -343,17 +344,6 @@ class FragmentNewEstate : Fragment() {
         val frameLayout: FrameLayout = MediaDisplayHandler
             .createNewFrameLayout(photo, activity as MainActivity)
         binding.linearLayoutMedia.addView(frameLayout, 0)
-    }
-
-    /**
-     * Gets layout inflater using context
-     * @param layout : layout to inflate
-     * @return : inflated view
-     */
-    private fun getViewFromLayoutInflater(@LayoutRes layout: Int): View? {
-        val inflater: LayoutInflater? =
-            context?.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as? LayoutInflater
-        return inflater?.inflate(layout, null)
     }
 
     /**

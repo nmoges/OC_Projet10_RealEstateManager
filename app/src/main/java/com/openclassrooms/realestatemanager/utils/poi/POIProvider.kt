@@ -1,4 +1,4 @@
-package com.openclassrooms.realestatemanager.utils
+package com.openclassrooms.realestatemanager.utils.poi
 
 import android.util.Log
 
@@ -9,7 +9,6 @@ object POIProvider {
      * @param which : Int
      */
     fun providePointOfInterest(which: Int): String {
-        Log.i("CHECK_STATUS", "providePointOfInterest")
         var pointOfInterest = ""
         when(which) {
             0 -> pointOfInterest = "Bar"

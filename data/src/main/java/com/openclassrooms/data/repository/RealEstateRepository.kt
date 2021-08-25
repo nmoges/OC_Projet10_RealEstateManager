@@ -1,6 +1,7 @@
 package com.openclassrooms.data.repository
 
 import android.app.Activity
+import android.database.Cursor
 import androidx.lifecycle.LiveData
 import com.openclassrooms.data.dao.*
 import com.openclassrooms.data.entities.*
@@ -63,6 +64,9 @@ interface RealEstateRepositoryAccess {
 
     // Retrofit
     fun getRetrofit(): Retrofit
+
+    // --------------------- TEST ---------------------------------
+    fun getEstateWithId(id: Long): Cursor
 }
 
 /**
@@ -148,4 +152,8 @@ class RealEstateRepository(
 
     // Retrofit
     override fun getRetrofit(): Retrofit = RetrofitBuilder.retrofit
+
+    // --------------------- TEST ---------------------------------
+    override fun getEstateWithId(id: Long): Cursor = estateDao.getEstateWithId(id)
+
 }

@@ -5,8 +5,11 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.os.Build;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -30,18 +33,35 @@ public class Utils {
      * NOTE : NE PAS SUPPRIMER, A MONTRER DURANT LA SOUTENANCE
      * @return : date
      */
-   /* public static String getTodayDate(){
-        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
-        return dateFormat.format(new Date());
-    }*/
     @SuppressLint("SimpleDateFormat")
-    public static String getTodayDate(Date date) {
+    public static String getDateFormat(Date date) {
         DateFormat dateFormat;
-        if (Locale.getDefault().getLanguage() == "en")
+        if (Locale.getDefault().getLanguage().equals("en"))
             dateFormat = new SimpleDateFormat("MM/dd/yyyy");
         else
             dateFormat = new SimpleDateFormat("dd/MM/yyyy");
         return dateFormat.format(date);
+    }
+   /* public static String getTodayDate(){
+        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
+        return dateFormat.format(new Date());
+    }*/
+
+    public static String getDate(List<Integer> list) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(list.get(2), list.get(1)-1, list.get(0));
+        return getDateFormat(calendar.getTime());
+    }
+
+    @SuppressLint("SimpleDateFormat")
+    public static Date convertFormatToDate(String date) throws java.text.ParseException{
+        DateFormat dateFormat;
+        if (Locale.getDefault().getLanguage().equals("en"))
+            dateFormat = new SimpleDateFormat("MM/dd/yyyy");
+        else
+            dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+
+        return dateFormat.parse(date);
     }
 
     /**

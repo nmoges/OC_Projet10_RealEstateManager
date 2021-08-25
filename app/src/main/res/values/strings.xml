@@ -32,6 +32,9 @@
     <!-- menu_fragment_estate_details.xml -->
     <string name="str_item_edit">Edit</string>
 
+    <!-- menu_fragment_search.xml -->
+    <string name="str_item_filter">Filter</string>
+
     <!-- fragment_new_estate.xml -->
     <string name="str_toolbar_fragment_new_estate_title">Create new estate</string>
     <string name="str_toolbar_fragment_modify_estate_title">Modify estate</string>
@@ -161,8 +164,14 @@
     <string name="str_dialog_loc_permission_access_message">Location access must be granted to allow
         application de work properly</string>
 
-    <!-- FragmentMap/kt -->
+    <!-- FragmentMap.kt -->
     <string name="str_dialog_enable_gps_title">Enable GPS</string>
     <string name="str_dialog_enable_gps_message">The GPS must be enable to access your position</string>
     <string name="str_dialog_enable_enable_button">Enable</string>
+
+    <!-- FragmentSearch.kt -->
+    <string name="str_toolbar_fragment_search_title">Search estates</string>
+    <string name="str_dialog_search_title">Select filters</string>
+    <string name="str_value_surface_slider">%1$d sqm</string>
+    <string name="str_value_price_slider">$%1$d</string>
 </resources>

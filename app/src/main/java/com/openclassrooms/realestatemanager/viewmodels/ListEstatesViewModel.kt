@@ -3,7 +3,6 @@ package com.openclassrooms.realestatemanager.viewmodels
 import android.app.Activity
 import android.content.Context
 import android.location.Geocoder
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -18,6 +17,7 @@ import com.openclassrooms.realestatemanager.model.date.EntryDate
 import com.openclassrooms.realestatemanager.model.date.SaleDate
 import com.openclassrooms.realestatemanager.service.DummyListAgentGenerator
 import com.openclassrooms.realestatemanager.utils.*
+import com.openclassrooms.realestatemanager.utils.poi.POIComparator
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import java.util.*

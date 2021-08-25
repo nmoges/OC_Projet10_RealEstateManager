@@ -1,6 +1,5 @@
 package com.openclassrooms.realestatemanager.ui.fragments
 
-import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.os.Bundle
 import android.view.*
@@ -67,8 +66,7 @@ class FragmentEstateDetails : Fragment() {
         initializeSaleButtonDisplay()
         initializeConfirmationDialog()
         updateMaterialTextSaleStatus()
-        updatePublishDateToDisplay()
-        updateSaleDateToDisplay()
+        displayPublishDate()
         restoreDialog(savedInstanceState)
         displayLocationOnMap()
     }
@@ -178,22 +176,17 @@ class FragmentEstateDetails : Fragment() {
      */
     private fun updateMaterialTextSaleStatus() {
         val status = selectedEstateToDisplay?.status
-        if (status != null) {
-            val text = resources.getString(R.string.str_sold_status)
-            if (status) binding.saleStatus.apply {
-                this.text = text
-                setTextColor(resources.getColor(R.color.red_google))
-            }
-        }
+        if (status != null)
+            if (status) displaySaleDate()
     }
 
     /**
      * Updates "publish date" MaterialTextView.
      */
-    private fun updatePublishDateToDisplay() {
+    private fun displayPublishDate() {
         //TODO() : utiliser parametre string
         selectedEstateToDisplay?.run {
-            val publishDateText = getDate(mutableListOf(dates.entryDate.day,
+            val publishDateText = Utils.getDate(mutableListOf(dates.entryDate.day,
                                                                dates.entryDate.month,
                                                                dates.entryDate.year))
             val textToDisplay = resources.getString(R.string.str_published_on) + ": $publishDateText"
@@ -205,27 +198,29 @@ class FragmentEstateDetails : Fragment() {
      * Updates "sale date" MaterialTextView.
      */
     //TODO() : utiliser parametre string
-    private fun updateSaleDateToDisplay() {
+    private fun displaySaleDate() {
         selectedEstateToDisplay?.run {
             val saleDate = dates.saleDate
             if (saleDate.day != 0 && saleDate.month != 0 && saleDate.year != 0) {
-                val saleDateText = getDate(mutableListOf(dates.saleDate.day,
+                val saleDateText = Utils.getDate(mutableListOf(dates.saleDate.day,
                     dates.saleDate.month,
                     dates.saleDate.year))
                 val textToDisplay = resources.getString(R.string.str_sold_status) + ": $saleDateText"
-                binding.saleStatus.text = textToDisplay
+                binding.saleStatus.apply {
+                    text = textToDisplay
+                    setTextColor(resources.getColor(R.color.red_google))
+                }
             }
         }
     }
 
     //TODO() : To move
-    @SuppressLint("SimpleDateFormat")
-    private fun getDate(list: MutableList<Int>): String {
+  /*  private fun getDate(list: MutableList<Int>): String {
         val calendar = Calendar.getInstance()
         calendar.set(list[2], list[1]-1, list[0])
         return Utils.getTodayDate(calendar.time)
     }
-
+*/
     /**
      * Initializes an [AlertDialog.Builder] to display a confirmation message to user.
      */

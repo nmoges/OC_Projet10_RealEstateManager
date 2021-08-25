@@ -80,6 +80,9 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
     /** Contains a reference to a [FragmentMap] object */
     private var fragmentMap: Fragment? = null
 
+    /** Contains a reference to a [FragmentSearch] object */
+    private var fragmentSearch: Fragment? = null
+
     /** Contains ViewModels reference */
     lateinit var listEstatesViewModel: ListEstatesViewModel
     lateinit var currencyViewModel: CurrencyViewModel
@@ -111,14 +114,12 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
         initializeDialogAddAgent()
         initializeDialogLogout()
         if (savedInstanceState != null) {
-            fragmentNewEstate = supportFragmentManager.findFragmentByTag(AppInfo.TAG_FRAGMENT_NEW_ESTATE)
-            fragmentEstateDetails =
-                       supportFragmentManager.findFragmentByTag(AppInfo.TAG_FRAGMENT_ESTATE_DETAILS)
-            fragmentSettings = supportFragmentManager.findFragmentByTag(AppInfo.TAG_FRAGMENT_SETTINGS)
-            fragmentMap = supportFragmentManager.findFragmentByTag(AppInfo.TAG_FRAGMENT_MAP)
+            findFragmentsFromSupportFragmentManager()
             removeExistingFragments()
             restoreFragments(containerId)
-            restoreDialogs(savedInstanceState) }
+            restoreSearchFragment()
+            restoreDialogs(savedInstanceState)
+        }
         initializeToolbar()
         initializeNotificationHandler()
         handleConnectivityBarBtnListener()
@@ -127,7 +128,7 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
         GPSAccessHandler.initializeNbPermissionRequests(this)
         accessDatabase()
         initializeMapClient()
-       }
+    }
 
     override fun onResume() {
         super.onResume()
@@ -180,6 +181,10 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
                 fragmentMap?.let {
                     supportFragmentManager.beginTransaction().remove(it).commit()
                     supportFragmentManager.executePendingTransactions() } }
+            fragmentSearch != null -> {
+                fragmentSearch?.let {
+                    supportFragmentManager.beginTransaction().remove(it).commit()
+                    supportFragmentManager.executePendingTransactions() } }
         }
     }
 
@@ -191,6 +196,15 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
         typeOrientation = resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
         containerId = if (typeOrientation && typeLayout) R.id.fragment_container_view_right
         else R.id.fragment_container_view
+    }
+
+    private fun findFragmentsFromSupportFragmentManager() {
+        fragmentNewEstate = supportFragmentManager.findFragmentByTag(AppInfo.TAG_FRAGMENT_NEW_ESTATE)
+        fragmentEstateDetails =
+            supportFragmentManager.findFragmentByTag(AppInfo.TAG_FRAGMENT_ESTATE_DETAILS)
+        fragmentSettings = supportFragmentManager.findFragmentByTag(AppInfo.TAG_FRAGMENT_SETTINGS)
+        fragmentMap = supportFragmentManager.findFragmentByTag(AppInfo.TAG_FRAGMENT_MAP)
+        fragmentSearch = supportFragmentManager.findFragmentByTag(AppInfo.TAG_FRAGMENT_SEARCH)
     }
 
     /**
@@ -211,6 +225,16 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
             fragmentMap != null -> {
                 launchTransaction(typeContainer, fragmentMap as FragmentMap,
                     AppInfo.TAG_FRAGMENT_MAP) }
+        }
+    }
+
+    private fun restoreSearchFragment() {
+        val containerIdSearch: Int = if (typeOrientation && typeLayout) R.id.fragment_container_view_left
+        else R.id.fragment_container_view
+        if (fragmentSearch != null) {
+            launchTransaction(containerIdSearch,
+                              fragmentSearch as FragmentSearch,
+                              AppInfo.TAG_FRAGMENT_SEARCH)
         }
     }
 
@@ -242,6 +266,13 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
         val fragment: FragmentNewEstate = FragmentNewEstate.newInstance()
         fragment.updateEstate = updateEstate
         launchTransaction(containerId, fragment, AppInfo.TAG_FRAGMENT_NEW_ESTATE)
+    }
+
+    fun displayFragmentSearch() {
+        val containerIdSearch: Int = if (typeOrientation && typeLayout) R.id.fragment_container_view_left
+        else R.id.fragment_container_view
+        val fragment: FragmentSearch = FragmentSearch.newInstance()
+        launchTransaction(containerIdSearch, fragment, AppInfo.TAG_FRAGMENT_SEARCH)
     }
 
     /**
@@ -360,11 +391,12 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
             fragmentEstateDetails = findFragmentByTag(AppInfo.TAG_FRAGMENT_ESTATE_DETAILS)
             fragmentSettings = findFragmentByTag(AppInfo.TAG_FRAGMENT_SETTINGS)
             fragmentMap = findFragmentByTag(AppInfo.TAG_FRAGMENT_MAP)
+            fragmentSearch = findFragmentByTag(AppInfo.TAG_FRAGMENT_SEARCH)
         }
         if (fragmentNewEstate != null || fragmentEstateDetails != null
-            || fragmentSettings != null || fragmentMap != null) {
+            || fragmentSettings != null || fragmentMap != null || fragmentSearch != null) {
             // Display FragmentListEstate if needed
-            if (!(typeOrientation && typeLayout))
+            if (!(typeOrientation && typeLayout) || fragmentSearch != null)
                 launchTransaction(containerIdList,
                     FragmentListEstate.newInstance(), AppInfo.TAG_FRAGMENT_LIST_ESTATE)
             // Reset item selection on list
