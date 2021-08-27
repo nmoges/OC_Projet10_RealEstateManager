@@ -19,16 +19,16 @@ object RepositoryModule {
     @Singleton
     @Provides
     fun provideRepository(estateDao: EstateDao,
-                         photoDao: PhotoDao,
-                         interiorDao: InteriorDao,
-                         locationDao: LocationDao,
-                         agentDao: AgentDao,
-                         datesDao: DatesDao,
-                         pointOfInterestDao: PointOfInterestDao,
-                         estateWithPhotosAndInteriorDao: EstateWithPhotosAndInteriorDao
+                          photoDao: PhotoDao,
+                          interiorDao: InteriorDao,
+                          locationDao: LocationDao,
+                          agentDao: AgentDao,
+                          datesDao: DatesDao,
+                          pointOfInterestDao: PointOfInterestDao,
+                          fullEstateDao: FullEstateDao
     ): RealEstateRepositoryAccess {
         return RealEstateRepository(estateDao, photoDao, interiorDao, locationDao,
                                     agentDao, datesDao, pointOfInterestDao,
-                                    estateWithPhotosAndInteriorDao)
+                                    fullEstateDao)
     }
 }

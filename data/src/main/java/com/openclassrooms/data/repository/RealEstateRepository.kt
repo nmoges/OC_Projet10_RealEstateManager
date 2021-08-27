@@ -57,7 +57,7 @@ interface RealEstateRepositoryAccess {
     suspend fun getPointsOfInterest(id: Long): List<PointOfInterestData>
 
     // EstateWithPhotosAndInteriorDao
-    fun loadAllEstates(): LiveData<List<EstateDataWithPhotosAndInterior>>
+    fun loadAllEstates(): LiveData<List<FullEstateData>>
 
     // Autocomplete service
     fun performAutocompleteRequest(activity: Activity)
@@ -80,7 +80,7 @@ class RealEstateRepository(
     private val agentDao: AgentDao,
     private val datesDao: DatesDao,
     private val pointOfInterestDao: PointOfInterestDao,
-    private val estateWithPhotosAndInteriorDao: EstateWithPhotosAndInteriorDao):
+    private val fullEstateDao: FullEstateDao):
     RealEstateRepositoryAccess {
 
     // EstateDao
@@ -142,8 +142,8 @@ class RealEstateRepository(
     = pointOfInterestDao.getPointsOfInterest(id)
 
     // EstateWithPhotosAndInteriorDao
-    override fun loadAllEstates(): LiveData<List<EstateDataWithPhotosAndInterior>> =
-                                                     estateWithPhotosAndInteriorDao.loadAllEstates()
+    override fun loadAllEstates(): LiveData<List<FullEstateData>> =
+                                                     fullEstateDao.loadAllEstates()
 
     // Autocomplete Service
     override fun performAutocompleteRequest(activity: Activity) {

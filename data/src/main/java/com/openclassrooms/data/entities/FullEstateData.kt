@@ -4,8 +4,8 @@ import androidx.room.Embedded
 import androidx.room.Relation
 import com.openclassrooms.data.entities.date.DatesData
 
-//TODO() : rename class
-data class EstateDataWithPhotosAndInterior(
+
+data class FullEstateData(
     @Embedded
     val estateData: EstateData,
 

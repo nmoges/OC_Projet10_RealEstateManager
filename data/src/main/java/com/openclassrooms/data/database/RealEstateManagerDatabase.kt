@@ -22,5 +22,5 @@ abstract class RealEstateManagerDatabase: RoomDatabase() {
     abstract val datesDao: DatesDao
     abstract val locationDao: LocationDao
     abstract val pointOfInterestDao: PointOfInterestDao
-    abstract val estateWithPhotosAndInteriorDao: EstateWithPhotosAndInteriorDao
+    abstract val fullEstateDao: FullEstateDao
 }

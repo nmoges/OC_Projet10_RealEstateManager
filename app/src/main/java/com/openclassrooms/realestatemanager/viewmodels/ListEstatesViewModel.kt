@@ -8,7 +8,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.libraries.places.api.model.Place
-import com.openclassrooms.data.entities.EstateDataWithPhotosAndInterior
+import com.openclassrooms.data.entities.FullEstateData
 import com.openclassrooms.data.entities.PointOfInterestData
 import com.openclassrooms.data.repository.RealEstateRepositoryAccess
 import com.openclassrooms.realestatemanager.model.*
@@ -210,7 +210,7 @@ class ListEstatesViewModel @Inject constructor(
      * Restores data from database.
      * @param list : list of data
      */
-    fun restoreData(list: List<EstateDataWithPhotosAndInterior>) {
+    fun restoreData(list: List<FullEstateData>) {
         viewModelScope.launch {
             val listEstateRestored: MutableList<Estate> = mutableListOf()
             list.forEach { it ->

@@ -4,12 +4,12 @@ import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Transaction
-import com.openclassrooms.data.entities.EstateDataWithPhotosAndInterior
+import com.openclassrooms.data.entities.FullEstateData
 
 @Dao
-interface EstateWithPhotosAndInteriorDao {
+interface FullEstateDao {
 
     @Transaction
     @Query("SELECT * FROM table_estates")
-    fun loadAllEstates() : LiveData<List<EstateDataWithPhotosAndInterior>>
+    fun loadAllEstates() : LiveData<List<FullEstateData>>
 }

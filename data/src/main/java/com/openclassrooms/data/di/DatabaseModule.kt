@@ -44,8 +44,7 @@ object DatabaseModule {
 
     @Singleton
     @Provides
-    fun provideEstateWithPhotosAndInteriorDao(db: RealEstateManagerDatabase) =
-                                                                   db.estateWithPhotosAndInteriorDao
+    fun provideFullEstateDao(db: RealEstateManagerDatabase) = db.fullEstateDao
 
     @Singleton
     @Provides
