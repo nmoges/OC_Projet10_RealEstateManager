@@ -8,4 +8,11 @@
         android:icon="@drawable/ic_baseline_filter_list_24dp_white"
         android:title="@string/str_item_filter"
         app:showAsAction="ifRoom"/>
+
+    <item
+        android:id="@+id/reset"
+        android:enabled="true"
+        android:icon="@drawable/ic_baseline_restart_alt_24p_white"
+        android:title="@string/str_item_reset_filters"
+        app:showAsAction="ifRoom"/>
 </menu>

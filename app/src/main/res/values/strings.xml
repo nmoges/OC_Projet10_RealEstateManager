@@ -34,6 +34,8 @@
 
     <!-- menu_fragment_search.xml -->
     <string name="str_item_filter">Filter</string>
+    <string name="str_item_reset_filters">Reset filters</string>
+
 
     <!-- fragment_new_estate.xml -->
     <string name="str_toolbar_fragment_new_estate_title">Create new estate</string>

@@ -2,6 +2,7 @@ package com.openclassrooms.realestatemanager.ui.fragments
 
 import android.app.AlertDialog
 import android.app.DatePickerDialog
+import android.opengl.Visibility
 import android.os.Build
 import android.os.Bundle
 import android.util.DisplayMetrics
@@ -10,7 +11,10 @@ import android.view.*
 import android.widget.CheckBox
 import android.widget.LinearLayout
 import androidx.annotation.ColorRes
+import androidx.annotation.IntegerRes
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.slider.RangeSlider
 import com.google.android.material.textfield.TextInputEditText
@@ -19,10 +23,13 @@ import com.google.android.material.textview.MaterialTextView
 import com.openclassrooms.realestatemanager.AppInfo
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.Utils
+import com.openclassrooms.realestatemanager.databinding.FragmentSearchBinding
 import com.openclassrooms.realestatemanager.ui.LayoutInflaterProvider
 import com.openclassrooms.realestatemanager.ui.activities.MainActivity
+import com.openclassrooms.realestatemanager.ui.adapters.ListEstatesAdapter
 import com.openclassrooms.realestatemanager.utils.DateComparator
 import com.openclassrooms.realestatemanager.utils.StringHandler
+import com.openclassrooms.realestatemanager.viewmodels.SearchFiltersViewModel
 import java.util.*
 
 class FragmentSearch : Fragment() {
@@ -30,10 +37,15 @@ class FragmentSearch : Fragment() {
     companion object {
         @JvmStatic
         fun newInstance() = FragmentSearch()
-
         private fun Int.toPx(activity: MainActivity) =
             this * activity.resources.displayMetrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT
     }
+
+    /** View Binding parameter */
+    private lateinit var binding: FragmentSearchBinding
+
+    /** Contains ViewModel reference */
+    private lateinit var searchFiltersViewModel: SearchFiltersViewModel
 
     /** Contains a reference to an [AlertDialog] for search functionality. */
     private lateinit var builderSearchDialog: AlertDialog
@@ -47,13 +59,16 @@ class FragmentSearch : Fragment() {
     /** [DatePickerDialog] for "end date" filter. */
     private lateinit var builderEndDatePickerDialog: DatePickerDialog
 
+    /** Contains a reference to an [AlertDialog] for reset confirmation */
+    private lateinit var builderConfirmReset: AlertDialog
+
     /** Layout containing the list of "point of interest" tag filters*/
     private lateinit var linearLayoutTags: LinearLayout
 
-    /** [RangeSlider] for price filtering. */
+    /** [RangeSlider] for "price" filtering. */
     private lateinit var rangeSliderPrice : RangeSlider
 
-    /** [RangeSlider] for surface filtering. */
+    /** [RangeSlider] for "surface" filtering. */
     private lateinit var rangeSliderSurface: RangeSlider
 
     /** [MaterialButton] for "Available estates" filtering */
@@ -61,12 +76,6 @@ class FragmentSearch : Fragment() {
 
     /** [MaterialButton] for "Sold estates" filtering */
     private lateinit var soldButton: MaterialButton
-
-    /** Defines status of both material buttons [availableButton] and [soldButton]*/
-    private var availableStatus: Boolean = true
-
-    /** Defines status of all [MaterialButton] contained in [linearLayoutTags] */
-    private var listPOIStatus: MutableList<Boolean> = mutableListOf()
 
     /** [TextInputEditText] containing a start date for filtering */
     private lateinit var textInputStartDate: TextInputEditText
@@ -77,19 +86,61 @@ class FragmentSearch : Fragment() {
     /** [TextInputEditText] containing an end date for filtering */
     private lateinit var textInputEndDate: TextInputEditText
 
+    /** [CheckBox] for "Price" filtering. */
+    private lateinit var checkBoxPrice: CheckBox
+
+    /** [CheckBox] for "Surface" filtering. */
+    private lateinit var checkBoxSurface: CheckBox
+
+    /** [CheckBox] for "Date" filtering. */
+    private lateinit var checkBoxDate: CheckBox
+
+    /** [CheckBox] for "Status estate" filtering. */
+    private lateinit var checkBoxStatus: CheckBox
+
+    /** [CheckBox] for "Points of interest" filtering. */
+    private lateinit var checkBoxPOI: CheckBox
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
+        searchFiltersViewModel = ViewModelProvider(requireActivity())[SearchFiltersViewModel::class.java]
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-    ): View? { return inflater.inflate(R.layout.fragment_search, container, false) }
+    override fun onCreateView(inflater: LayoutInflater,
+                              container: ViewGroup?,
+                              savedInstanceState: Bundle?): View? {
+        binding = FragmentSearchBinding.inflate(inflater, container, false)
+        return binding.root
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         updateToolbarTitle()
+        initializeRecyclerView()
         initializeSearchDialog()
-        restoreDialog(savedInstanceState)
+        initializeConfirmationResetDialog()
+        initializeSliders()
+        handleRangeSliderPriceListener()
+        handleRangeSliderSurfaceListener()
+        initializeStatusMaterialButtons()
+        initializeListPOISelectionInDialog()
+        initializeDatePickerDialogs()
+        initializeTextInputDate()
+        handleCheckboxPrice()
+        handleCheckBoxSurface()
+        handleCheckBoxDate()
+        handleCheckBoxStatus()
+        handleCheckBoxPOIStatus()
+        handleDateTextInputClicks()
+        handleMaterialButtonsStatus()
+        handleMaterialButtonsPOI()
+        restoreCheckBoxesCheckedStatus(savedInstanceState)
+        restoresDialog(savedInstanceState)
+        handleRangeSlidersObservers()
+        handleDateObserver()
+        handleStatusObserver()
+        handlePOIObserver()
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -102,7 +153,7 @@ class FragmentSearch : Fragment() {
         when (item.itemId) {
             android.R.id.home -> {  (activity as MainActivity).onBackPressed() }
             R.id.filter -> { builderSearchDialog.show() }
-        }
+            R.id.reset -> { builderConfirmReset.show() } }
         return super.onOptionsItemSelected(item)
     }
 
@@ -113,6 +164,48 @@ class FragmentSearch : Fragment() {
         (activity as MainActivity).apply {
             setToolbarProperties(R.string.str_toolbar_fragment_search_title, true)
         }
+    }
+
+    /**
+     * Initializes recycler view for list display.
+     */
+    private fun initializeRecyclerView() {
+        binding.recyclerViewResults.apply {
+            setHasFixedSize(true)
+            layoutManager = LinearLayoutManager(context)
+            adapter = ListEstatesAdapter(context) { handleClickOnEstateItem(it) }
+            (adapter as ListEstatesAdapter).activity = (activity as MainActivity)
+        }
+    }
+
+    fun handleClickOnEstateItem(position: Int) {
+
+    }
+
+    private fun resetAllFilters() {
+        context?.let { itContext ->
+            searchFiltersViewModel.let {
+                checkBoxPrice.isChecked = false
+                checkBoxStatus.isChecked = false
+                checkBoxSurface.isChecked = false
+                checkBoxDate.isChecked = false
+                checkBoxStatus.isChecked = false
+                checkBoxPOI.isChecked = false
+                it.restoreDefaultValues(itContext)
+                it.resetCheckBoxes()
+                if (textLayoutStartDate.isErrorEnabled) textLayoutStartDate.apply {
+                        isErrorEnabled = false
+                        error = "" }
+            }
+        }
+    }
+
+    /**
+     * Update [MaterialTextView] displayed in background.
+     * @param visibility : visibility status value
+     */
+    private fun handleBackgroundMaterialTextVisibility(visibility: Int) {
+        binding.txtBackgroundNoResults.visibility = visibility
     }
 
     /**
@@ -129,40 +222,103 @@ class FragmentSearch : Fragment() {
                                        .setPositiveButton(R.string.str_dialog_confirm) { _, _ -> }
                                        .setNegativeButton(R.string.str_dialog_button_cancel) { _, _ -> }
                                        .create()
-            initializeSliders()
-            initializeListPOISelectionInDialog()
-            initializeDatePickerDialogs()
-            initializeTextInputDate()
-            handleCheckboxPrice()
-            handleCheckBoxSurface()
-            handleCheckBoxDate()
-            handleCheckBoxStatus()
-            handleCheckBoxPOIStatus()
-            handleDateTextInputClicks()
-            handleMaterialButtonsStatus()
-            handleMaterialButtonsPOI()
         }
     }
 
+    private fun initializeConfirmationResetDialog() {
+        builderConfirmReset = AlertDialog.Builder(activity)
+            .setTitle("Reset filters")
+            .setMessage("All the filters will be removed and set to default value. Confirm ?")
+            .setPositiveButton(resources.getString(R.string.str_dialog_confirm)) { _, _ ->
+                resetAllFilters()
+            }
+            .setNegativeButton(resources.getString(R.string.str_dialog_button_cancel))  { _, _ -> }
+            .create()
+    }
     /**
      * Initializes [RangeSlider] views.
      */
     private fun initializeSliders() {
         viewLayoutDialog?.let {
             // Initialize "Price" slider
-            val valuesPrice = resources.getIntArray(R.array.slider_price_values)
-            val valuesSurface = resources.getIntArray(R.array.slider_surface_values)
+            val valuesPrice = searchFiltersViewModel.valuesPrice
+            val valuesSurface = searchFiltersViewModel.valuesSurface
             rangeSliderPrice = it.findViewById<RangeSlider>(R.id.range_slider_price).apply {
                 this.setValues(valuesPrice[0].toFloat(), valuesPrice[1].toFloat())
                 this.stepSize = valuesPrice[2].toFloat()
+                updateMaterialTextRangeSlider(valuesPrice[0], valuesPrice[1],
+                                                                     R.id.min_price, R.id.max_price)
             }
             rangeSliderSurface = it.findViewById<RangeSlider>(R.id.range_slider_surface).apply {
                 this.setValues(valuesSurface[0].toFloat(), valuesSurface[1].toFloat())
                 this.stepSize = valuesSurface[2].toFloat()
+                updateMaterialTextRangeSlider(valuesSurface[0], valuesSurface[1],
+                                                                 R.id.min_surface, R.id.max_surface)
             }
-            // Set listeners
-            handleRangeSliderPriceListener()
-            handleRangeSliderSurfaceListener()
+        }
+    }
+
+    /**
+     * Add observe to [searchFiltersViewModel] "checkBoxPriceValue" and
+     * "checkBoxSurfaceValue" LiveData properties.
+     */
+    private fun handleRangeSlidersObservers() {
+        searchFiltersViewModel.checkBoxPriceValue.observe(viewLifecycleOwner, {
+            val valuesPrice = searchFiltersViewModel.valuesPrice
+            rangeSliderPrice.apply {
+                isEnabled = it
+                setValues(valuesPrice[0].toFloat(), valuesPrice[1].toFloat())
+            }
+        })
+        searchFiltersViewModel.checkBoxSurfaceValue.observe(viewLifecycleOwner, {
+            val valuesSurface = searchFiltersViewModel.valuesSurface
+            rangeSliderSurface.apply {
+                isEnabled = it
+                setValues(valuesSurface[0].toFloat(), valuesSurface[1].toFloat())
+            }
+        })
+    }
+
+    /**
+     * Add observe to [searchFiltersViewModel] "checkBoxDateValue" LiveData property.
+     */
+    private fun handleDateObserver() {
+        searchFiltersViewModel.checkBoxDateValue.observe(viewLifecycleOwner, {
+            textInputStartDate.isEnabled = it
+            textInputStartDate.text = StringHandler.convertStringToEditable(searchFiltersViewModel.startDate)
+            textInputEndDate.isEnabled = it
+            textInputEndDate.text = StringHandler.convertStringToEditable(searchFiltersViewModel.endDate)
+        })
+    }
+
+    /**
+     * Add observe to [searchFiltersViewModel] "checkBoxStatusValue" LiveData property.
+     */
+    private fun handleStatusObserver() {
+        searchFiltersViewModel.checkBoxStatusValue.observe(viewLifecycleOwner, {
+            updateStatusMaterialButtons(it)
+            availableButton.isClickable = it
+            soldButton.isClickable = it })
+    }
+
+    /**
+     * Add observe to [searchFiltersViewModel] "checkBoxPOIValue" LiveData property.
+     */
+    private fun handlePOIObserver() {
+        searchFiltersViewModel.checkBoxPOIValue.observe(viewLifecycleOwner, {
+            for (i in 0 until linearLayoutTags.childCount) {
+                (linearLayoutTags.getChildAt(i) as MaterialButton).isClickable = it
+                initializePOIMaterialButton((linearLayoutTags.getChildAt(i) as MaterialButton), i, it)
+            } })
+    }
+
+    /**
+     * Initialize both [MaterialTextView] for "status" filter.
+     */
+    private fun initializeStatusMaterialButtons() {
+        viewLayoutDialog?.let {
+            availableButton = it.findViewById(R.id.button_available)
+            soldButton = it.findViewById(R.id.button_sold)
         }
     }
 
@@ -174,23 +330,31 @@ class FragmentSearch : Fragment() {
         val list: Array<out String> = resources.getStringArray(R.array.poi)
         // Initialize layoutParams for views to add in HorizontalScrollView
         val layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-            ViewGroup.LayoutParams.WRAP_CONTENT).apply {
-            marginStart = 20.toPx(activity as MainActivity)
-        }
+            ViewGroup.LayoutParams.WRAP_CONTENT).apply { marginStart = 20.toPx(activity as MainActivity) }
         context?.let { itContext ->
             // Add each button in HorizontalScrollView
             for (i in list.indices) {
                 val materialButton = MaterialButton(itContext).apply {
                     text = list[i]
-                    setColorsMaterialButton(R.color.grey41, R.color.grey93, this)
                     isAllCaps = false
-                    isClickable = false
-                }
+                    isClickable = false }
                 linearLayoutTags.addView(materialButton, layoutParams)
-                // Update list status
-                listPOIStatus.add(false)
             }
         }
+    }
+
+    /**
+     * Initializes all "tag" [MaterialButton] for "points of interest" filter.
+     * @param button : "tag" button
+     * @param indice : position in "listPOIStatus"
+     * @param status : "enabled" button status
+     */
+    private fun initializePOIMaterialButton(button: MaterialButton, indice: Int, status: Boolean) {
+        if (status)
+            if (searchFiltersViewModel.listPOIStatus[indice])
+                setColorsMaterialButton(R.color.colorPrimary, R.color.white, button)
+            else setColorsMaterialButton(R.color.white, R.color.colorPrimary, button)
+        else setColorsMaterialButton(R.color.grey41, R.color.grey93, button)
     }
 
     /**
@@ -220,9 +384,11 @@ class FragmentSearch : Fragment() {
         viewLayoutDialog?.let {
             textLayoutStartDate = it.findViewById(R.id.text_layout_date_start)
             textInputStartDate = it.findViewById(R.id.text_input_date_start)
-            textInputStartDate.isEnabled = false
+            textInputStartDate.apply {
+                text = StringHandler.convertStringToEditable(searchFiltersViewModel.startDate) }
             textInputEndDate = it.findViewById(R.id.text_input_date_end)
-            textInputEndDate.isEnabled = false
+            textInputEndDate.apply {
+                text = StringHandler.convertStringToEditable(searchFiltersViewModel.endDate) }
         }
     }
 
@@ -230,8 +396,32 @@ class FragmentSearch : Fragment() {
      * Restores displayed [builderSearchDialog] alert dialog after a configuration change
      * @param savedInstanceState : Bundle
      */
-    private fun restoreDialog(savedInstanceState: Bundle?) {
-        savedInstanceState?.let { builderSearchDialog.show() }
+    private fun restoresDialog(savedInstanceState: Bundle?) {
+        savedInstanceState?.let {
+            when {
+                it.getBoolean(AppInfo.DIALOG_SEARCH_KEY) == true -> {
+                    builderSearchDialog.show()
+                    checkTextInputEditTextFields()
+                }
+                it.getBoolean(AppInfo.DIALOG_RESET_FILTERS_KEY) == true -> {
+                    builderConfirmReset.show()
+                }
+            }
+        }
+    }
+
+    /**
+     * Restores "checked" [CheckBox] status.
+     * @param savedInstanceState : Bundle
+     */
+    private fun restoreCheckBoxesCheckedStatus(savedInstanceState: Bundle?) {
+        savedInstanceState?.let {
+            checkBoxPrice.isChecked = it.getBoolean(AppInfo.CHECKBOX_PRICE_KEY)
+            checkBoxSurface.isChecked = it.getBoolean(AppInfo.CHECKBOX_SURFACE_KEY)
+            checkBoxDate.isChecked = it.getBoolean(AppInfo.CHECKBOX_DATE_KEY)
+            checkBoxStatus.isChecked = it.getBoolean(AppInfo.CHECKBOX_STATUS_KEY)
+            checkBoxPOI.isChecked = it.getBoolean(AppInfo.CHECKBOX_POI_KEY)
+        }
     }
 
     /**
@@ -239,8 +429,12 @@ class FragmentSearch : Fragment() {
      */
     private fun handleCheckboxPrice() {
         viewLayoutDialog?.let {
-            it.findViewById<CheckBox>(R.id.checkbox_price).setOnCheckedChangeListener { _, isChecked ->
-                rangeSliderPrice.isEnabled = isChecked
+            checkBoxPrice = it.findViewById<CheckBox>(R.id.checkbox_price)
+            checkBoxPrice.apply {
+                setOnCheckedChangeListener { _, isChecked ->
+                    rangeSliderPrice.isEnabled = isChecked
+                    searchFiltersViewModel.updateCheckBoxPriceValue(isChecked)
+                }
             }
         }
     }
@@ -250,8 +444,12 @@ class FragmentSearch : Fragment() {
      */
     private fun handleCheckBoxSurface() {
         viewLayoutDialog?.let {
-            it.findViewById<CheckBox>(R.id.checkbox_surface).setOnCheckedChangeListener { _, isChecked ->
-                rangeSliderSurface.isEnabled = isChecked
+            checkBoxSurface = it.findViewById<CheckBox>(R.id.checkbox_surface)
+            checkBoxSurface.apply {
+                setOnCheckedChangeListener { _, isChecked ->
+                    rangeSliderSurface.isEnabled = isChecked
+                    searchFiltersViewModel.updateCheckBoxSurfaceValue(isChecked)
+                }
             }
         }
     }
@@ -261,9 +459,13 @@ class FragmentSearch : Fragment() {
      */
     private fun handleCheckBoxDate() {
         viewLayoutDialog?.let {
-            it.findViewById<CheckBox>(R.id.checkbox_date).setOnCheckedChangeListener { _, isChecked ->
-                textInputStartDate.isEnabled = isChecked
-                textInputEndDate.isEnabled = isChecked
+            checkBoxDate = it.findViewById<CheckBox>(R.id.checkbox_date)
+            checkBoxDate.apply {
+                setOnCheckedChangeListener { _, isChecked ->
+                    textInputStartDate.isEnabled = isChecked
+                    textInputEndDate.isEnabled = isChecked
+                    searchFiltersViewModel.updateCheckBoxDateValue(isChecked)
+                }
             }
         }
     }
@@ -273,25 +475,14 @@ class FragmentSearch : Fragment() {
      */
     private fun handleCheckBoxStatus() {
         viewLayoutDialog?.let {
-            availableButton = it.findViewById(R.id.button_available)
-            soldButton = it.findViewById(R.id.button_sold)
-            it.findViewById<CheckBox>(R.id.checkbox_status).setOnCheckedChangeListener { _, isChecked ->
-                if (isChecked) {
-                    if (availableStatus) { // "Available" button selected
-                        setColorsMaterialButton(R.color.colorPrimary, R.color.white, availableButton)
-                        setColorsMaterialButton(R.color.white, R.color.colorPrimary, soldButton)
-                    }
-                    else { // "Sold button selected
-                        setColorsMaterialButton(R.color.white, R.color.colorPrimary, availableButton)
-                        setColorsMaterialButton(R.color.colorPrimary, R.color.white, soldButton)
-                    }
+            checkBoxStatus = it.findViewById<CheckBox>(R.id.checkbox_status)
+            checkBoxStatus.apply {
+                setOnCheckedChangeListener { _, isChecked ->
+                    updateStatusMaterialButtons(isChecked)
+                    availableButton.isClickable = isChecked
+                    soldButton.isClickable = isChecked
+                    searchFiltersViewModel.updateCheckBoxStatusValue(isChecked)
                 }
-                else {
-                    setColorsMaterialButton(R.color.grey41, R.color.grey93, availableButton)
-                    setColorsMaterialButton(R.color.grey41, R.color.grey93, soldButton)
-                }
-                availableButton.isClickable = isChecked
-                soldButton.isClickable = isChecked
             }
         }
     }
@@ -301,20 +492,26 @@ class FragmentSearch : Fragment() {
      */
     private fun handleCheckBoxPOIStatus() {
         viewLayoutDialog?.let {
-            it.findViewById<CheckBox>(R.id.checkbox_poi).setOnCheckedChangeListener {
-                    _, isChecked ->
-                for (i in 0 until linearLayoutTags.childCount) {
-                    val materialButton = linearLayoutTags.getChildAt(i) as MaterialButton
-                    if (isChecked) {
-                        materialButton.isClickable = true
-                        if (listPOIStatus[i])
-                            setColorsMaterialButton(R.color.colorPrimary, R.color.white, materialButton)
-                        else
-                            setColorsMaterialButton(R.color.white, R.color.colorPrimary, materialButton)
-                    }
-                    else {
-                        materialButton.isClickable = false
-                        setColorsMaterialButton(R.color.grey41, R.color.grey93, materialButton)
+            checkBoxPOI = it.findViewById<CheckBox>(R.id.checkbox_poi)
+            checkBoxPOI.apply {
+                setOnCheckedChangeListener { _, isChecked ->
+                    isChecked.let {
+                        for (i in 0 until linearLayoutTags.childCount) {
+                            val materialButton = linearLayoutTags.getChildAt(i) as MaterialButton
+                            if (it) {
+                                materialButton.isClickable = true
+                                if (searchFiltersViewModel.listPOIStatus[i])
+                                    setColorsMaterialButton(R.color.colorPrimary,
+                                                                      R.color.white, materialButton)
+                                else setColorsMaterialButton(R.color.white,
+                                                               R.color.colorPrimary, materialButton)
+                            }
+                            else {
+                                materialButton.isClickable = false
+                                setColorsMaterialButton(R.color.grey41, R.color.grey93, materialButton)
+                            }
+                        }
+                        searchFiltersViewModel.updateCheckBoxPOIValue(it)
                     }
                 }
             }
@@ -328,7 +525,10 @@ class FragmentSearch : Fragment() {
         viewLayoutDialog?.let {
             val priceSlider = it.findViewById<RangeSlider>(R.id.range_slider_price)
             priceSlider.addOnChangeListener { slider, _, _ ->
-                updateMaterialTextPrice(slider.values[0].toInt(), slider.values[1].toInt(), it)
+                updateMaterialTextRangeSlider(slider.values[0].toInt(), slider.values[1].toInt(),
+                                              R.id.min_price, R.id.max_price)
+                searchFiltersViewModel.valuesPrice[0] = slider.values[0].toInt()
+                searchFiltersViewModel.valuesPrice[1] = slider.values[1].toInt()
             }
         }
     }
@@ -340,7 +540,10 @@ class FragmentSearch : Fragment() {
         viewLayoutDialog?.let {
             val surfaceSlider = it.findViewById<RangeSlider>(R.id.range_slider_surface)
             surfaceSlider.addOnChangeListener { slider, _, _ ->
-                updateMaterialTextSurface(slider.values[0].toInt(), slider.values[1].toInt(), it)
+                updateMaterialTextRangeSlider(slider.values[0].toInt(), slider.values[1].toInt(),
+                                              R.id.min_surface, R.id.max_surface)
+                searchFiltersViewModel.valuesSurface[0] = slider.values[0].toInt()
+                searchFiltersViewModel.valuesSurface[1] = slider.values[1].toInt()
             }
         }
     }
@@ -361,17 +564,15 @@ class FragmentSearch : Fragment() {
     private fun handleMaterialButtonsStatus() {
         viewLayoutDialog?.let {
             availableButton.setOnClickListener {
-                availableStatus = true
+                searchFiltersViewModel.availableStatus = true
                 setColorsMaterialButton(R.color.colorPrimary, R.color.white, availableButton)
                 setColorsMaterialButton(R.color.white, R.color.colorPrimary, soldButton)
             }
             soldButton.setOnClickListener {
-                availableStatus = false
+                searchFiltersViewModel.availableStatus = false
                 setColorsMaterialButton(R.color.white, R.color.colorPrimary, availableButton)
                 setColorsMaterialButton(R.color.colorPrimary, R.color.white, soldButton)
             }
-            availableButton.isClickable = false
-            soldButton.isClickable = false
         }
     }
 
@@ -382,48 +583,62 @@ class FragmentSearch : Fragment() {
         for (i in 0 until linearLayoutTags.childCount) {
             (linearLayoutTags.getChildAt(i) as MaterialButton).setOnClickListener {
                 // Update status
-                listPOIStatus[i] = !listPOIStatus[i]
+                searchFiltersViewModel.listPOIStatus[i] = !searchFiltersViewModel.listPOIStatus[i]
                 // Update button properties
-                if (listPOIStatus[i]) setColorsMaterialButton(R.color.colorPrimary, R.color.white,
-                    linearLayoutTags.getChildAt(i) as MaterialButton)
+                if (searchFiltersViewModel.listPOIStatus[i])
+                    setColorsMaterialButton(R.color.colorPrimary, R.color.white,
+                                                   linearLayoutTags.getChildAt(i) as MaterialButton)
                 else setColorsMaterialButton(R.color.white, R.color.colorPrimary,
-                    linearLayoutTags.getChildAt(i) as MaterialButton)
+                                                   linearLayoutTags.getChildAt(i) as MaterialButton)
             }
-            (linearLayoutTags.getChildAt(i) as MaterialButton).isClickable = false
+        }
+    }
+
+    private fun updateStatusMaterialButtons(status: Boolean) {
+        if (status) { // Checkbox checked
+            if (searchFiltersViewModel.availableStatus) { // "Available" button selected
+                setColorsMaterialButton(R.color.colorPrimary, R.color.white, availableButton)
+                setColorsMaterialButton(R.color.white, R.color.colorPrimary, soldButton)
+            }
+            else { // "Sold button selected
+                setColorsMaterialButton(R.color.white, R.color.colorPrimary, availableButton)
+                setColorsMaterialButton(R.color.colorPrimary, R.color.white, soldButton)
+            }
+        }
+        else { // Checkbox unchecked
+            setColorsMaterialButton(R.color.grey41, R.color.grey93, availableButton)
+            setColorsMaterialButton(R.color.grey41, R.color.grey93, soldButton)
         }
     }
 
     /**
-     * Updates min and max values displayed for [rangeSliderPrice].
-     * @param minPrice : min value selected
-     * @param maxPrice : max value selected
-     * @param view : [viewLayoutDialog]
+     * Updates min and max values associated to a selected [RangeSlider].
+     * @param minValue : min value to display
+     * @param maxValue : max value to display
+     * @param resMin : [MaterialTextView] resource displaying the min value
+     * @param resMax : [MaterialTextView] resource displaying the max value
      */
-    private fun updateMaterialTextPrice(minPrice: Int, maxPrice: Int, view: View) {
-        view.findViewById<MaterialTextView>(R.id.min_price).apply {
-            val text = resources.getString(R.string.str_value_price_slider, minPrice)
-            setText(text)
-        }
-        view.findViewById<MaterialTextView>(R.id.max_price).apply {
-            val text = resources.getString(R.string.str_value_price_slider, maxPrice)
-            setText(text)
-        }
-    }
-
-    /**
-     * Updates min and max values displayed for [rangeSliderSurface].
-     * @param minSurface : min value selected
-     * @param maxSurface : max value selected
-     * @param view : [viewLayoutDialog]
-     */
-    private fun updateMaterialTextSurface(minSurface: Int, maxSurface : Int, view: View) {
-        view.findViewById<MaterialTextView>(R.id.min_surface).apply {
-            val text = resources.getString(R.string.str_value_surface_slider, minSurface)//"$minSurface sqm"
-            setText(text)
-        }
-        view.findViewById<MaterialTextView>(R.id.max_surface).apply {
-            val text = resources.getString(R.string.str_value_surface_slider, maxSurface)//"$maxSurface sqm"
-            setText(text)
+    private fun updateMaterialTextRangeSlider(minValue: Int, maxValue: Int,
+                                              @IntegerRes resMin: Int, @IntegerRes resMax: Int) {
+        viewLayoutDialog?.let {
+            it.findViewById<MaterialTextView>(resMin).apply {
+                when(resMin) {
+                    R.id.min_price -> {
+                        val text = resources.getString(R.string.str_value_price_slider, minValue)
+                        setText(text) }
+                    R.id.min_surface -> {
+                        val text = resources.getString(R.string.str_value_surface_slider, minValue)
+                        setText(text) } }
+            }
+            it.findViewById<MaterialTextView>(resMax).apply {
+                when(resMax) {
+                    R.id.max_price -> {
+                        val text = resources.getString(R.string.str_value_price_slider, maxValue)
+                        setText(text) }
+                    R.id.max_surface -> {
+                        val text = resources.getString(R.string.str_value_surface_slider, maxValue)
+                        setText(text) } }
+            }
         }
     }
 
@@ -438,22 +653,25 @@ class FragmentSearch : Fragment() {
         val selectedDate = Calendar.getInstance()
         selectedDate.set(year, month, day)
         val currentDate = Utils.getDateFormat(selectedDate.time)
-        if (type) textInputStartDate.text = StringHandler.convertStringToEditable(currentDate)
-        else textInputEndDate.text = StringHandler.convertStringToEditable(currentDate)
+        if (type) {
+            searchFiltersViewModel.startDate = currentDate
+            textInputStartDate.text = StringHandler.convertStringToEditable(currentDate) }
+        else {
+            searchFiltersViewModel.endDate = currentDate
+            textInputEndDate.text = StringHandler.convertStringToEditable(currentDate) }
     }
 
     /**
      * Checks [textLayoutStartDate] and [textInputEndDate] text values.
      */
     private fun checkTextInputEditTextFields() {
-        if (textInputStartDate.text?.isNotEmpty() == true && textInputEndDate.text?.isNotEmpty() == true)
-        {
+        if (textInputStartDate.text?.isNotEmpty() == true
+            && textInputEndDate.text?.isNotEmpty() == true) {
             val status = DateComparator.compareDates(textInputStartDate.text.toString(),
                                                      textInputEndDate.text.toString())
             textLayoutStartDate.apply {
                 isErrorEnabled = !status
-                error = if (!status) "Error" else ""
-            }
+                error = if (!status) "Error" else "" }
             builderSearchDialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled = status
         }
     }
@@ -469,19 +687,22 @@ class FragmentSearch : Fragment() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
             button.apply {
                 setTextColor(resources.getColor(textColor, null))
-                setBackgroundColor(resources.getColor(backgroundColor, null))
-            }
+                setBackgroundColor(resources.getColor(backgroundColor, null)) }
         else
             button.apply {
                 setTextColor(resources.getColor(textColor))
-                setBackgroundColor(resources.getColor(backgroundColor))
-            }
+                setBackgroundColor(resources.getColor(backgroundColor)) }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.apply {
             putBoolean(AppInfo.DIALOG_SEARCH_KEY, builderSearchDialog.isShowing)
-        }
+            putBoolean(AppInfo.CHECKBOX_PRICE_KEY, checkBoxPrice.isChecked)
+            putBoolean(AppInfo.CHECKBOX_SURFACE_KEY, checkBoxSurface.isChecked)
+            putBoolean(AppInfo.CHECKBOX_DATE_KEY, checkBoxDate.isChecked)
+            putBoolean(AppInfo.CHECKBOX_STATUS_KEY, checkBoxStatus.isChecked)
+            putBoolean(AppInfo.CHECKBOX_POI_KEY, checkBoxPOI.isChecked)
+            putBoolean(AppInfo.DIALOG_RESET_FILTERS_KEY, builderConfirmReset.isShowing)}
     }
 }

@@ -28,8 +28,7 @@ import javax.inject.Inject
  */
 @HiltViewModel
 class ListEstatesViewModel @Inject constructor(
-    val repositoryAccess: RealEstateRepositoryAccess
-): ViewModel() {
+    val repositoryAccess: RealEstateRepositoryAccess): ViewModel() {
 
     /** Contains list of existing [Estate] objects.  */
     private val _listEstates: MutableLiveData<List<Estate>> = MutableLiveData()

@@ -90,7 +90,7 @@ class FragmentNewEstate : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
-        listEstatesViewModel = ViewModelProvider(requireActivity()).get(ListEstatesViewModel::class.java)
+        listEstatesViewModel = ViewModelProvider(requireActivity())[ListEstatesViewModel::class.java]
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
