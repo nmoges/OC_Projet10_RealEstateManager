@@ -212,26 +212,8 @@ class ListEstatesViewModel @Inject constructor(
      */
     fun restoreData(list: List<FullEstateData>) {
         viewModelScope.launch {
-            val listEstateRestored: MutableList<Estate> = mutableListOf()
-            list.forEach { it ->
-                val interior = it.interiorData.toInterior()
-                val listPhoto: MutableList<Photo> = mutableListOf()
-                it.listPhotosData.forEach { listPhoto.add(it.toPhoto()) }
-                val listPointOfInterest: MutableList<PointOfInterest> = mutableListOf()
-                it.listPointOfInterestData.forEach {
-                    listPointOfInterest.add(it.toPointOfInterest())
-                }
-                val agentData = repositoryAccess.getAgentById(it.estateData.idAgent)
-                val datesData = repositoryAccess.getDatesById(it.estateData.idEstate)
-                val locationData = it.locationData.toLocation()
-                val estate = it.estateData.toEstate(interior, listPhoto,
-                                                    agentData.toAgent(),
-                                                    datesData.toDates(),
-                                                    locationData,
-                                                    listPointOfInterest)
-                listEstateRestored.add(estate)
-            }
-            _listEstates.postValue(listEstateRestored)
+            _listEstates.postValue(Converters.convertListFullEstateDataToListEstate(list,
+                                                                                  repositoryAccess))
         }
     }
 

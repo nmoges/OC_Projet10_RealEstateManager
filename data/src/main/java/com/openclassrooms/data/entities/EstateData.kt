@@ -29,4 +29,8 @@ data class EstateData(
     @ColumnInfo(name = "id_agent")
     var idAgent: Long,
     var status: Boolean,
-)
+) {
+    companion object {
+        const val TABLE_NAME = "table_estates"
+    }
+}

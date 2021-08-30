@@ -2,18 +2,26 @@ package com.openclassrooms.realestatemanager.viewmodels
 
 import android.content.Context
 import android.widget.CheckBox
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.google.android.material.slider.RangeSlider
 import com.google.android.material.textfield.TextInputEditText
+import com.openclassrooms.data.entities.FullEstateData
+import com.openclassrooms.data.repository.RealEstateRepositoryAccess
 import com.openclassrooms.realestatemanager.R
+import com.openclassrooms.realestatemanager.model.Estate
 import com.openclassrooms.realestatemanager.ui.fragments.FragmentSearch
+import com.openclassrooms.realestatemanager.utils.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class SearchFiltersViewModel @Inject constructor(@ApplicationContext context: Context): ViewModel() {
+class SearchFiltersViewModel @Inject constructor(@ApplicationContext context: Context,
+    private val repositoryAccess: RealEstateRepositoryAccess): ViewModel() {
 
     /** Contains boolean value for "Price" [CheckBox] */
     var checkBoxPriceValue: MutableLiveData<Boolean> = MutableLiveData(false)
@@ -43,11 +51,15 @@ class SearchFiltersViewModel @Inject constructor(@ApplicationContext context: Co
     var endDate: String = ""
 
     /** Defines value of the "Estate status" filter */
-    var availableStatus: Boolean = false  // true : available estates only
-                                          // false : sold estates only
+    var availableStatus: Boolean = false  // false : available estates only
+                                          // true : sold estates only
 
     /** Defines values of the "Points of interest" filter */
     var listPOIStatus: MutableList<Boolean> = mutableListOf()
+
+    private val _searchResults: MutableLiveData<List<Estate>> = MutableLiveData()
+    val searchResults: LiveData<List<Estate>>
+        get() = _searchResults
 
     init {
         // Initialize listPOIStatus with default values (no filter selected)
@@ -116,5 +128,24 @@ class SearchFiltersViewModel @Inject constructor(@ApplicationContext context: Co
         updateCheckBoxStatusValue(false)
         updateCheckBoxPOIValue(false)
     }
+
+    fun getSearchResultsFromRepository(price: ArrayList<Int?>, surface: ArrayList<Int?>,
+                                       status: Boolean?, listPoi : MutableList<String>?, nbFilters: Int): LiveData<List<FullEstateData>> {
+
+
+        return repositoryAccess.getSearchResults(price, surface, status, listPoi, nbFilters)
+    }
+
+    fun convertDataFromSearchRequest(searchResults: List<FullEstateData>) {
+        viewModelScope.launch {
+            _searchResults.postValue(Converters.convertListFullEstateDataToListEstate(searchResults,
+                                                                                  repositoryAccess))
+        }
+    }
+
+    fun resetSearchResults() {
+        _searchResults.postValue(mutableListOf())
+    }
+
 }
 

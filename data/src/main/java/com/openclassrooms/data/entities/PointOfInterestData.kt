@@ -21,4 +21,8 @@ data class PointOfInterestData(
 
     @ColumnInfo(name= "id_associated_estate")
     var associatedId: Long
-)
+) {
+    companion object {
+        const val TABLE_NAME = "table_poi"
+    }
+}

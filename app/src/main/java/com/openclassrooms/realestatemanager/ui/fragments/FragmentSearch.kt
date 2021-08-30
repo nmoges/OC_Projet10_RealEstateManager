@@ -31,6 +31,7 @@ import com.openclassrooms.realestatemanager.utils.DateComparator
 import com.openclassrooms.realestatemanager.utils.StringHandler
 import com.openclassrooms.realestatemanager.viewmodels.SearchFiltersViewModel
 import java.util.*
+import kotlin.collections.ArrayList
 
 class FragmentSearch : Fragment() {
 
@@ -101,6 +102,9 @@ class FragmentSearch : Fragment() {
     /** [CheckBox] for "Points of interest" filtering. */
     private lateinit var checkBoxPOI: CheckBox
 
+    /** List of existing "Point of interest" */
+    private lateinit var listPOI: Array<out String>
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
@@ -116,6 +120,7 @@ class FragmentSearch : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        listPOI = resources.getStringArray(R.array.poi)
         updateToolbarTitle()
         initializeRecyclerView()
         initializeSearchDialog()
@@ -141,6 +146,7 @@ class FragmentSearch : Fragment() {
         handleDateObserver()
         handleStatusObserver()
         handlePOIObserver()
+        handleViewModelObserver()
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -151,7 +157,11 @@ class FragmentSearch : Fragment() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            android.R.id.home -> {  (activity as MainActivity).onBackPressed() }
+            android.R.id.home -> {
+                resetAllFilters()
+                ResetSearchResults()
+                (activity as MainActivity).onBackPressed()
+            }
             R.id.filter -> { builderSearchDialog.show() }
             R.id.reset -> { builderConfirmReset.show() } }
         return super.onOptionsItemSelected(item)
@@ -219,7 +229,9 @@ class FragmentSearch : Fragment() {
             builderSearchDialog = AlertDialog.Builder(activity)
                                        .setTitle(R.string.str_dialog_search_title)
                                        .setView(it)
-                                       .setPositiveButton(R.string.str_dialog_confirm) { _, _ -> }
+                                       .setPositiveButton(R.string.str_dialog_confirm) { _, _ ->
+                                           performSearch()
+                                       }
                                        .setNegativeButton(R.string.str_dialog_button_cancel) { _, _ -> }
                                        .create()
         }
@@ -231,6 +243,7 @@ class FragmentSearch : Fragment() {
             .setMessage("All the filters will be removed and set to default value. Confirm ?")
             .setPositiveButton(resources.getString(R.string.str_dialog_confirm)) { _, _ ->
                 resetAllFilters()
+                ResetSearchResults()
             }
             .setNegativeButton(resources.getString(R.string.str_dialog_button_cancel))  { _, _ -> }
             .create()
@@ -312,6 +325,20 @@ class FragmentSearch : Fragment() {
             } })
     }
 
+    private fun handleViewModelObserver() {
+        searchFiltersViewModel.searchResults.observe(viewLifecycleOwner, {
+            (binding.recyclerViewResults.adapter as ListEstatesAdapter).apply {
+                listEstates.apply {
+                    clear()
+                    addAll(it)
+                    notifyDataSetChanged()
+                }
+                val visibility = if (it.isEmpty()) View.VISIBLE else View.INVISIBLE
+                handleBackgroundMaterialTextVisibility(visibility)
+            }
+        })
+    }
+
     /**
      * Initialize both [MaterialTextView] for "status" filter.
      */
@@ -326,16 +353,14 @@ class FragmentSearch : Fragment() {
      * Initializes the list of points of interest available for filter selection.
      */
     private fun initializeListPOISelectionInDialog() {
-        // Get list of points of interest from xml resource
-        val list: Array<out String> = resources.getStringArray(R.array.poi)
         // Initialize layoutParams for views to add in HorizontalScrollView
         val layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.WRAP_CONTENT).apply { marginStart = 20.toPx(activity as MainActivity) }
         context?.let { itContext ->
             // Add each button in HorizontalScrollView
-            for (i in list.indices) {
+            for (i in listPOI.indices) {
                 val materialButton = MaterialButton(itContext).apply {
-                    text = list[i]
+                    text = listPOI[i]
                     isAllCaps = false
                     isClickable = false }
                 linearLayoutTags.addView(materialButton, layoutParams)
@@ -564,12 +589,12 @@ class FragmentSearch : Fragment() {
     private fun handleMaterialButtonsStatus() {
         viewLayoutDialog?.let {
             availableButton.setOnClickListener {
-                searchFiltersViewModel.availableStatus = true
+                searchFiltersViewModel.availableStatus = false
                 setColorsMaterialButton(R.color.colorPrimary, R.color.white, availableButton)
                 setColorsMaterialButton(R.color.white, R.color.colorPrimary, soldButton)
             }
             soldButton.setOnClickListener {
-                searchFiltersViewModel.availableStatus = false
+                searchFiltersViewModel.availableStatus = true
                 setColorsMaterialButton(R.color.white, R.color.colorPrimary, availableButton)
                 setColorsMaterialButton(R.color.colorPrimary, R.color.white, soldButton)
             }
@@ -704,5 +729,59 @@ class FragmentSearch : Fragment() {
             putBoolean(AppInfo.CHECKBOX_STATUS_KEY, checkBoxStatus.isChecked)
             putBoolean(AppInfo.CHECKBOX_POI_KEY, checkBoxPOI.isChecked)
             putBoolean(AppInfo.DIALOG_RESET_FILTERS_KEY, builderConfirmReset.isShowing)}
+    }
+
+    private fun performSearch() {
+        var minPriceFilter: Int? = null
+        var maxPriceFilter: Int? = null
+        var minSurfaceFilter: Int? = null
+        var maxSurfaceFilter: Int? = null
+        var statusFilter: Boolean? = null
+        var nbFilters = 0
+        var listPOIFilters: MutableList<String>? = null
+
+        if(checkBoxSurface.isChecked) {
+            minSurfaceFilter = rangeSliderSurface.values[0].toInt()
+            maxSurfaceFilter = rangeSliderSurface.values[1].toInt()
+            nbFilters++
+        }
+        if(checkBoxPrice.isChecked) {
+            minPriceFilter = rangeSliderPrice.values[0].toInt()
+            maxPriceFilter = rangeSliderPrice.values[1].toInt()
+            nbFilters++
+        }
+        if(checkBoxStatus.isChecked) {
+            statusFilter = searchFiltersViewModel.availableStatus
+            nbFilters++
+        }
+
+        if (checkBoxPOI.isChecked && searchFiltersViewModel.listPOIStatus.contains(true)) {
+            listPOIFilters = mutableListOf()
+            for (i in 0 until searchFiltersViewModel.listPOIStatus.size) {
+                if (searchFiltersViewModel.listPOIStatus[i]) {
+                    listPOIFilters.add(listPOI[i])
+                }
+            }
+            nbFilters++
+        }
+        if (nbFilters > 0) {
+            val priceFilter: ArrayList<Int?> = arrayListOf()
+            priceFilter.add(minPriceFilter)
+            priceFilter.add(maxPriceFilter)
+            val surfaceFilter: ArrayList<Int?> = arrayListOf()
+            surfaceFilter.add(minSurfaceFilter)
+            surfaceFilter.add(maxSurfaceFilter)
+
+            searchFiltersViewModel
+                .getSearchResultsFromRepository(priceFilter, surfaceFilter, statusFilter, listPOIFilters, nbFilters)
+                .observe(viewLifecycleOwner,
+                {
+                    if (it.size > 0) searchFiltersViewModel.convertDataFromSearchRequest(it)
+                })
+        }
+    }
+
+    private fun ResetSearchResults() {
+        searchFiltersViewModel.resetSearchResults()
     }
 }
