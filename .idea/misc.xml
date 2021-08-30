@@ -7,6 +7,7 @@
         <entry key="..\:/Users/nicol/OneDrive/Documents/Formation/OpenClassrooms/Projet 9/App/RealEstateManager/RealEstateManager/app/src/main/res/drawable/border_constraint_layout_poi.xml" value="0.11171875" />
         <entry key="..\:/Users/nicol/OneDrive/Documents/Formation/OpenClassrooms/Projet 9/App/RealEstateManager/RealEstateManager/app/src/main/res/drawable/button_shape.xml" value="0.18671875" />
         <entry key="..\:/Users/nicol/OneDrive/Documents/Formation/OpenClassrooms/Projet 9/App/RealEstateManager/RealEstateManager/app/src/main/res/drawable/dotted_border_background_clicked.xml" value="0.15416666666666667" />
+        <entry key="..\:/Users/nicol/OneDrive/Documents/Formation/OpenClassrooms/Projet 9/App/RealEstateManager/RealEstateManager/app/src/main/res/drawable/ic_baseline_home_24dp_grey41.xml" value="0.11953125" />
         <entry key="..\:/Users/nicol/OneDrive/Documents/Formation/OpenClassrooms/Projet 9/App/RealEstateManager/RealEstateManager/app/src/main/res/drawable/ic_baseline_map_24dp_dark_blue.xml" value="0.128515625" />
         <entry key="..\:/Users/nicol/OneDrive/Documents/Formation/OpenClassrooms/Projet 9/App/RealEstateManager/RealEstateManager/app/src/main/res/drawable/ic_baseline_restart_alt_24p_white.xml" value="0.12708333333333333" />
         <entry key="..\:/Users/nicol/OneDrive/Documents/Formation/OpenClassrooms/Projet 9/App/RealEstateManager/RealEstateManager/app/src/main/res/drawable/ic_baseline_settings_24dp_dark_blue.xml" value="0.14921875" />
@@ -17,7 +18,7 @@
         <entry key="..\:/Users/nicol/OneDrive/Documents/Formation/OpenClassrooms/Projet 9/App/RealEstateManager/RealEstateManager/app/src/main/res/layout/dialog_filters.xml" value="0.2" />
         <entry key="..\:/Users/nicol/OneDrive/Documents/Formation/OpenClassrooms/Projet 9/App/RealEstateManager/RealEstateManager/app/src/main/res/layout/dialog_media_confirmation.xml" value="0.135546875" />
         <entry key="..\:/Users/nicol/OneDrive/Documents/Formation/OpenClassrooms/Projet 9/App/RealEstateManager/RealEstateManager/app/src/main/res/layout/dialog_media_selection.xml" value="0.135546875" />
-        <entry key="..\:/Users/nicol/OneDrive/Documents/Formation/OpenClassrooms/Projet 9/App/RealEstateManager/RealEstateManager/app/src/main/res/layout/fragment_estate_details.xml" value="0.2" />
+        <entry key="..\:/Users/nicol/OneDrive/Documents/Formation/OpenClassrooms/Projet 9/App/RealEstateManager/RealEstateManager/app/src/main/res/layout/fragment_estate_details.xml" value="0.176" />
         <entry key="..\:/Users/nicol/OneDrive/Documents/Formation/OpenClassrooms/Projet 9/App/RealEstateManager/RealEstateManager/app/src/main/res/layout/fragment_list_estate.xml" value="0.1" />
         <entry key="..\:/Users/nicol/OneDrive/Documents/Formation/OpenClassrooms/Projet 9/App/RealEstateManager/RealEstateManager/app/src/main/res/layout/fragment_list_estate_item.xml" value="0.115234375" />
         <entry key="..\:/Users/nicol/OneDrive/Documents/Formation/OpenClassrooms/Projet 9/App/RealEstateManager/RealEstateManager/app/src/main/res/layout/fragment_map.xml" value="0.137109375" />

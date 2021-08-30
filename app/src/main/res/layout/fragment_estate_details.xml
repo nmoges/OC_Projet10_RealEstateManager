@@ -327,6 +327,74 @@
             android:layout_marginTop="20dp"
             android:layout_gravity="center"/>
 
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="20dp"
+            android:orientation="horizontal">
+
+            <GridLayout
+                android:id="@+id/places_nearby_grid"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:columnCount="2"
+                android:rowCount="1"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/places_nearby_icon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="top"
+                    android:layout_marginStart="20dp"
+                    android:src="@drawable/ic_baseline_location_on_24dp_grey41"
+                    android:layout_row="0"
+                    android:layout_column="0"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintRight_toLeftOf="@id/address_location_grid"/>
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_row="0"
+                    android:layout_column="1"
+                    android:text="Places nearby"
+                    android:textStyle="bold"
+                    android:textSize="@dimen/text_description_grid"/>
+            </GridLayout>
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/places_nearby_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="45dp"
+                android:paddingEnd="45dp"
+                android:text="-"
+                android:visibility="visible"
+                android:textSize="@dimen/text_description_grid"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/places_nearby_grid"
+                app:layout_constraintBottom_toBottomOf="parent"/>
+
+            <co.lujun.androidtagview.TagContainerLayout
+                android:id="@+id/tag_container_layout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:layout_column="0"
+                android:layout_row="0"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/places_nearby_grid"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:container_background_color="@color/fui_transparent"
+                app:container_border_color="@color/fui_transparent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+
         <!-- "Status" section -->
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/title_section_status"

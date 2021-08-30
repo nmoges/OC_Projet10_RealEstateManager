@@ -69,6 +69,7 @@ class FragmentEstateDetails : Fragment() {
         displayPublishDate()
         restoreDialog(savedInstanceState)
         displayLocationOnMap()
+        initializeTagContainerDisplay()
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -226,6 +227,18 @@ class FragmentEstateDetails : Fragment() {
             .setNegativeButton(resources.getString(R.string.str_dialog_button_cancel))
             { _, _ ->  }
             .create()
+    }
+
+    /**
+     * Initializes the tag container to display all points of interest associated with the
+     * current [Estate].
+     */
+    private fun initializeTagContainerDisplay() {
+        binding.tagContainerLayout.let { itContainer ->
+            selectedEstateToDisplay?.listPointOfInterest?.forEach { itPoi ->
+                itContainer.addTag(itPoi.name)
+            }
+        }
     }
 
     /**
