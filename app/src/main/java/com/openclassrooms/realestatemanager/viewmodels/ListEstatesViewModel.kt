@@ -11,10 +11,9 @@ import com.google.android.libraries.places.api.model.Place
 import com.openclassrooms.data.entities.FullEstateData
 import com.openclassrooms.data.entities.PointOfInterestData
 import com.openclassrooms.data.repository.RealEstateRepositoryAccess
+import com.openclassrooms.realestatemanager.Utils
 import com.openclassrooms.realestatemanager.model.*
 import com.openclassrooms.realestatemanager.model.date.Dates
-import com.openclassrooms.realestatemanager.model.date.EntryDate
-import com.openclassrooms.realestatemanager.model.date.SaleDate
 import com.openclassrooms.realestatemanager.service.DummyListAgentGenerator
 import com.openclassrooms.realestatemanager.utils.*
 import com.openclassrooms.realestatemanager.utils.poi.POIComparator
@@ -63,7 +62,7 @@ class ListEstatesViewModel @Inject constructor(
                 interior = Interior(id= 1, numberRooms = 5, numberBathrooms = 1,
                                     numberBedrooms = 1, surface = 200),
                 agent = Agent(id = 1, firstName = "", lastName = ""),
-                dates = Dates(id = 1, entryDate = EntryDate(), saleDate = SaleDate())
+                dates = Dates(id = 1, dateEntry = "", dateSale = "")
             )
     }
 
@@ -126,16 +125,8 @@ class ListEstatesViewModel @Inject constructor(
      * @param type : type of date to add (entry date or sale date)
      */
     fun updateDateSelectedEstate(type: Boolean) {
-        val calendar: Calendar = Calendar.getInstance()
-        val date: MutableList<Int> = mutableListOf(
-            calendar.get(Calendar.DAY_OF_MONTH),
-            calendar.get(Calendar.MONTH)+1,
-            calendar.get(Calendar.YEAR)
-        )
-        if (!type) selectedEstate?.dates?.entryDate = EntryDate(
-            day = date[0], month = date[1], year = date[2])
-        else selectedEstate?.dates?.saleDate = SaleDate(
-            day = date[0], month = date[1], year = date[2])
+        if (!type) selectedEstate?.dates?.dateEntry = Utils.getDate()
+        else selectedEstate?.dates?.dateSale = Utils.getDate()
     }
 
     /**

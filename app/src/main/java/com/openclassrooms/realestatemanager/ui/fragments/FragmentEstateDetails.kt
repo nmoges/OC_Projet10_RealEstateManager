@@ -186,10 +186,8 @@ class FragmentEstateDetails : Fragment() {
     private fun displayPublishDate() {
         //TODO() : utiliser parametre string
         selectedEstateToDisplay?.run {
-            val publishDateText = Utils.getDate(mutableListOf(dates.entryDate.day,
-                                                               dates.entryDate.month,
-                                                               dates.entryDate.year))
-            val textToDisplay = resources.getString(R.string.str_published_on) + ": $publishDateText"
+            val entryDateText = dates.dateEntry
+            val textToDisplay = resources.getString(R.string.str_published_on) + ": $entryDateText"
             binding.publishDate.text = textToDisplay
         }
     }
@@ -200,11 +198,8 @@ class FragmentEstateDetails : Fragment() {
     //TODO() : utiliser parametre string
     private fun displaySaleDate() {
         selectedEstateToDisplay?.run {
-            val saleDate = dates.saleDate
-            if (saleDate.day != 0 && saleDate.month != 0 && saleDate.year != 0) {
-                val saleDateText = Utils.getDate(mutableListOf(dates.saleDate.day,
-                    dates.saleDate.month,
-                    dates.saleDate.year))
+            val saleDateText = dates.dateSale
+            if (saleDateText.isNotEmpty()) {
                 val textToDisplay = resources.getString(R.string.str_sold_status) + ": $saleDateText"
                 binding.saleStatus.apply {
                     text = textToDisplay
@@ -214,13 +209,6 @@ class FragmentEstateDetails : Fragment() {
         }
     }
 
-    //TODO() : To move
-  /*  private fun getDate(list: MutableList<Int>): String {
-        val calendar = Calendar.getInstance()
-        calendar.set(list[2], list[1]-1, list[0])
-        return Utils.getTodayDate(calendar.time)
-    }
-*/
     /**
      * Initializes an [AlertDialog.Builder] to display a confirmation message to user.
      */

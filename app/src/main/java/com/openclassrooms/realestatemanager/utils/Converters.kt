@@ -2,13 +2,9 @@ package com.openclassrooms.realestatemanager.utils
 
 import com.openclassrooms.data.entities.*
 import com.openclassrooms.data.entities.date.DatesData
-import com.openclassrooms.data.entities.date.EntryDateData
-import com.openclassrooms.data.entities.date.SaleDateData
 import com.openclassrooms.data.repository.RealEstateRepositoryAccess
 import com.openclassrooms.realestatemanager.model.*
 import com.openclassrooms.realestatemanager.model.date.Dates
-import com.openclassrooms.realestatemanager.model.date.EntryDate
-import com.openclassrooms.realestatemanager.model.date.SaleDate
 
 object Converters {
     /**
@@ -115,37 +111,13 @@ fun Agent.toAgentData() = AgentData(
 
 // Date converters
 fun Dates.toDatesData(associatedId: Long) = DatesData(
-    entryDateData = entryDate.toEntryDateData(),
-    saleDateData = saleDate.toSaleDateData(),
+    dateEntry = dateEntry,
+    dateSale = dateSale,
     associatedId = associatedId
 )
 
 fun DatesData.toDates() = Dates(
     id = idDates,
-    entryDate = entryDateData.toEntryDate(),
-    saleDate = saleDateData.toSaleDate()
-)
-
-fun EntryDate.toEntryDateData() = EntryDateData(
-    day = day,
-    month = month,
-    year = year
-)
-
-fun EntryDateData.toEntryDate() = EntryDate(
-    day = day,
-    month = month,
-    year = year
-)
-
-fun SaleDate.toSaleDateData() = SaleDateData(
-    day = day,
-    month = month,
-    year = year
-)
-
-fun SaleDateData.toSaleDate() = SaleDate(
-    day = day,
-    month = month,
-    year = year
+    dateSale = dateSale,
+    dateEntry = dateEntry
 )

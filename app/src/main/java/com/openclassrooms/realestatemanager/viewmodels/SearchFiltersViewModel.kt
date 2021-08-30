@@ -1,6 +1,7 @@
 package com.openclassrooms.realestatemanager.viewmodels
 
 import android.content.Context
+import android.text.Editable
 import android.widget.CheckBox
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -11,9 +12,10 @@ import com.google.android.material.textfield.TextInputEditText
 import com.openclassrooms.data.entities.FullEstateData
 import com.openclassrooms.data.repository.RealEstateRepositoryAccess
 import com.openclassrooms.realestatemanager.R
+import com.openclassrooms.realestatemanager.Utils
 import com.openclassrooms.realestatemanager.model.Estate
 import com.openclassrooms.realestatemanager.ui.fragments.FragmentSearch
-import com.openclassrooms.realestatemanager.utils.*
+import com.openclassrooms.realestatemanager.utils.Converters
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.launch
@@ -60,6 +62,8 @@ class SearchFiltersViewModel @Inject constructor(@ApplicationContext context: Co
     private val _searchResults: MutableLiveData<List<Estate>> = MutableLiveData()
     val searchResults: LiveData<List<Estate>>
         get() = _searchResults
+
+    var nbFilters = 0
 
     init {
         // Initialize listPOIStatus with default values (no filter selected)
@@ -129,13 +133,25 @@ class SearchFiltersViewModel @Inject constructor(@ApplicationContext context: Co
         updateCheckBoxPOIValue(false)
     }
 
+    /**
+     * Uses [RealEstateRepositoryAccess] interface to perform search requests.
+     * @param price : Contains min and max price values for price filtering
+     * @param surface : Contains min and max surface values for surface filtering
+     * @param status : Contains boolean value defining the status estate filtering
+     * @param dates : Contains dates values for date filtering
+     * @return : Request results
+     */
     fun getSearchResultsFromRepository(price: ArrayList<Int?>, surface: ArrayList<Int?>,
-                                       status: Boolean?, listPoi : MutableList<String>?, nbFilters: Int): LiveData<List<FullEstateData>> {
-
-
-        return repositoryAccess.getSearchResults(price, surface, status, listPoi, nbFilters)
+                                       status: Boolean?, listPoi : MutableList<String>?,
+                                       dates: ArrayList<String?>): LiveData<List<FullEstateData>> {
+        return repositoryAccess.getSearchResults(price, surface, status, dates, listPoi, nbFilters)
     }
 
+    /**
+     * Converts all [FullEstateData] objects returned from search request into a list [Estate] objects
+     * to store in [_searchResults] property.
+     * @param searchResults : Request results to convert
+     */
     fun convertDataFromSearchRequest(searchResults: List<FullEstateData>) {
         viewModelScope.launch {
             _searchResults.postValue(Converters.convertListFullEstateDataToListEstate(searchResults,
@@ -143,9 +159,109 @@ class SearchFiltersViewModel @Inject constructor(@ApplicationContext context: Co
         }
     }
 
+    /**
+     * Reset list of stored results.
+     */
     fun resetSearchResults() {
         _searchResults.postValue(mutableListOf())
     }
 
+    /**
+     * Initializes a "Surface" filter for SQL search requests.
+     * @param minSurface : Min surface value to search
+     * @param maxSurface : Max surface value to search
+     * @param checkBoxStatus : Filter activation status
+     * @return : "Surface" filter
+     */
+    fun initializeSurfaceFilter(minSurface: Int, maxSurface: Int, checkBoxStatus: Boolean): ArrayList<Int?> {
+        var minSurfaceFilter: Int? = null
+        var maxSurfaceFilter: Int? = null
+        if (checkBoxStatus) {
+            minSurfaceFilter = minSurface
+            maxSurfaceFilter= maxSurface
+            nbFilters++
+        }
+        val surfaceFilter: ArrayList<Int?> = arrayListOf()
+        surfaceFilter.apply {
+            add(minSurfaceFilter)
+            add(maxSurfaceFilter)
+        }
+        return surfaceFilter
+    }
+
+    /**
+     * Initializes a "Price" filter for SQL search requests.
+     * @param minPrice : Min price value to search
+     * @param maxPrice : Max price value to search
+     * @param checkBoxStatus : Filter activation status
+     * @return : "Price" filter
+     */
+    fun initializePriceFilter(minPrice: Int, maxPrice: Int, checkBoxStatus: Boolean): ArrayList<Int?> {
+        var minPriceFilter: Int? =  null
+        var maxPriceFilter: Int? =  null
+        if (checkBoxStatus) {
+            minPriceFilter = minPrice
+            maxPriceFilter = maxPrice
+            nbFilters++
+        }
+        val priceFilter: ArrayList<Int?> = arrayListOf()
+        priceFilter.apply {
+            add(minPriceFilter)
+            add(maxPriceFilter)
+        }
+        return priceFilter
+    }
+
+    /**
+     * Initializes an "Estate status" filter for SQL search requests.
+     * @param checkBoxStatus : Filter activation status
+     * @return : "Estate Status" filter
+     */
+    fun initializeStatusFilter(checkBoxStatus: Boolean): Boolean? {
+        if (checkBoxStatus) nbFilters++
+        return if (checkBoxStatus) availableStatus else null
+    }
+
+    /**
+     * Initializes a "Points of interest" filter for SQL search requests.
+     * @param checkBoxStatus : Filter activation status
+     * @param listPOI : List of existing points of interest
+     * @return : "Point of interest" filter
+     */
+    fun initializePOIFilter(checkBoxStatus: Boolean, listPOI: Array<out String>): MutableList<String>? {
+        var listPOIFilters: MutableList<String>? = null
+        if (checkBoxStatus && listPOIStatus.contains(true)) {
+            listPOIFilters = mutableListOf()
+            for (i in 0 until listPOIStatus.size) {
+                if (listPOIStatus[i]) listPOIFilters.add(listPOI[i])
+            }
+            nbFilters++
+        }
+        return listPOIFilters
+    }
+
+    /**
+     * Initializes a "Points of interest" filter for SQL search requests.
+     * @param checkBoxStatus : Filter activation status
+     * @param startDate : Defines min date
+     * @param endDate : Define max date
+     * @return : "Dates" filter
+     */
+    fun initializeDatesFilter(checkBoxStatus: Boolean, startDate: Editable?, endDate: Editable?): ArrayList<String?> {
+        var startDateFilter: String? = null
+        var endDateFilter: String? = null
+        val datesFilter: ArrayList<String?> = arrayListOf()
+
+        if (checkBoxStatus && startDate?.isNotEmpty() == true && endDate?.isNotEmpty() == true) {
+            startDateFilter = Utils.convertStringToSQLiteFormat(startDate.toString())
+            endDateFilter = Utils.convertStringToSQLiteFormat(endDate.toString())
+            nbFilters++
+        }
+        datesFilter.apply {
+            add(startDateFilter)
+            add(endDateFilter)
+        }
+        return datesFilter
+    }
 }
 

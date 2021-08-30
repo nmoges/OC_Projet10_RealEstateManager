@@ -4,12 +4,11 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.os.Build;
+
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 
 /**
@@ -34,7 +33,19 @@ public class Utils {
      * @return : date
      */
     @SuppressLint("SimpleDateFormat")
-    public static String getDateFormat(Date date) {
+    public static String getDate() {
+        Calendar calendar = Calendar.getInstance();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        return dateFormat.format(calendar.getTime());
+    }
+
+    /**
+     * Converts a date to a specific format according to the system language.
+     * @param date : Date to convert
+     * @return : Converted date (String)
+     */
+    @SuppressLint("SimpleDateFormat")
+    public static String convertDateToFormat(Date date) {
         DateFormat dateFormat;
         if (Locale.getDefault().getLanguage().equals("en"))
             dateFormat = new SimpleDateFormat("MM/dd/yyyy");
@@ -42,17 +53,13 @@ public class Utils {
             dateFormat = new SimpleDateFormat("dd/MM/yyyy");
         return dateFormat.format(date);
     }
-   /* public static String getTodayDate(){
-        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
-        return dateFormat.format(new Date());
-    }*/
 
-    public static String getDate(List<Integer> list) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(list.get(2), list.get(1)-1, list.get(0));
-        return getDateFormat(calendar.getTime());
-    }
 
+    /**
+     * Converts a formatted date into a Date object according to the system language.
+     * @param date : Formatted date to convert
+     * @return : Converted date (Date)
+     */
     @SuppressLint("SimpleDateFormat")
     public static Date convertFormatToDate(String date) throws java.text.ParseException{
         DateFormat dateFormat;
@@ -62,6 +69,27 @@ public class Utils {
             dateFormat = new SimpleDateFormat("dd/MM/yyyy");
 
         return dateFormat.parse(date);
+    }
+
+    /**
+     * Converts a selected date to a SQL compatible date-format
+     * @param date : Date to convert
+     * @return : Converted date
+     */
+    public static String convertStringToSQLiteFormat(String date) {
+        String day;
+        String month;
+        String year;
+        if (Locale.getDefault().getLanguage().equals("en")) {
+            month = date.substring(0,2);
+            day = date.substring(3,5);
+        }
+        else {
+            day = date.substring(0,2);
+            month = date.substring(3,5);
+        }
+        year = date.substring(6);
+        return year + "-" + month + "-" + day;
     }
 
     /**

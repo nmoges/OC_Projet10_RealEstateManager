@@ -2,7 +2,6 @@ package com.openclassrooms.data.repository
 
 import android.app.Activity
 import android.database.Cursor
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.sqlite.db.SimpleSQLiteQuery
 import com.openclassrooms.data.dao.*
@@ -11,7 +10,6 @@ import com.openclassrooms.data.entities.date.DatesData
 import com.openclassrooms.data.service.AutocompleteService
 import com.openclassrooms.data.service.RetrofitBuilder
 import retrofit2.Retrofit
-import kotlin.math.max
 
 /**
  * Repository class interface.
@@ -72,7 +70,8 @@ interface RealEstateRepositoryAccess {
     fun getEstateWithId(id: Long): Cursor
 
     fun getSearchResults(price: ArrayList<Int?>, surface: ArrayList<Int?>,
-                         status: Boolean?, listPoi : MutableList<String>?, _nbFilters: Int): LiveData<List<FullEstateData>>
+                         status: Boolean?, dates: ArrayList<String?>,
+                         listPoi : MutableList<String>?, _nbFilters: Int): LiveData<List<FullEstateData>>
 }
 
 /**
@@ -166,47 +165,74 @@ class RealEstateRepository(
     companion object {
         const val TABLE_ESTATE = EstateData.TABLE_NAME
         const val TABLE_INTERIOR = InteriorData.TABLE_NAME
-        const val TABLE_LOCATION = LocationData.TABLE_NAME
         const val TABLE_DATE = DatesData.TABLE_NAME
         const val TABLE_POI = PointOfInterestData.TABLE_NAME
     }
 
+    /**
+     * Performs a SQL search request to [FullEstateDao] interface
+     * @param price : "Price" filter
+     * @param surface : "Surface" filter
+     * @param status : "Estate status" filter
+     * @param dates : "Dates" filter
+     * @param listPoi : "Points of interest" filter
+     * @param _nbFilters : number of filters enabled
+     *
+     */
     override fun getSearchResults(price: ArrayList<Int?>, surface: ArrayList<Int?>,
-                                  status: Boolean?, listPoi : MutableList<String>?, _nbFilters: Int): LiveData<List<FullEstateData>> {
+                                  status: Boolean?, dates: ArrayList<String?>,
+                                  listPoi : MutableList<String>?, _nbFilters: Int): LiveData<List<FullEstateData>> {
         var query = "SELECT DISTINCT $TABLE_ESTATE.* FROM $TABLE_ESTATE"
-        query = addJoinClauseToSearchQuery(query, surface[0], surface[1], listPoi)
-        query = addConditionsToSearchQuery(query, price[0], price[1], surface[0], surface[1], status, listPoi, _nbFilters)
-
-        Log.i("SQL_REQUEST", query)
+        query = addJoinClauseToSearchQuery(query, surface, dates, listPoi)
+        query = addConditionsToSearchQuery(query, price, surface, status, dates, listPoi, _nbFilters)
         return fullEstateDao.getSearchResults(SimpleSQLiteQuery(query))
     }
 
-    private fun addJoinClauseToSearchQuery(query: String, minSurface: Int?, maxSurface: Int?, listPoi : MutableList<String>?): String {
+    /**
+     * Constructs SQL search request by adding JOIN clause according to the selected filters.
+     * @param query : SQL query to update
+     * @param surface : "Surface" filter
+     * @param dates : "Dates" filter
+     * @param listPoi : "Points of interest" filter
+     */
+    private fun addJoinClauseToSearchQuery(query: String, surface: ArrayList<Int?>,
+                                           dates: ArrayList<String?>,
+                                           listPoi : MutableList<String>?): String {
         var updatedQuery = query
-        if(minSurface != null && maxSurface != null)
+        if(surface[0] != null && surface[1] != null)
             updatedQuery += " INNER JOIN $TABLE_INTERIOR ON $TABLE_INTERIOR.id_associated_estate = $TABLE_ESTATE.id_estate"
         if (listPoi != null)
             updatedQuery += " INNER JOIN $TABLE_POI ON $TABLE_POI.id_associated_estate = $TABLE_ESTATE.id_estate"
-        // TODO: Add TABLE_DATE
-        Log.i("SQL_REQUEST", "Join : $updatedQuery")
+        if (dates[0] != null && dates[1] != null)
+            updatedQuery += " INNER JOIN $TABLE_DATE ON $TABLE_DATE.id_associated_estate = $TABLE_ESTATE.id_estate"
         return updatedQuery
     }
 
-    private fun addConditionsToSearchQuery(query: String, minPrice: Int?, maxPrice: Int?,
-                                           minSurface: Int?, maxSurface: Int?,
-                                           status: Boolean?, listPoi: MutableList<String>?,
-                                           _nbFilters: Int): String {
+    /**
+     * Adds conditions to SQL search request according to the selected filters.
+     * @param query : SQL request to update
+     * @param price : "Price" filter
+     * @param surface : "Surface" filter
+     * @param status : "Estate status" filter
+     * @param dates : "Dates" filter
+     * @param listPoi : "Points of interest" filter
+     * @param _nbFilters : number of selected filters
+     */
+    private fun addConditionsToSearchQuery(query: String, price: ArrayList<Int?>,
+                                           surface: ArrayList<Int?>,
+                                           status: Boolean?, dates: ArrayList<String?>,
+                                           listPoi: MutableList<String>?, _nbFilters: Int): String {
         var updatedQuery = query
         updatedQuery += " WHERE"
         var nbFilters = _nbFilters
-        if(minPrice != null && maxPrice != null) {
+        if(price[0] != null && price[1] != null) {
             nbFilters--
-            updatedQuery += " $TABLE_ESTATE.price BETWEEN $minPrice and $maxPrice"
+            updatedQuery += " $TABLE_ESTATE.price BETWEEN ${price[0]} and ${price[1]}"
             if (nbFilters != 0) updatedQuery += " AND"
         }
-        if(minSurface != null && maxSurface != null) {
+        if(surface[0] != null && surface[1] != null) {
             nbFilters--
-            updatedQuery += " $TABLE_INTERIOR.surface BETWEEN $minSurface and $maxSurface"
+            updatedQuery += " $TABLE_INTERIOR.surface BETWEEN ${surface[0]} and ${surface[1]}"
             if (nbFilters != 0) updatedQuery += " AND"
         }
         if (listPoi != null) {
@@ -222,7 +248,11 @@ class RealEstateRepository(
             updatedQuery += " $TABLE_ESTATE.status = ${if(status) 1 else 0}"
             if (nbFilters != 0) updatedQuery += " AND"
         }
-        Log.i("SQL_REQUEST", "Condition : $updatedQuery")
+        if (dates[0] != null && dates[1] != null) {
+            nbFilters--
+            updatedQuery += " $TABLE_DATE.entry_date >= '${dates[0]}' AND $TABLE_DATE.entry_date <= '${dates[1]}'"
+            if (nbFilters != 0) updatedQuery += " AND"
+        }
         return updatedQuery
     }
 }

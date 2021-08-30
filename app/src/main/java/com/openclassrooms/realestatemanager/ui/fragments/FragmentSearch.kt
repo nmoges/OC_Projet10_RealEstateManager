@@ -159,7 +159,7 @@ class FragmentSearch : Fragment() {
         when (item.itemId) {
             android.R.id.home -> {
                 resetAllFilters()
-                ResetSearchResults()
+                resetSearchResults()
                 (activity as MainActivity).onBackPressed()
             }
             R.id.filter -> { builderSearchDialog.show() }
@@ -243,7 +243,7 @@ class FragmentSearch : Fragment() {
             .setMessage("All the filters will be removed and set to default value. Confirm ?")
             .setPositiveButton(resources.getString(R.string.str_dialog_confirm)) { _, _ ->
                 resetAllFilters()
-                ResetSearchResults()
+                resetSearchResults()
             }
             .setNegativeButton(resources.getString(R.string.str_dialog_button_cancel))  { _, _ -> }
             .create()
@@ -677,7 +677,7 @@ class FragmentSearch : Fragment() {
     private fun updateTextInputEditTextWithDate(type: Boolean, year: Int, month: Int, day: Int) {
         val selectedDate = Calendar.getInstance()
         selectedDate.set(year, month, day)
-        val currentDate = Utils.getDateFormat(selectedDate.time)
+        val currentDate = Utils.convertDateToFormat(selectedDate.time)
         if (type) {
             searchFiltersViewModel.startDate = currentDate
             textInputStartDate.text = StringHandler.convertStringToEditable(currentDate) }
@@ -700,6 +700,7 @@ class FragmentSearch : Fragment() {
             builderSearchDialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled = status
         }
     }
+
     /**
      * Sets colors for text and background for a selected [MaterialButton]
      * @param textColor : color of the [MaterialButton] text
@@ -731,57 +732,53 @@ class FragmentSearch : Fragment() {
             putBoolean(AppInfo.DIALOG_RESET_FILTERS_KEY, builderConfirmReset.isShowing)}
     }
 
+    /**
+     * Initializes filters to perform a search request.
+     */
     private fun performSearch() {
-        var minPriceFilter: Int? = null
-        var maxPriceFilter: Int? = null
-        var minSurfaceFilter: Int? = null
-        var maxSurfaceFilter: Int? = null
-        var statusFilter: Boolean? = null
-        var nbFilters = 0
-        var listPOIFilters: MutableList<String>? = null
+        // Reset number of selected filters
+        searchFiltersViewModel.nbFilters = 0
 
-        if(checkBoxSurface.isChecked) {
-            minSurfaceFilter = rangeSliderSurface.values[0].toInt()
-            maxSurfaceFilter = rangeSliderSurface.values[1].toInt()
-            nbFilters++
-        }
-        if(checkBoxPrice.isChecked) {
-            minPriceFilter = rangeSliderPrice.values[0].toInt()
-            maxPriceFilter = rangeSliderPrice.values[1].toInt()
-            nbFilters++
-        }
-        if(checkBoxStatus.isChecked) {
-            statusFilter = searchFiltersViewModel.availableStatus
-            nbFilters++
-        }
-
-        if (checkBoxPOI.isChecked && searchFiltersViewModel.listPOIStatus.contains(true)) {
-            listPOIFilters = mutableListOf()
-            for (i in 0 until searchFiltersViewModel.listPOIStatus.size) {
-                if (searchFiltersViewModel.listPOIStatus[i]) {
-                    listPOIFilters.add(listPOI[i])
-                }
-            }
-            nbFilters++
-        }
-        if (nbFilters > 0) {
-            val priceFilter: ArrayList<Int?> = arrayListOf()
-            priceFilter.add(minPriceFilter)
-            priceFilter.add(maxPriceFilter)
-            val surfaceFilter: ArrayList<Int?> = arrayListOf()
-            surfaceFilter.add(minSurfaceFilter)
-            surfaceFilter.add(maxSurfaceFilter)
-
+        // Initialize filters
+        val surfaceFilter: ArrayList<Int?> = searchFiltersViewModel.initializeSurfaceFilter(
+            minSurface = rangeSliderSurface.values[0].toInt(),
+            maxSurface = rangeSliderSurface.values[1].toInt(),
+            checkBoxStatus = checkBoxSurface.isChecked
+        )
+        val priceFilter: ArrayList<Int?> = searchFiltersViewModel.initializePriceFilter(
+            minPrice = rangeSliderPrice.values[0].toInt(),
+            maxPrice = rangeSliderPrice.values[1].toInt(),
+            checkBoxStatus = checkBoxPrice.isChecked
+        )
+        val statusFilter: Boolean? = searchFiltersViewModel
+                                    .initializeStatusFilter(checkBoxStatus.isChecked)
+        val listPOIFilters: MutableList<String>? = searchFiltersViewModel.initializePOIFilter(
+            checkBoxStatus = checkBoxPOI.isChecked,
+            listPOI = listPOI
+        )
+        val datesFilter: ArrayList<String?> = searchFiltersViewModel.initializeDatesFilter(
+            checkBoxStatus = checkBoxDate.isChecked,
+            startDate = textInputStartDate.text,
+            endDate = textInputEndDate.text
+        )
+        // Send request
+        if (searchFiltersViewModel.nbFilters > 0) {
             searchFiltersViewModel
-                .getSearchResultsFromRepository(priceFilter, surfaceFilter, statusFilter, listPOIFilters, nbFilters)
+                .getSearchResultsFromRepository(priceFilter, surfaceFilter, statusFilter,
+                                                                        listPOIFilters, datesFilter)
                 .observe(viewLifecycleOwner,
                 {
                     if (it.size > 0) searchFiltersViewModel.convertDataFromSearchRequest(it)
+                    else resetSearchResults()
                 })
         }
+        else resetSearchResults()
     }
 
-    private fun ResetSearchResults() {
+    /**
+     * Resets search results displayed.
+     */
+    private fun resetSearchResults() {
         searchFiltersViewModel.resetSearchResults()
     }
 }
