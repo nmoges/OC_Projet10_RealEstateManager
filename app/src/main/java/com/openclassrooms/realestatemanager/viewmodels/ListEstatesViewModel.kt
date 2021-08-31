@@ -36,7 +36,7 @@ class ListEstatesViewModel @Inject constructor(
 
     /** Contains a temporary photo uri converted value. */
     private val _photoUriEstate: MutableLiveData<String> = MutableLiveData()
-    val photoUriEstate: LiveData<String>
+    private val photoUriEstate: LiveData<String>
         get() = _photoUriEstate
 
     /** Contains a list of agents. */

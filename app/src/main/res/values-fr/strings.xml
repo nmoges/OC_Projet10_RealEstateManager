@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Real Estate Manager</string>
+    <string name="facebook_application_id">1898055770358844</string>
+    <string name="fb_login_protocol_scheme">fb1898055770358844</string>
+    <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">AIzaSyDn2jw9WgTHuGyoJGdr_NdDGGJNhWQeH28</string>
+
+    <!-- activity_main.xml -->
+    <string name="content_desc_img">Image du bien</string>
+    <string name="content_desc_img_no_estate_selected">Logo spécifiant qu\'un bien n\'a pas encore été sélectionné</string>
+    <string name="str_no_estate_selected">Aucune bien sélectioné</string>
+    <string name="str_no_network">Aucun réseau détecté</string>
+    <string name="str_connectivity_bar_btn_close">Fermer</string>
+    <string name="str_dialog_add_agent_title">Ajouter un nouvel agent</string>
+    <string name="str_dialog_confirm">Confirmer</string>
+    <string name="str_dialog_logout_title">Déconnexion</string>
+    <string name="str_dialog_logout_message">Voulez-vous vous déconnecter ?</string>
+    <string name="str_error_logout">Erreur pendant la déconnexion</string>
+
+    <!-- menu_fragment_list_estate.xml -->
+    <string name="str_toolbar_fragment_list_estate_title">Real Estate Manager</string>
+    <string name="str_item_add_agent">Ajouter un agent</string>
+    <string name="str_item_map">Carte</string>
+    <string name="str_item_search">Rechercher</string>
+    <string name="str_item_settings">Paramètres</string>
+    <string name="str_item_logout">Déconnexion</string>
+
+    <!-- menu_fragment_new_estate.xml -->
+    <string name="str_item_reset">Reset</string>
+
+    <!-- menu_fragment_estate_details.xml -->
+    <string name="str_item_edit">Édition</string>
+
+    <!-- menu_fragment_search.xml -->
+    <string name="str_item_filter">Filtrer</string>
+    <string name="str_item_reset_filters">Réinitialiser les filtres</string>
+
+    <!-- fragment_new_estate.xml -->
+    <string name="str_toolbar_fragment_new_estate_title">Créer un nouveau bien</string>
+    <string name="str_toolbar_fragment_modify_estate_title">Modifier un bien</string>
+    <string name="str_new_estate_name_hint_text_input">Nom</string>
+    <string name="str_new_estate_agent_hint_text_input">Nom agent</string>
+    <string name="str_new_estate_price_hint_text_input">Prix</string>
+    <string name="str_new_estate_location_hint_text_input">Localisation</string>
+    <string name="str_new_estate_description_hint_text_input">Description</string>
+    <string name="str_new_estate_surface_hint_text_input">Surface</string>
+    <string name="str_new_estate_rooms_hint_text_input">Pièces</string>
+    <string name="str_new_estate_bathrooms_hint_text_input">Salles de bain</string>
+    <string name="str_new_estate_bedrooms_hint_text_input">Chambres</string>
+    <string name="str_slider_surface_title">Surface</string>
+    <string name="str_slider_rooms_title">Pièces</string>
+    <string name="str_slider_bathrooms_title">Salles de bain</string>
+    <string name="str_slider_bedrooms_title">Chambres</string>
+    <string name="str_slider_price_title">Prix</string>
+    <string name="str_slider_value_default_surface">200 m2</string>
+    <string name="str_slider_value_default_rooms">5</string>
+    <string name="str_slider_value_default_bathrooms">1</string>
+    <string name="str_slider_value_default_bedrooms">1</string>
+    <string name="str_sqm_unit">%1$d m2</string>
+    <string name="str_sqm_unit_greater_than_or_equal">≥%1$d m2</string>
+    <string name="str_greater_than_or_equal">≥%1$d</string>
+    <string name="str_new_estate_surface_section_area_unit">m2</string>
+    <string name="str_new_estate_surface_number_of_rooms_title">Nombres de pièces</string>
+    <string name="str_new_estate_surface_rooms_hint">Chambres</string>
+    <string name="str_new_estate_surface_bathrooms_hint">Salles de bain</string>
+    <string name="str_new_estate_surface_bedrooms_hint">Chambres</string>
+    <string name="str_new_estate_location_title">Localisation</string>
+    <string name="str_new_estate_price_title">Prix</string>
+    <string name="str_new_estate_surface_section_price_unit">$</string>
+    <string name="str_button_confirmation_creation">Confirmer création du bien</string>
+    <string name="str_button_confirmation_modification">Confirmer modification</string>
+    <string name="str_button_add_media">Ajouter une photo</string>
+    <string name="str_button_add_places_nearby">Ajouter des lieux à proximité</string>
+
+    <string name="str_details_media_section_title">Photos</string>
+    <string name="str_details_description_section_title">Description</string>
+    <string name="str_details_status_section_title">Statut</string>
+    <string name="str_details_surface_sub_section_title">Surface</string>
+    <string name="str_details_number_of_rooms_sub_section_title">Nombre de pièces</string>
+    <string name="str_details_number_of_bedrooms_sub_section_title">Nombre de chambres</string>
+    <string name="str_details_number_of_bathrooms_sub_section_title">Nombre de salles de bain</string>
+    <string name="str_details_location_sub_section_title">Localisation</string>
+    <string name="str_content_desc_number_of_bedrooms_icon">Icône nombre de chambres</string>
+    <string name="str_content_desc_number_of_bathrooms_icon">Icône nombre de salles de bain</string>
+    <string name="str_content_desc_number_of_rooms_icon">Icône nombre de pièces</string>
+    <string name="str_content_desc_surface_icon">Icône Surface</string>
+
+    <!-- FragmentNewEstate.kt -->
+    <string name="str_dialog_reset_title">Réinitialiser bien</string>
+    <string name="str_dialog_reset_message">Toutes les informations seront supprimées. Confirmer ?</string>
+    <string name="str_dialog_cancel_creation_title">Annuler creation</string>
+    <string name="str_dialog_cancel_modification_title">Annuler modifications</string>
+    <string name="str_dialog_cancel_creation_message">Toutes les informations seront perdues. Confirmer ?</string>
+    <string name="str_dialog_cancel_modifications_message">Toutes les modifications seront perdues. Confirmer ?</string>
+    <string name="str_dialog_button_yes">Oui</string>
+    <string name="str_dialog_button_no">Non</string>
+    <string name="str_dialog_button_cancel">Annuler</string>
+    <string name="str_dialog_button_close">Fermer</string>
+    <string name="str_dialog_add_media_title">Importer photo</string>
+    <string name="str_dialog_add_media_option_take_picture">Prendre une photo</string>
+    <string name="str_dialog_add_media_option_import_from_gallery">Importer depuis la gallerie</string>
+    <string name="str_dialog_name_media_title">Nom photo</string>
+    <string name="str_dialog_select_agent_title">Selectionner un agent</string>
+    <string name="str_dialog_ad_poi_title">Ajouter des points d\'intérêt</string>
+    <string name="str_toast_missing_information">Création impossible, informations manquantes</string>
+    <string name="str_toast_new_estate_created">Nouveau bien crée</string>
+    <string name="str_toast_estate_modified">Modifications sauvegardées</string>
+
+    <!-- FragmentEstateDetails.xml -->
+    <string name="str_dialog_confirm_sale_tile">Confirmer la vente</string>
+    <string name="str_dialog_confirm_sale_message">Ce bien sera définitivement marqué comme vendu. Confirmer ?</string>
+    <string name="str_sold_status">Vendu le</string>
+    <string name="str_available_status">Disponible</string>
+    <string name="str_sale_button_text">Vendu</string>
+    <string name="str_published_on">Publié le </string>
+
+    <!-- custom_auth_layout.xml -->
+    <string name="content_desc_logo_app">Logo application</string>
+    <string name="str_authentication_btn_facebook">Connect with Facebook</string>
+    <string name="str_authentication_btn_google">Connect with Google</string>
+    <string name="str_authentication_btn_twitter">Connect with Twitter</string>
+
+    <!-- activity_sign_in.xml -->
+    <string name="str_sign_in_button">Connexion</string>
+    <string name="snack_bar_auth_cancelled">Authentification annulée</string>
+    <string name="snack_bar_error_no_network">Authentification échouée - Aucun réseau</string>
+    <string name="snack_bar_error_unknown">Authentification échouée - Erreur inconnue</string>
+
+    <!-- dialog_media_confirmation.xml -->
+    <string name="str_dialog_new_media_hint_text_input">Nom</string>
+
+    <!-- MediaAccessHandler.kt -->
+    <string name="str_dialog_permission_access_title">Permission d\'accès</string>
+    <string name="str_dialog_permission_access_message">L\'accès au stockage et à la caméra doit être
+    autorisée</string>
+    <string name="str_dialog_permission_access_button_settings">Paramètres</string>
+    <string name="uri_string_package">package:com.openclassrooms.realestatemanager</string>
+
+    <!-- fragment_settings.xml -->
+    <string name="str_title_select_currency_dialog">Choisir devise</string>
+    <string name="str_text_usd_dialog">United States Dollar</string>
+    <string name="str_text_eur_dialog">Euro</string>
+    <string name="str_symbol_usd_dialog">USD</string>
+    <string name="str_symbol_eur_dialog">EUR</string>
+    <string name="str_title_delete_account_dialog">Supprimer compte</string>
+    <string name="str_text_delete_account_dialog">Votre compte sera définitivement supprimé. Confirmer ?</string>
+    <string name="str_title_button_confirm">Confirmer</string>
+    <string name="str_title_currency">Devise</string>
+    <string name="str_text_currency">Définir la devise souhaitée </string>
+    <string name="str_text_symbol_currency">USD</string>
+    <string name="str_title_delete_account">Supprimer compte</string>
+    <string name="str_text_delete_account">Supprimer votre compte Real Estate Manager</string>
+
+    <!-- fragment_list_estate_item.xml -->
+    <string name="str_sold_status_item">vendu</string>
+    <string name="str_no_real_estate">Aucun bien</string>
+
+    <!-- NotificationHandler.kt -->
+    <string name="notification_title">Real Estate Manager</string>
+    <string name="notification_message_estate_available">Nouveau bien disponible</string>
+    <string name="notification_message_estate_updated">Mise à jour d\'un bien</string>
+
+    <!-- GPSAccessHandler.kt -->
+    <string name="str_dialog_loc_permission_access_title">Permission d\'accès</string>
+    <string name="str_dialog_loc_permission_access_message">L\'accès à la localisation doit être authorisée pour que
+    l\'application fonctionne correctement</string>
+
+    <!-- FragmentMap.kt -->
+    <string name="str_dialog_enable_gps_title">Activer GPS</string>
+    <string name="str_dialog_enable_gps_message">Le GPS doit être activé pour accéder à votre position</string>
+    <string name="str_dialog_enable_enable_button">Activer</string>
+
+    <!-- FragmentSearch.kt -->
+    <string name="str_toolbar_fragment_search_title">Rechercher des biens</string>
+    <string name="str_dialog_search_title">Selectionner filtres</string>
+    <string name="str_value_surface_slider">%1$d m2</string>
+    <string name="str_value_price_slider">$%1$d</string>
+</resources>

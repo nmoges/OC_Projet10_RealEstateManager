@@ -106,8 +106,6 @@ Yapp/src/main/java/com/openclassrooms/realestatemanager/ui/fragments/FragmentLis
 :
 
 .gitignore,a\5\a5cc2925ca8258af241be7e5b0381edf30266302
-ˆ
-Xapp/src/main/java/com/openclassrooms/realestatemanager/ui/fragments/FragmentNewEstate.kt,1\0\10e9fd407e603b8e87eac8081b920670bdebfc8a
 p
 @data/src/main/java/com/openclassrooms/data/entities/AgentData.kt,1\a\1abeb1e4c310f94b5881840af6c97b2bad56f91a
 o
