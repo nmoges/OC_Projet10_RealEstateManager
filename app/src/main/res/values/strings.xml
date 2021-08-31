@@ -72,6 +72,7 @@
     <string name="str_button_confirmation_creation">Confirm estate creation</string>
     <string name="str_button_confirmation_modification">Confirm modification</string>
     <string name="str_button_add_media">Add photo</string>
+    <string name="str_button_add_places_nearby">Add places nearby</string>
 
     <!-- fragment_estate_details.xml -->
     <string name="str_details_media_section_title">Media</string>

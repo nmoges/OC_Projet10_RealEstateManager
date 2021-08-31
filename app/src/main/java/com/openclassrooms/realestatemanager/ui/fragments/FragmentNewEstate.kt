@@ -5,6 +5,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.*
 import android.widget.ArrayAdapter
 import android.widget.FrameLayout
@@ -233,6 +234,7 @@ class FragmentNewEstate : Fragment() {
                 else { if (listPOI.contains(pointOfInterest)) listPOI.remove(pointOfInterest) }
                 listEstatesViewModel.updatePointOfInterestSelectedEstate(listPOI)
                 updateTagsDisplay()
+                updatePOIButtonTextDisplay()
             }
             .setPositiveButton(resources.getString(R.string.str_dialog_button_close)) { _, _ -> }
             .create()
@@ -646,7 +648,16 @@ class FragmentNewEstate : Fragment() {
      * Handles click events on "Points of interest" button.
      */
     private fun handleAddPOIButton() {
-        binding.buttonAddPoi.setOnClickListener { builderAddPOIDialog.show() }
+        binding.constraintLayoutAddPoi.setOnClickListener { builderAddPOIDialog.show() }
+    }
+
+    /**
+     * Updates visibility status of POI button text.
+     */
+    private fun updatePOIButtonTextDisplay() {
+            binding.textPlacesNearby.visibility =
+                            if (binding.tagContainerLayout.tags.size > 0) View.INVISIBLE
+                            else View.VISIBLE
     }
 
     /**
