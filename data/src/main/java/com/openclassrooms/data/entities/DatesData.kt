@@ -1,10 +1,9 @@
-package com.openclassrooms.data.entities.date
+package com.openclassrooms.data.entities
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.openclassrooms.data.database.RealEstateManagerDatabase
-import java.util.*
 
 /**
  * Defines an entity for [RealEstateManagerDatabase] "table_dates" table.

@@ -17,14 +17,10 @@ Iapp/src/main/java/com/openclassrooms/realestatemanager/BaseApplication.kt,b\a\
 Yapp/src/main/java/com/openclassrooms/realestatemanager/service/DummyListAgentGenerator.kt,5\f\5fe671e3fb31accf5982ae77c2cc55752fd6c2dc
 j
 :data/src/main/java/com/openclassrooms/data/dao/AgentDao.kt,d\2\d20ee6d39cb3c34e59629120160b30356a7288c8
-j
-:data/src/main/java/com/openclassrooms/data/dao/DatesDao.kt,9\3\93c2ff06aa6101fd97c0adfe22c91cecb7f19391
 Ç
 Rapp/src/main/java/com/openclassrooms/realestatemanager/utils/ProgressBarHandler.kt,d\b\dbe63d1314d52afb625fb7b1d1fe2ca7ab7490a0
 Ü
 Vapp/src/main/java/com/openclassrooms/realestatemanager/ui/activities/SignInActivity.kt,a\0\a035330725176dbdadf66fa7a48fe60f59c22fe2
-ã
-[app/src/main/java/com/openclassrooms/realestatemanager/receiver/NetworkBroadcastReceiver.kt,f\1\f117ec76d658633e3629a8628f6a9bf4340324de
 }
 Mapp/src/main/java/com/openclassrooms/realestatemanager/utils/StringHandler.kt,e\2\e260499a1b93021bbd8b2e5de5a992969733878f
 ä
@@ -63,12 +59,8 @@ X
 (gradle/wrapper/gradle-wrapper.properties,f\b\fbe448ebfc3eb2d4e308f6b8b043666f5b57235e
 
 Oapp/src/main/java/com/openclassrooms/realestatemanager/model/PointOfInterest.kt,c\8\c8678782ecf5f797f4d43f542d4eb66cbd1ec29c
-u
-Edata/src/main/java/com/openclassrooms/data/service/RetrofitBuilder.kt,f\6\f6ab5c44990f1c017cbac0d50cab009d00d875b1
 j
 :data/src/main/java/com/openclassrooms/data/dao/PhotoDao.kt,8\2\82b00eb2f02e997490ffcd2758b5a09f45cf7cc8
-v
-Fapp/src/main/java/com/openclassrooms/realestatemanager/model/Estate.kt,0\a\0a743a39517e287c226241bc41f3283269c20dae
 t
 Ddata/src/main/java/com/openclassrooms/data/dao/PointOfInterestDao.kt,4\2\429590f1d2c8938841e1fd3ebd62a03950390080
 A
@@ -101,8 +93,6 @@ A
 gradle.properties,2\a\2afbb999f001938c88fa43fc2ef52abf0f8213e4
 É
 Sapp/src/main/java/com/openclassrooms/realestatemanager/ui/LayoutInflaterProvider.kt,c\1\c108c07badd45aeb51512956076622f7ae3526ca
-Ñ
-Tapp/src/main/java/com/openclassrooms/realestatemanager/ui/activities/MainActivity.kt,c\b\cbf2ccaf6756210c5c05ca63a07eba971bc8b792
 Å
 Qapp/src/main/java/com/openclassrooms/realestatemanager/utils/poi/POIComparator.kt,a\2\a2e24b30d4ee6eb9697954b1990dfc546644ddeb
 
@@ -116,20 +106,14 @@ Yapp/src/main/java/com/openclassrooms/realestatemanager/ui/fragments/FragmentLis
 :
 
 .gitignore,a\5\a5cc2925ca8258af241be7e5b0381edf30266302
-q
-Aapp/src/main/java/com/openclassrooms/realestatemanager/AppInfo.kt,f\8\f8e7cae62fac8f3581a3f05de0e89e15f032b39e
 à
 Xapp/src/main/java/com/openclassrooms/realestatemanager/ui/fragments/FragmentNewEstate.kt,1\0\10e9fd407e603b8e87eac8081b920670bdebfc8a
 p
 @data/src/main/java/com/openclassrooms/data/entities/AgentData.kt,1\a\1abeb1e4c310f94b5881840af6c97b2bad56f91a
 o
 ?data/src/main/java/com/openclassrooms/data/di/DatabaseModule.kt,5\8\582e29b6fb27be5a71667aaaa980f44f6a5af920
-Ä
-Pdata/src/main/java/com/openclassrooms/data/database/RealEstateManagerDatabase.kt,c\f\cf13f5471418a4a7d857f040a9d908169edfa11f
 q
 Adata/src/main/java/com/openclassrooms/data/di/RepositoryModule.kt,4\e\4e7e9a6e28737687db49ed999abd83b9ff920fc2
-u
-Edata/src/main/java/com/openclassrooms/data/entities/FullEstateData.kt,e\5\e581718775b920625d80847f45fe83b92acf29b9
 q
 Adata/src/main/java/com/openclassrooms/data/entities/EstateData.kt,1\4\14eb9e6620233341b15e0fa8816c29640c5cc9d0
 o
@@ -142,3 +126,9 @@ p
 @data/src/main/java/com/openclassrooms/data/entities/PhotoData.kt,a\a\aad053980ff6334b42b736cbd89a003a3a786d9d
 z
 Jdata/src/main/java/com/openclassrooms/data/entities/PointOfInterestData.kt,e\0\e02122442c4323754ea46945b73468d2248d6293
+Ö
+Uapp/src/main/java/com/openclassrooms/realestatemanager/ui/fragments/FragmentSearch.kt,3\7\37821cd1226743e1f0344773b1d2a4fde1aeb286
+ã
+[app/src/main/java/com/openclassrooms/realestatemanager/viewmodels/SearchFiltersViewModel.kt,8\e\8ebae4e1f238d3b748a05f4ad703655827ed6a98
+å
+\app/src/main/java/com/openclassrooms/realestatemanager/ui/fragments/FragmentEstateDetails.kt,b\9\b942265427bb7d6d6717bf6813fb573821668d1b

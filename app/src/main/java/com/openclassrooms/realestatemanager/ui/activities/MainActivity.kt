@@ -105,6 +105,8 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
     /** Defines an [AlertDialog] for logout */
     private lateinit var builderLogoutDialog: AlertDialog
 
+    private var networkBarDisplayStatus = true
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -119,6 +121,7 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
             restoreFragments(containerId)
             restoreSearchFragment()
             restoreDialogs(savedInstanceState)
+            networkBarDisplayStatus = savedInstanceState.getBoolean(AppInfo.NETWORK_BAR_STATUS_KEY)
         }
         initializeToolbar()
         initializeNotificationHandler()
@@ -336,17 +339,20 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
      * @param status : Defines if a network is available or not.
      */
     override fun updateConnectivityBarNetworkDisplay(status: Boolean) {
-        if (status) { // Hide bar - - Wifi/Data network active
-            val fadeOutAnim: ViewPropertyAnimator = binding.barConnectivityInfo.animate()
-                .alpha(0.0f).setDuration(200)
-            fadeOutAnim.withEndAction { binding.barConnectivityInfo.visibility = View.GONE}
-        }
-        else { // Display bar No network active
-            binding.barConnectivityInfo.visibility = View.VISIBLE
-            ViewCompat.setElevation(binding.barConnectivityInfo, 10F)
-            val fadeInAnim: ViewPropertyAnimator = binding.barConnectivityInfo.animate()
-                .alpha(1.0f).setDuration(200)
-            fadeInAnim.start()
+        if (status) networkBarDisplayStatus = true
+        if (networkBarDisplayStatus) {
+            if (status) { // Hide bar - - Wifi/Data network active
+                val fadeOutAnim: ViewPropertyAnimator = binding.barConnectivityInfo.animate()
+                    .alpha(0.0f).setDuration(200)
+                fadeOutAnim.withEndAction { binding.barConnectivityInfo.visibility = View.GONE}
+            }
+            else { // Display bar No network active
+                binding.barConnectivityInfo.visibility = View.VISIBLE
+                ViewCompat.setElevation(binding.barConnectivityInfo, 10F)
+                val fadeInAnim: ViewPropertyAnimator = binding.barConnectivityInfo.animate()
+                    .alpha(1.0f).setDuration(200)
+                fadeInAnim.start()
+            }
         }
     }
 
@@ -355,7 +361,9 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
      */
     private fun handleConnectivityBarBtnListener() {
         binding.barConnectivityInfoBtnClose.setOnClickListener {
-            updateConnectivityBarNetworkDisplay(true) }
+            updateConnectivityBarNetworkDisplay(true)
+            networkBarDisplayStatus = false
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -365,6 +373,7 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
             putBoolean(AppInfo.DIALOG_LOGOUT_KEY, builderLogoutDialog.isShowing)
             putString(AppInfo.FIRST_NAME_AGENT_KEY, firstNameAgent)
             putString(AppInfo.LAST_NAME_AGENT_KEY, lastNameAgent)
+            putBoolean(AppInfo.NETWORK_BAR_STATUS_KEY, networkBarDisplayStatus)
         }
     }
 

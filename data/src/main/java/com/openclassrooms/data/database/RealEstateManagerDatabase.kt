@@ -4,7 +4,7 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import com.openclassrooms.data.dao.*
 import com.openclassrooms.data.entities.*
-import com.openclassrooms.data.entities.date.DatesData
+import com.openclassrooms.data.entities.DatesData
 
 @Database(entities = [EstateData::class,
                       InteriorData::class,

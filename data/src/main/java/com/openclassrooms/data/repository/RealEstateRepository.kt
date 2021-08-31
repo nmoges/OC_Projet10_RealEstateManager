@@ -6,10 +6,8 @@ import androidx.lifecycle.LiveData
 import androidx.sqlite.db.SimpleSQLiteQuery
 import com.openclassrooms.data.dao.*
 import com.openclassrooms.data.entities.*
-import com.openclassrooms.data.entities.date.DatesData
+import com.openclassrooms.data.entities.DatesData
 import com.openclassrooms.data.service.AutocompleteService
-import com.openclassrooms.data.service.RetrofitBuilder
-import retrofit2.Retrofit
 
 /**
  * Repository class interface.
@@ -62,9 +60,6 @@ interface RealEstateRepositoryAccess {
 
     // Autocomplete service
     fun performAutocompleteRequest(activity: Activity)
-
-    // Retrofit
-    fun getRetrofit(): Retrofit
 
     // --------------------- TEST ---------------------------------
     fun getEstateWithId(id: Long): Cursor
@@ -154,9 +149,6 @@ class RealEstateRepository(
     override fun performAutocompleteRequest(activity: Activity) {
         AutocompleteService.performAutocompleteRequest(activity)
     }
-
-    // Retrofit
-    override fun getRetrofit(): Retrofit = RetrofitBuilder.retrofit
 
     // --------------------- TEST ---------------------------------
     override fun getEstateWithId(id: Long): Cursor = estateDao.getEstateWithId(id)

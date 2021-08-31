@@ -1,10 +1,10 @@
 package com.openclassrooms.realestatemanager.utils
 
 import com.openclassrooms.data.entities.*
-import com.openclassrooms.data.entities.date.DatesData
+import com.openclassrooms.data.entities.DatesData
 import com.openclassrooms.data.repository.RealEstateRepositoryAccess
 import com.openclassrooms.realestatemanager.model.*
-import com.openclassrooms.realestatemanager.model.date.Dates
+import com.openclassrooms.realestatemanager.model.Dates
 
 object Converters {
     /**

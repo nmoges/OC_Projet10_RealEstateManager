@@ -1,4 +1,4 @@
-package com.openclassrooms.realestatemanager.model.date
+package com.openclassrooms.realestatemanager.model
 
 import java.util.*
 

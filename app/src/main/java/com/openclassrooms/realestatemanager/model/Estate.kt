@@ -1,7 +1,5 @@
 package com.openclassrooms.realestatemanager.model
 
-import com.openclassrooms.realestatemanager.model.date.Dates
-
 /**
  * Defines a real estate.
  * @param id : Id of the estate

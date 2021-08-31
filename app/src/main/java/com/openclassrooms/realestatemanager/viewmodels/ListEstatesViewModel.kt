@@ -13,7 +13,7 @@ import com.openclassrooms.data.entities.PointOfInterestData
 import com.openclassrooms.data.repository.RealEstateRepositoryAccess
 import com.openclassrooms.realestatemanager.Utils
 import com.openclassrooms.realestatemanager.model.*
-import com.openclassrooms.realestatemanager.model.date.Dates
+import com.openclassrooms.realestatemanager.model.Dates
 import com.openclassrooms.realestatemanager.service.DummyListAgentGenerator
 import com.openclassrooms.realestatemanager.utils.*
 import com.openclassrooms.realestatemanager.utils.poi.POIComparator
