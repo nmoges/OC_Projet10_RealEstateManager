@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryLight">#CED5EE</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
     <color name="black">#000000</color>
@@ -13,6 +14,7 @@
     <color name="white">#FFFFFF</color>
     <color name="blue_facebook">#3B5999</color>
     <color name="red_google">#FF0017</color>
+    <color name="red_google_light">#FCB9BF</color>
     <color name="blue_twitter">#1DA1F3</color>
     <color name="grey58">#949494</color>
 </resources>

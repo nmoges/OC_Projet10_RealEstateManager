@@ -60,7 +60,7 @@ class ListEstatesViewModel @Inject constructor(
                 location = Location(id = 1, address = "", district = "",
                                     latitude = 0.0, longitude = 0.0),
                 interior = Interior(id= 1, numberRooms = 5, numberBathrooms = 1,
-                                    numberBedrooms = 1, surface = 200),
+                                    numberBedrooms = 1, surface = 50),
                 agent = Agent(id = 1, firstName = "", lastName = ""),
                 dates = Dates(id = 1, dateEntry = "", dateSale = "")
             )

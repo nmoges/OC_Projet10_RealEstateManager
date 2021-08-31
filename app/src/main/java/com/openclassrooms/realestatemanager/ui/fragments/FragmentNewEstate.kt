@@ -1,6 +1,7 @@
 package com.openclassrooms.realestatemanager.ui.fragments
 
 import android.app.AlertDialog
+import android.content.res.ColorStateList
 import android.net.Uri
 import android.os.Bundle
 import android.text.Editable
@@ -88,6 +89,9 @@ class FragmentNewEstate : Fragment() {
     /** Contains temporary values of selected points of interest */
     private var listPOI = mutableListOf<String>()
 
+    /** Contains status error sliders */
+    private var errorSliders = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
@@ -112,6 +116,7 @@ class FragmentNewEstate : Fragment() {
             restoreDialogs(savedInstanceState)
             updateEstate = savedInstanceState.getBoolean(AppInfo.UPDATE_ESTATE_KEY, false)
             agentSelected = savedInstanceState.getInt(AppInfo.ESTATE_AGENT_KEY, 1)
+            errorSliders = savedInstanceState.getBoolean(AppInfo.ERROR_SLIDERS_KEY)
         }
         updateToolbarTitle()
         updateMaterialButtonText()
@@ -308,7 +313,7 @@ class FragmentNewEstate : Fragment() {
      */
     private fun initializeSliderMaterialText() {
         binding.apply {
-            sliderSurfaceValue.text = StringHandler.getSliderString(5000,
+            sliderSurfaceValue.text = StringHandler.getSliderString(1000,
                            sliderSurface.value.toInt(), R.string.str_sqm_unit_greater_than_or_equal,
                            R.string.str_sqm_unit, true, context)
             sliderRoomsValue.text = StringHandler.getSliderString(20,
@@ -417,11 +422,13 @@ class FragmentNewEstate : Fragment() {
             descSectionEdit.text?.clear()
             agentSectionEdit.text?.clear()
             priceSectionEdit.text?.clear()
-            sliderSurface.value = 200.0F
+            sliderSurface.value = 50.0F
             sliderRooms.value = 5.0F
             sliderBathrooms.value = 1.0F
             sliderBedrooms.value = 1.0F
-            linearLayoutMedia.removeViews(0, currentEstate.listPhoto.size) }
+            linearLayoutMedia.removeViews(0, currentEstate.listPhoto.size)
+            tagContainerLayout.removeAllTags()
+            updatePOIButtonTextDisplay()}
         currentEstate.listPhoto.clear()
     }
 
@@ -439,6 +446,8 @@ class FragmentNewEstate : Fragment() {
             putString(AppInfo.TEXT_DIALOG_CONFIRM_MEDIA_KEY, textNameMediaDialog)
             putInt(AppInfo.NUMBER_PHOTO_KEY, numberPhotosAdded)
             putBoolean(AppInfo.CONFIRM_EXIT_KEY, confirmExit)
+            putBoolean(AppInfo.ERROR_SLIDERS_KEY, errorSliders)
+            putBoolean(AppInfo.ERROR_SLIDERS_KEY, errorSliders)
         }
     }
 
@@ -506,24 +515,78 @@ class FragmentNewEstate : Fragment() {
         var text: String?
         binding.apply {
             sliderSurface.addOnChangeListener{ _, _, _ ->
-                text = StringHandler.getSliderString(5000, sliderSurface.value.toInt(),
+                text = StringHandler.getSliderString(1000, sliderSurface.value.toInt(),
                 R.string.str_sqm_unit_greater_than_or_equal, R.string.str_sqm_unit, true, context)
                 sliderSurfaceValue.text = text }
             sliderRooms.addOnChangeListener{ _, _, _ ->
+                checkSlidersValues()
                 text = StringHandler.getSliderString(20, sliderRooms.value.toInt(),
                 R.string.str_greater_than_or_equal, null, false, context)
                 sliderRoomsValue.text = text }
             sliderBathrooms.addOnChangeListener{ _, _, _ ->
+                checkSlidersValues()
                 text = StringHandler.getSliderString(5, sliderBathrooms.value.toInt(),
                 R.string.str_greater_than_or_equal, null, false, context)
                 sliderBathroomsValue.text = text }
             sliderBedrooms.addOnChangeListener{ _, _, _ ->
+                checkSlidersValues()
                 text = StringHandler.getSliderString(10, sliderBedrooms.value.toInt(),
                 R.string.str_greater_than_or_equal, null, false, context)
                 sliderBedroomsValue.text = text }
         }
     }
 
+    /**
+     * Checks and compares sliders values, to update sliders display.
+     */
+    private fun checkSlidersValues() {
+        if (binding.sliderBedrooms.value + binding.sliderBathrooms.value > binding.sliderRooms.value) {
+            binding.apply {
+                errorSliders = true
+                sliderRooms.apply {
+                    tickTintList = ColorStateList.valueOf(resources.getColor(R.color.red_google))
+                    thumbTintList = ColorStateList.valueOf(resources.getColor(R.color.red_google))
+                    trackActiveTintList = ColorStateList.valueOf(resources.getColor(R.color.red_google))
+                    trackInactiveTintList = ColorStateList.valueOf(resources.getColor(R.color.red_google_light))
+                }
+                sliderBathrooms.apply {
+                    tickTintList = ColorStateList.valueOf(resources.getColor(R.color.red_google))
+                    thumbTintList = ColorStateList.valueOf(resources.getColor(R.color.red_google))
+                    trackActiveTintList = ColorStateList.valueOf(resources.getColor(R.color.red_google))
+                    trackInactiveTintList = ColorStateList.valueOf(resources.getColor(R.color.red_google_light))
+                }
+                sliderBedrooms.apply {
+                    tickTintList = ColorStateList.valueOf(resources.getColor(R.color.red_google))
+                    thumbTintList = ColorStateList.valueOf(resources.getColor(R.color.red_google))
+                    trackActiveTintList = ColorStateList.valueOf(resources.getColor(R.color.red_google))
+                    trackInactiveTintList = ColorStateList.valueOf(resources.getColor(R.color.red_google_light))
+                }
+            }
+        }
+        else {
+            errorSliders = false
+            binding.apply {
+                sliderRooms.apply {
+                    tickTintList = ColorStateList.valueOf(resources.getColor(R.color.colorPrimary))
+                    thumbTintList = ColorStateList.valueOf(resources.getColor(R.color.colorPrimary))
+                    trackActiveTintList = ColorStateList.valueOf(resources.getColor(R.color.colorPrimary))
+                    trackInactiveTintList = ColorStateList.valueOf(resources.getColor(R.color.colorPrimaryLight))
+                }
+                sliderBathrooms.apply {
+                    tickTintList = ColorStateList.valueOf(resources.getColor(R.color.colorPrimary))
+                    thumbTintList = ColorStateList.valueOf(resources.getColor(R.color.colorPrimary))
+                    trackActiveTintList = ColorStateList.valueOf(resources.getColor(R.color.colorPrimary))
+                    trackInactiveTintList = ColorStateList.valueOf(resources.getColor(R.color.colorPrimaryLight))
+                }
+                sliderBedrooms.apply {
+                    tickTintList = ColorStateList.valueOf(resources.getColor(R.color.colorPrimary))
+                    thumbTintList = ColorStateList.valueOf(resources.getColor(R.color.colorPrimary))
+                    trackActiveTintList = ColorStateList.valueOf(resources.getColor(R.color.colorPrimary))
+                    trackInactiveTintList = ColorStateList.valueOf(resources.getColor(R.color.colorPrimaryLight))
+                }
+            }
+        }
+    }
     /**
      * Handle user interactions with confirmation button.
      */
@@ -537,7 +600,8 @@ class FragmentNewEstate : Fragment() {
                 val nameAgent: String = agentSectionEdit.text.toString()
                 if (name.isNotEmpty() && location.isNotEmpty() && nameAgent.isNotEmpty()
                     && description.isNotEmpty() && price.isNotEmpty()
-                    && listEstatesViewModel.selectedEstate?.listPhoto?.isNotEmpty() == true) {
+                    && listEstatesViewModel.selectedEstate?.listPhoto?.isNotEmpty() == true
+                    && !errorSliders) {
                     displayToastEstate(false)
                     (activity as MainActivity).notificationHandler.createNotification(updateEstate)
                     updateSelectedEstateFromViewModel(name, description, price)
