@@ -5,8 +5,7 @@ import com.openclassrooms.data.database.RealEstateManagerDatabase
 import com.openclassrooms.data.entities.PointOfInterestData
 
 /**
- * Data access object interface to [RealEstateManagerDatabase]
- * table_poi.
+ * Data access object interface to [RealEstateManagerDatabase] table_poi.
  */
 @Dao
 interface PointOfInterestDao {

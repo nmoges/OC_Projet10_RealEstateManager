@@ -30,7 +30,7 @@ class NotificationHandler(val context: Context) {
                               .setContentTitle(context.resources.getString(R.string.notification_title))
                               .setContentText(message)
                               .setAutoCancel(true)
-                              .setPriority(setPriority())
+                              .setPriority(getNotificationPriority())
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) createChannel()
 
@@ -39,12 +39,12 @@ class NotificationHandler(val context: Context) {
 
     /**
      * Defines notification priority.
+     * @return : priority
      */
-    private fun setPriority(): Int {
+    private fun getNotificationPriority(): Int {
         return  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
                     Notification.PRIORITY_DEFAULT
                 else NotificationCompat.PRIORITY_DEFAULT
-
     }
 
     /**

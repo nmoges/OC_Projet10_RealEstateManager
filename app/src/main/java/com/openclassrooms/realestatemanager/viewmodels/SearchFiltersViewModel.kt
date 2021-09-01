@@ -21,6 +21,9 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+/**
+ * View Model class containing the search results.
+ */
 @HiltViewModel
 class SearchFiltersViewModel @Inject constructor(@ApplicationContext context: Context,
     private val repositoryAccess: RealEstateRepositoryAccess): ViewModel() {

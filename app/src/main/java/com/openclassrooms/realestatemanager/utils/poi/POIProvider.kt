@@ -1,7 +1,5 @@
 package com.openclassrooms.realestatemanager.utils.poi
 
-import android.util.Log
-
 object POIProvider {
 
     /**

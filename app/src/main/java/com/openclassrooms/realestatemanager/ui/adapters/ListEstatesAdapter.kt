@@ -33,6 +33,11 @@ class ListEstatesAdapter(private val context: Context, private val onItemClicked
     /** Parent activity */
     lateinit var activity: MainActivity
 
+    /**
+     * Defines a custom [RecyclerView.ViewHolder].
+     * @param view : view
+     * @param onItemClicked : lambda function handling clicks on list item
+     */
     inner class ListEstateViewHolder(view: View, val onItemClicked: (Int) -> Unit) :
         RecyclerView.ViewHolder(view) {
         var type: MaterialTextView = view.findViewById(R.id.list_estate_item_text_type)
@@ -149,6 +154,9 @@ class ListEstatesAdapter(private val context: Context, private val onItemClicked
         }
     }
 
+    /**
+     * Clears current selected item.
+     */
     fun clearCurrentSelection() {
         var found = false
         var index = 0
@@ -177,6 +185,9 @@ class ListEstatesAdapter(private val context: Context, private val onItemClicked
                                    else View.INVISIBLE
     }
 
+    /**
+     * Updates [currency] with saved value in SharedPreferences file.
+     */
     fun updateCurrencyWithSharedPreferencesValue() {
         context.getSharedPreferences(AppInfo.FILE_SHARED_PREF, Context.MODE_PRIVATE).apply {
             this.getString(AppInfo.PREF_CURRENCY, "USD")?.let {

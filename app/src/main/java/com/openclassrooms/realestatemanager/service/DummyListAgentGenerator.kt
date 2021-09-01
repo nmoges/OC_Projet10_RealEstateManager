@@ -2,6 +2,9 @@ package com.openclassrooms.realestatemanager.service
 
 import com.openclassrooms.realestatemanager.model.Agent
 
+/**
+ * Dummy generator providing a fake agent list.
+ */
 class DummyListAgentGenerator {
     companion object {
         val listAgents: MutableList<Agent> = mutableListOf(

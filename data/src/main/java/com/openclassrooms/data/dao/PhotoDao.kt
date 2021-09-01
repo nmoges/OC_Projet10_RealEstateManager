@@ -8,8 +8,7 @@ import com.openclassrooms.data.entities.PhotoData
 import com.openclassrooms.data.database.RealEstateManagerDatabase
 
 /**
- * Data access object interface to [RealEstateManagerDatabase]
- * table_photos.
+ * Data access object interface to [RealEstateManagerDatabase] table_photos.
  */
 @Dao
 interface PhotoDao {

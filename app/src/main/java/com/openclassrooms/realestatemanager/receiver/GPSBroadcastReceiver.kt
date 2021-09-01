@@ -6,6 +6,9 @@ import android.content.Intent
 import android.location.LocationManager
 import com.openclassrooms.realestatemanager.utils.GPSAccessHandler
 
+/**
+ * [BroadcastReceiver] used to detect any GPS event.
+ */
 class GPSBroadcastReceiver(private val onGpsEventDetected: (Boolean) -> Unit ): BroadcastReceiver() {
 
     override fun onReceive(context: Context?, intent: Intent?) {

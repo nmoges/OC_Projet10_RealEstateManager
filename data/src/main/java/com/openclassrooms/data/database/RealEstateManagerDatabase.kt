@@ -6,6 +6,9 @@ import com.openclassrooms.data.dao.*
 import com.openclassrooms.data.entities.*
 import com.openclassrooms.data.entities.DatesData
 
+/**
+ * Application database class.
+ */
 @Database(entities = [EstateData::class,
                       InteriorData::class,
                       LocationData ::class,

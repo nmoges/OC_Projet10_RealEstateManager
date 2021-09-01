@@ -10,7 +10,6 @@ import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.openclassrooms.realestatemanager.AppInfo
 import com.openclassrooms.realestatemanager.R
-import com.openclassrooms.realestatemanager.Utils
 import com.openclassrooms.realestatemanager.databinding.FragmentEstateDetailsBinding
 import com.openclassrooms.realestatemanager.model.Estate
 import com.openclassrooms.realestatemanager.ui.MediaDisplayHandler
@@ -21,7 +20,6 @@ import com.openclassrooms.realestatemanager.viewmodels.ListEstatesViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.util.*
 
 /**
  * [Fragment] subclass used to display the details of a selected existing [Estate].
@@ -158,9 +156,7 @@ class FragmentEstateDetails : Fragment() {
      * Handles sale button interactions.
      */
     private fun handleSaleButtonListener() {
-        binding.saleButton.setOnClickListener {
-            builderConfirmDialog.show()
-        }
+        binding.saleButton.setOnClickListener { builderConfirmDialog.show() }
     }
 
     /**

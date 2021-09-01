@@ -126,6 +126,7 @@ object MediaAccessHandler {
     /**
      * Handles [File] creation when camera is launched to take a new photo.
      * @param activity : Main activity
+     * @return : image file
      */
     private fun createImageFile(activity: MainActivity): File? {
         // Create an image file name

@@ -26,6 +26,11 @@ public class Utils {
         return (int) Math.round(dollars * 0.812);
     }
 
+    /**
+     * Euro to dollar converter
+     * @param euros : price in euros
+     * @return converted value in dollars
+     */
     public static int convertEuroToDollar(int euros) {
         return (int) Math.round(euros/0.812);
     }

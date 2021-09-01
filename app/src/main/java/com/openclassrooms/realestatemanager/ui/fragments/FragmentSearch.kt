@@ -33,6 +33,9 @@ import com.openclassrooms.realestatemanager.viewmodels.SearchFiltersViewModel
 import java.util.*
 import kotlin.collections.ArrayList
 
+/**
+ * [Fragment] subclass used to display search results.
+ */
 class FragmentSearch : Fragment() {
 
     companion object {
@@ -192,6 +195,9 @@ class FragmentSearch : Fragment() {
 
     }
 
+    /**
+     * Resets all filters.
+     */
     private fun resetAllFilters() {
         context?.let { itContext ->
             searchFiltersViewModel.let {
@@ -237,6 +243,9 @@ class FragmentSearch : Fragment() {
         }
     }
 
+    /**
+     * Initializes an [AlertDialog.Builder] for reset confirmation message display.
+     */
     private fun initializeConfirmationResetDialog() {
         builderConfirmReset = AlertDialog.Builder(activity)
             .setTitle("Reset filters")
@@ -325,6 +334,9 @@ class FragmentSearch : Fragment() {
             } })
     }
 
+    /**
+     * Handles [searchFiltersViewModel] observer.
+     */
     private fun handleViewModelObserver() {
         searchFiltersViewModel.searchResults.observe(viewLifecycleOwner, {
             (binding.recyclerViewResults.adapter as ListEstatesAdapter).apply {

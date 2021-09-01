@@ -2,7 +2,11 @@ package com.openclassrooms.data.dao
 
 import androidx.room.*
 import com.openclassrooms.data.entities.DatesData
+import com.openclassrooms.data.database.RealEstateManagerDatabase
 
+/**
+ * Data access object interface to [RealEstateManagerDatabase] table_dates.
+ */
 @Dao
 interface DatesDao {
 

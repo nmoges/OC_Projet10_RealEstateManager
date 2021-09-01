@@ -9,6 +9,9 @@ import com.openclassrooms.data.R
 object AutocompleteService {
     private const val AUTOCOMPLETE_REQUEST_CODE = 200
 
+    /**
+     * Performs an autocomplete request.
+     */
     fun performAutocompleteRequest(activity: Activity) {
         val fields = listOf(Place.Field.ID, Place.Field.ADDRESS,
                                                 Place.Field.ADDRESS_COMPONENTS, Place.Field.LAT_LNG)

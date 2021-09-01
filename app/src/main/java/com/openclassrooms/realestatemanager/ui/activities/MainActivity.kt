@@ -141,6 +141,9 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
         unregisterReceiver(networkBroadcastReceiver)
     }
 
+    /**
+     * Initialize map client.
+     */
     private fun initializeMapClient() {
         if (!Places.isInitialized()) Places.initialize(applicationContext, BuildConfig.MAPS_API_KEY)
         Places.createClient(this)
@@ -148,6 +151,9 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
 
     }
 
+    /**
+     * Initializes a [NotificationHandler] object.
+     */
     private fun initializeNotificationHandler() {
         notificationHandler = NotificationHandler(this)
     }
@@ -190,6 +196,9 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
         else R.id.fragment_container_view
     }
 
+    /**
+     * Initializes child fragments
+     */
     private fun findFragmentsFromSupportFragmentManager() {
         fragmentNewEstate = supportFragmentManager.findFragmentByTag(AppInfo.TAG_FRAGMENT_NEW_ESTATE)
         fragmentEstateDetails =
@@ -220,6 +229,9 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
         }
     }
 
+    /**
+     * Restores [FragmentSearch] fragment.
+     */
     private fun restoreSearchFragment() {
         val containerIdSearch: Int = if (typeOrientation && typeLayout) R.id.fragment_container_view_left
         else R.id.fragment_container_view
@@ -260,6 +272,9 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
         launchTransaction(containerId, fragment, AppInfo.TAG_FRAGMENT_NEW_ESTATE)
     }
 
+    /**
+     * Displays [FragmentSearch].
+     */
     fun displayFragmentSearch() {
         val containerIdSearch: Int = if (typeOrientation && typeLayout) R.id.fragment_container_view_left
         else R.id.fragment_container_view
@@ -700,9 +715,13 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
         }
     }
 
+    /**
+     * Handle click events on list item.
+     * @param position : position in list
+     */
     fun handleClickOnEstateView(position: Int) {
         val fragmentListEstate = supportFragmentManager
                           .findFragmentByTag(AppInfo.TAG_FRAGMENT_LIST_ESTATE) as FragmentListEstate
-        fragmentListEstate.let { it.handleClickOnEstateItem(position) }
+        fragmentListEstate.handleClickOnEstateItem(position)
     }
 }

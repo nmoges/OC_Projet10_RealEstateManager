@@ -6,6 +6,9 @@ import androidx.annotation.StringRes
 
 object StringHandler {
 
+    /**
+     * Gets string to display in a slider.
+     */
     fun getSliderString(maxValue: Int,
                         currentValue: Int,
                         @StringRes resMaxValue: Int,
@@ -19,6 +22,9 @@ object StringHandler {
             else currentValue.toString()
     }
 
+    /**
+     * Converts a [String] object to [Editable].
+     */
     fun convertStringToEditable(text: String): Editable =
         Editable.Factory.getInstance().newEditable(text)
 }

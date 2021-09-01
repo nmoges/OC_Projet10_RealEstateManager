@@ -116,6 +116,9 @@ class FragmentListEstate : Fragment() {
         return super.onOptionsItemSelected(item)
     }
 
+    /**
+     * Handles [listEstatesViewModel] observer.
+     */
     private fun addObserverToViewModel() {
         listEstatesViewModel.listEstates.observe(viewLifecycleOwner, {
             (binding.recyclerViewListEstates.adapter as ListEstatesAdapter).apply {
@@ -133,6 +136,9 @@ class FragmentListEstate : Fragment() {
         })
     }
 
+    /**
+     * Initializes fragment recycler view.
+     */
     private fun initializeRecyclerView() {
         binding.recyclerViewListEstates.apply {
             setHasFixedSize(true)
@@ -143,15 +149,22 @@ class FragmentListEstate : Fragment() {
         }
     }
 
+    /**
+     * Handles text background visibility.
+     * @param visibility : visibility value
+     */
     private fun handleBackgroundMaterialTextVisibility(visibility: Int) {
         binding.txtBackgroundNoRealEstate.visibility = visibility
     }
 
+    /**
+     * Resets list item selection status.
+     * @param listEstate : list of [Estate]
+     */
     private fun resetSelection(listEstate: List<Estate>) {
         val orientation: Boolean = (activity as MainActivity).typeOrientation
         val itemSelected: Boolean = parentFragmentManager
                                      .findFragmentByTag(AppInfo.TAG_FRAGMENT_ESTATE_DETAILS) == null
-
         if ((activity as MainActivity).typeLayout) {
             if (!orientation && !itemSelected) {
                 for (i in listEstate.indices) listEstate[i].selected = false

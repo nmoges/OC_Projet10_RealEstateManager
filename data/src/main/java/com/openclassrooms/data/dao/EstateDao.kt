@@ -3,10 +3,10 @@ package com.openclassrooms.data.dao
 import android.database.Cursor
 import androidx.room.*
 import com.openclassrooms.data.entities.EstateData
+import com.openclassrooms.data.database.RealEstateManagerDatabase
 
 /**
- * Data access object interface to [com.openclassrooms.data.database.RealEstateManagerDatabase]
- * table_estates.
+ * Data access object interface to [RealEstateManagerDatabase] table_estates.
  */
 @Dao
 interface EstateDao {

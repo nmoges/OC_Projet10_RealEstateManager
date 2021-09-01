@@ -10,7 +10,6 @@ import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Bundle
 import android.provider.Settings
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
@@ -32,6 +31,9 @@ import com.openclassrooms.realestatemanager.ui.activities.MainActivity
 import com.openclassrooms.realestatemanager.utils.GPSAccessHandler
 import com.openclassrooms.realestatemanager.viewmodels.ListEstatesViewModel
 
+/**
+ * [Fragment] subclass used to display a google map.
+ */
 class FragmentMap : Fragment(), OnMapReadyCallback {
 
     companion object {
@@ -117,6 +119,10 @@ class FragmentMap : Fragment(), OnMapReadyCallback {
         saveCurrentLocation()
     }
 
+    /**
+     * Handles location updates listener.
+     * @param status : listener enabled status
+     */
     private fun handleLocationListener(status: Boolean) {
         if (GPSAccessHandler.checkLocationPermission(activity as MainActivity)
             && GPSAccessHandler.isGPSEnabled(locationManager)) {

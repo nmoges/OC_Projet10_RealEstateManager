@@ -93,6 +93,12 @@ object GPSAccessHandler {
         builderAccessLocationDialog.show()
     }
 
+    /**
+     * Checks distance between user location and an estate location.
+     * @param estateLatLng : Estate location
+     * @param gpsPosition : User location
+     * @return : boolean value
+     */
     fun checkDistanceEstateFromGPSLocation(estateLatLng: LatLng, gpsPosition: LatLng): Boolean {
         val result = FloatArray(1)
         Location.distanceBetween(gpsPosition.latitude,
@@ -106,6 +112,11 @@ object GPSAccessHandler {
         return false
     }
 
+    /**
+     * Checks if GPS is enabled.
+     * @param locationManager : Location manager
+     * @return : GPS status
+     */
     fun isGPSEnabled(locationManager: LocationManager): Boolean =
         locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
 }

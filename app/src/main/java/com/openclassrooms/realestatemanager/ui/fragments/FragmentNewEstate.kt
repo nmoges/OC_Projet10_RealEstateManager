@@ -90,6 +90,7 @@ class FragmentNewEstate : Fragment() {
     /** Contains status error sliders */
     private var errorSliders = false
 
+    /** Contains saved currency unit */
     private lateinit var currency: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -703,6 +704,9 @@ class FragmentNewEstate : Fragment() {
         }
     }
 
+    /**
+     * Updates error status display in associated [TextInputLayout].
+     */
     private fun updateErrorStatus(status: Boolean, layout: TextInputLayout) {
         if (status) layout.apply {
                                     isErrorEnabled = true

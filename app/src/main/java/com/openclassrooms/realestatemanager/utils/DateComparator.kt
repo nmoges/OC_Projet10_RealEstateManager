@@ -6,6 +6,11 @@ import java.util.*
 
 object DateComparator {
 
+    /**
+     * Compares two dates.
+     * @param startDate : start date
+     * @param endDate : end date
+     */
     fun compareDates(startDate: String, endDate: String): Boolean {
         try {
             val startTime = Calendar.getInstance()

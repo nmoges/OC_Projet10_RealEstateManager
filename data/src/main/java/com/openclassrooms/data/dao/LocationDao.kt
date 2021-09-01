@@ -8,8 +8,7 @@ import com.openclassrooms.data.database.RealEstateManagerDatabase
 import com.openclassrooms.data.entities.LocationData
 
 /**
- * Data access object interface to [RealEstateManagerDatabase]
- * table_locations.
+ * Data access object interface to [RealEstateManagerDatabase] table_locations.
  */
 @Dao
 interface LocationDao {

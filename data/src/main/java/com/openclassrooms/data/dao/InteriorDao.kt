@@ -8,8 +8,7 @@ import com.openclassrooms.data.entities.InteriorData
 import com.openclassrooms.data.database.RealEstateManagerDatabase
 
 /**
- * Data access object interface to [RealEstateManagerDatabase]
- * table_interiors.
+ * Data access object interface to [RealEstateManagerDatabase] table_interiors.
  */
 @Dao
 interface InteriorDao {
