@@ -389,7 +389,7 @@
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/new_estate_price_section_unit"
-                android:text="@string/str_new_estate_surface_section_price_unit"
+                android:text="@string/str_new_estate_surface_section_price_dollar"
                 android:textSize="@dimen/unit_text"
                 android:textColor="@color/grey50"
                 android:layout_marginStart="5dp"

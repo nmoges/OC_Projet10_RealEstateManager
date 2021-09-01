@@ -11,6 +11,7 @@ import androidx.core.net.toUri
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.android.material.textview.MaterialTextView
+import com.openclassrooms.realestatemanager.AppInfo
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.Utils
 import com.openclassrooms.realestatemanager.model.Estate
@@ -174,5 +175,13 @@ class ListEstatesAdapter(private val context: Context, private val onItemClicked
     private fun displaySaleStatus(holder: ListEstateViewHolder, position: Int) {
         holder.status.visibility = if (listEstates[position].status) View.VISIBLE
                                    else View.INVISIBLE
+    }
+
+    fun updateCurrencyWithSharedPreferencesValue() {
+        context.getSharedPreferences(AppInfo.FILE_SHARED_PREF, Context.MODE_PRIVATE).apply {
+            this.getString(AppInfo.PREF_CURRENCY, "USD")?.let {
+                currency = it
+            }
+        }
     }
 }

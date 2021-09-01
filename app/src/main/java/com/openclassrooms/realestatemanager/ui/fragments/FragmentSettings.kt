@@ -9,12 +9,10 @@ import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.edit
-import androidx.lifecycle.ViewModelProvider
 import com.openclassrooms.realestatemanager.AppInfo
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.databinding.FragmentSettingsBinding
 import com.openclassrooms.realestatemanager.ui.activities.MainActivity
-import com.openclassrooms.realestatemanager.viewmodels.CurrencyViewModel
 
 /**
  * [Fragment] subclass used to display the settings of the RealEstateManager application.
@@ -30,18 +28,14 @@ class FragmentSettings : Fragment() {
     private lateinit var builderCurrencySelectionDialog: AlertDialog
     private lateinit var builderDeleteAccountDialog: AlertDialog
 
-    /** View model */
-    private lateinit var currencyViewModel: CurrencyViewModel
-
     /** SharedPreferences contains the saved currency value */
     private lateinit var filePreferences: SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
-        currencyViewModel = ViewModelProvider(requireActivity())
-                                             .get(CurrencyViewModel::class.java)
     }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?): View {
         binding = FragmentSettingsBinding.inflate(inflater, container, false)
@@ -177,12 +171,8 @@ class FragmentSettings : Fragment() {
      * @param currency : selection currency
      */
     private fun updateCurrency(currency: String) {
-        // Update currency in shared preferences file
         filePreferences.edit { putString(AppInfo.PREF_CURRENCY, currency) }
-        // Update card view display
         updateDisplayedCurrencyInCardView(currency)
-        // Update in ViewModel
-        postNewCurrencyInViewModel(currency)
         builderCurrencySelectionDialog.dismiss()
     }
 
@@ -191,12 +181,10 @@ class FragmentSettings : Fragment() {
      * @param savedInstanceState : Bundle
      */
     private fun restoreDialog(savedInstanceState: Bundle?) {
-        if (savedInstanceState?.getBoolean(AppInfo.DIALOG_CURRENCY_SELECT_KEY) == true) {
+        if (savedInstanceState?.getBoolean(AppInfo.DIALOG_CURRENCY_SELECT_KEY) == true)
             builderCurrencySelectionDialog.show()
-        }
-        if (savedInstanceState?.getBoolean(AppInfo.DIALOG_DELETE_ACCOUNT_KEY) == true) {
+        if (savedInstanceState?.getBoolean(AppInfo.DIALOG_DELETE_ACCOUNT_KEY) == true)
             builderDeleteAccountDialog.show()
-        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -213,13 +201,5 @@ class FragmentSettings : Fragment() {
      */
     private fun updateDisplayedCurrencyInCardView(selectedCurrency: String) {
         binding.currencyTextSymbol.text = selectedCurrency
-    }
-
-    /**
-     * Updates the LiveData value contained in view model with the selected currency value.
-     * @param currency = selected currency
-     */
-    private fun postNewCurrencyInViewModel(currency: String) {
-        currencyViewModel.updateCurrencySelected(currency)
     }
 }

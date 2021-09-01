@@ -1,6 +1,7 @@
 package com.openclassrooms.realestatemanager.ui.fragments
 
 import android.app.AlertDialog
+import android.content.Context
 import android.content.res.ColorStateList
 import android.net.Uri
 import android.os.Bundle
@@ -17,6 +18,7 @@ import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.openclassrooms.realestatemanager.AppInfo
 import com.openclassrooms.realestatemanager.R
+import com.openclassrooms.realestatemanager.Utils
 import com.openclassrooms.realestatemanager.databinding.FragmentNewEstateBinding
 import com.openclassrooms.realestatemanager.model.Estate
 import com.openclassrooms.realestatemanager.model.Photo
@@ -88,6 +90,8 @@ class FragmentNewEstate : Fragment() {
     /** Contains status error sliders */
     private var errorSliders = false
 
+    private lateinit var currency: String
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
@@ -102,6 +106,7 @@ class FragmentNewEstate : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        updatePriceUnitDisplayed()
         initializeListPOI(savedInstanceState)
         updateTagsDisplay()
         updatePOIButtonTextDisplay()
@@ -379,12 +384,20 @@ class FragmentNewEstate : Fragment() {
     private fun updateFragmentViewsWithEstateProperties() {
         with(binding) {
             val currentEstate = listEstatesViewModel.selectedEstate ?: return
+            // TextInputEditText
             nameSectionEdit.text = StringHandler.convertStringToEditable(currentEstate.type)
             locationSectionEdit.text = StringHandler.convertStringToEditable(currentEstate.location.address)
             descSectionEdit.text = StringHandler.convertStringToEditable(currentEstate.description)
             agentSectionEdit.text = StringHandler.convertStringToEditable("" +
                                  "${currentEstate.agent.firstName} ${currentEstate.agent.lastName}")
-            priceSectionEdit.text = StringHandler.convertStringToEditable(currentEstate.price.toString())
+            if (currency == "EUR") {
+                val priceConverted = Utils.convertDollarToEuro(currentEstate.price)
+                priceSectionEdit.text = StringHandler.convertStringToEditable(priceConverted.toString())
+            }
+            else {
+                priceSectionEdit.text = StringHandler.convertStringToEditable(currentEstate.price.toString())
+            }
+            // Sliders
             sliderSurface.value = currentEstate.interior.surface.toFloat()
             sliderRooms.value = currentEstate.interior.numberRooms.toFloat()
             sliderBathrooms.value = currentEstate.interior.numberBathrooms.toFloat()
@@ -597,7 +610,7 @@ class FragmentNewEstate : Fragment() {
                 val name: String = nameSectionEdit.text.toString()
                 val location: String = locationSectionEdit.text.toString()
                 val description: String = descSectionEdit.text.toString()
-                val price: String = priceSectionEdit.text.toString()
+                var price: String = priceSectionEdit.text.toString()
                 val nameAgent: String = agentSectionEdit.text.toString()
                 if (name.isNotEmpty() && location.isNotEmpty() && nameAgent.isNotEmpty()
                     && description.isNotEmpty() && price.isNotEmpty()
@@ -605,6 +618,7 @@ class FragmentNewEstate : Fragment() {
                     && !errorSliders) {
                     displayToastEstate(false)
                     (activity as MainActivity).notificationHandler.createNotification(updateEstate)
+                    if (currency == "EUR") price = Utils.convertEuroToDollar(price.toInt()).toString()
                     updateSelectedEstateFromViewModel(name, description, price)
                 }
                 else {
@@ -759,5 +773,21 @@ class FragmentNewEstate : Fragment() {
      */
     fun clearListPOIViewModel() {
         listEstatesViewModel.listPOI.clear()
+    }
+
+    private fun updatePriceUnitDisplayed() {
+        context?.getSharedPreferences(AppInfo.FILE_SHARED_PREF, Context.MODE_PRIVATE)?.apply {
+            this.getString(AppInfo.PREF_CURRENCY, "USD")?.let {
+                currency = it
+                when (currency) {
+                    "USD" -> { binding.newEstatePriceSectionUnit.text =
+                          resources.getString(R.string.str_new_estate_surface_section_price_dollar)
+                    }
+                    "EUR" -> { binding.newEstatePriceSectionUnit.text =
+                        resources.getString(R.string.str_new_estate_surface_section_price_euro)
+                    }
+                }
+            }
+        }
     }
 }

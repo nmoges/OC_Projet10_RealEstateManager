@@ -66,7 +66,8 @@
     <string name="str_new_estate_surface_bedrooms_hint">Chambres</string>
     <string name="str_new_estate_location_title">Localisation</string>
     <string name="str_new_estate_price_title">Prix</string>
-    <string name="str_new_estate_surface_section_price_unit">$</string>
+    <string name="str_new_estate_surface_section_price_dollar">$</string>
+    <string name="str_new_estate_surface_section_price_euro">€</string>
     <string name="str_button_confirmation_creation">Confirmer création du bien</string>
     <string name="str_button_confirmation_modification">Confirmer modification</string>
     <string name="str_button_add_media">Ajouter une photo</string>

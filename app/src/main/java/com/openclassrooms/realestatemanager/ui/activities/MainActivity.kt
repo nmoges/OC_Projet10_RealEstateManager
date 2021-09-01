@@ -12,7 +12,6 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.text.Editable
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewPropertyAnimator
@@ -45,7 +44,6 @@ import com.openclassrooms.realestatemanager.utils.CustomTextWatcher
 import com.openclassrooms.realestatemanager.utils.GPSAccessHandler
 import com.openclassrooms.realestatemanager.utils.MediaAccessHandler
 import com.openclassrooms.realestatemanager.utils.StringHandler
-import com.openclassrooms.realestatemanager.viewmodels.CurrencyViewModel
 import com.openclassrooms.realestatemanager.viewmodels.ListEstatesViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -85,7 +83,6 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
 
     /** Contains ViewModels reference */
     lateinit var listEstatesViewModel: ListEstatesViewModel
-    lateinit var currencyViewModel: CurrencyViewModel
 
     /** Contains a reference to a [NetworkBroadcastReceiver] object */
     private val networkBroadcastReceiver: NetworkBroadcastReceiver = NetworkBroadcastReceiver(this)
@@ -126,7 +123,7 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
         initializeToolbar()
         initializeNotificationHandler()
         handleConnectivityBarBtnListener()
-        initializeViewModels()
+        listEstatesViewModel = ViewModelProvider(this)[ListEstatesViewModel::class.java]
         MediaAccessHandler.initializeNbPermissionRequests(this)
         GPSAccessHandler.initializeNbPermissionRequests(this)
         accessDatabase()
@@ -153,14 +150,6 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
 
     private fun initializeNotificationHandler() {
         notificationHandler = NotificationHandler(this)
-    }
-
-    /**
-     * Initializes both view models.
-     */
-    private fun initializeViewModels() {
-        listEstatesViewModel = ViewModelProvider(this).get(ListEstatesViewModel::class.java)
-        currencyViewModel = ViewModelProvider(this).get(CurrencyViewModel::class.java)
     }
 
     /**

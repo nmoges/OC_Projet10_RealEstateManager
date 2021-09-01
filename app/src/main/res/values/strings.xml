@@ -68,7 +68,8 @@
     <string name="str_new_estate_surface_bedrooms_hint">Bedrooms</string>
     <string name="str_new_estate_location_title">Location</string>
     <string name="str_new_estate_price_title">Price</string>
-    <string name="str_new_estate_surface_section_price_unit">$</string>
+    <string name="str_new_estate_surface_section_price_dollar">$</string>
+    <string name="str_new_estate_surface_section_price_euro">€</string>
     <string name="str_button_confirmation_creation">Confirm estate creation</string>
     <string name="str_button_confirmation_modification">Confirm modification</string>
     <string name="str_button_add_media">Add photo</string>

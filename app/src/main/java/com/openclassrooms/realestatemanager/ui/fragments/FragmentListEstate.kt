@@ -13,7 +13,6 @@ import com.openclassrooms.realestatemanager.databinding.FragmentListEstateBindin
 import com.openclassrooms.realestatemanager.model.Estate
 import com.openclassrooms.realestatemanager.ui.activities.MainActivity
 import com.openclassrooms.realestatemanager.ui.adapters.ListEstatesAdapter
-import com.openclassrooms.realestatemanager.viewmodels.CurrencyViewModel
 import com.openclassrooms.realestatemanager.viewmodels.ListEstatesViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -31,13 +30,10 @@ class FragmentListEstate : Fragment() {
     /** Contains a reference  to [ListEstatesViewModel] */
     private lateinit var listEstatesViewModel: ListEstatesViewModel
 
-    /** Contains a reference to [CurrencyViewModel] */
-    private lateinit var currencyViewModel: CurrencyViewModel
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
-        initializeViewModels()
+        listEstatesViewModel = ViewModelProvider(requireActivity())[ListEstatesViewModel::class.java]
     }
 
     override fun onCreateView(inflater: LayoutInflater,
@@ -53,16 +49,8 @@ class FragmentListEstate : Fragment() {
         (activity as MainActivity)
             .setToolbarProperties(R.string.str_toolbar_fragment_list_estate_title, false)
         initializeRecyclerView()
-        addObserversToViewModels()
+        addObserverToViewModel()
         handleFloatingActionButton()
-    }
-
-    /**
-     * Initializes both view model instances.
-     */
-    private fun initializeViewModels() {
-        listEstatesViewModel = ViewModelProvider(requireActivity())[ListEstatesViewModel::class.java]
-        currencyViewModel = ViewModelProvider(requireActivity())[CurrencyViewModel::class.java]
     }
 
     /**
@@ -128,7 +116,7 @@ class FragmentListEstate : Fragment() {
         return super.onOptionsItemSelected(item)
     }
 
-    private fun addObserversToViewModels() {
+    private fun addObserverToViewModel() {
         listEstatesViewModel.listEstates.observe(viewLifecycleOwner, {
             (binding.recyclerViewListEstates.adapter as ListEstatesAdapter).apply {
                 resetSelection(it)
@@ -143,13 +131,6 @@ class FragmentListEstate : Fragment() {
                                                        else View.VISIBLE)
             }
         })
-
-        currencyViewModel.currencySelected.observe(viewLifecycleOwner, {
-            binding.recyclerViewListEstates.apply {
-                (adapter as ListEstatesAdapter).currency = it
-                (adapter as ListEstatesAdapter).notifyDataSetChanged()
-            }
-        })
     }
 
     private fun initializeRecyclerView() {
@@ -158,6 +139,7 @@ class FragmentListEstate : Fragment() {
             layoutManager = LinearLayoutManager(context)
             adapter = ListEstatesAdapter(context) { handleClickOnEstateItem(it) }
             (adapter as ListEstatesAdapter).activity = (activity as MainActivity)
+            (adapter as ListEstatesAdapter).updateCurrencyWithSharedPreferencesValue()
         }
     }
 
