@@ -44,6 +44,9 @@ class ListEstatesViewModel @Inject constructor(
     val listAgents: LiveData<List<Agent>>
         get() = _listAgents
 
+    /** Contains a temporary list of points of interest */
+    val listPOI: MutableList<String> = mutableListOf()
+
     /** Contains selected [Estate]. */
     var selectedEstate: Estate? = null
 
@@ -151,19 +154,18 @@ class ListEstatesViewModel @Inject constructor(
 
     /**
      * Updates [selectedEstate] point of interest field value.
-     * @param list : new point of interest list
      */
-    fun updatePointOfInterestSelectedEstate(list: MutableList<String>) {
+    fun updatePointOfInterestSelectedEstate() {
         selectedEstate?.apply {
             listPointOfInterest.apply {
                 clear()
-                for (i in 0 until list.size) {
-                    add(PointOfInterest((i+1).toLong(), list[i]))
+                for (i in 0 until listPOI.size) {
+                    add(PointOfInterest((i+1).toLong(), listPOI[i]))
                 }
+                listPOI.clear()
             }
         }
     }
-
     // -------------------- Handle photo --------------------
     /**
      * Creates a new [Photo] object for an [Estate]
@@ -452,6 +454,5 @@ class ListEstatesViewModel @Inject constructor(
             restoreListAgents()
         }
     }
-
 }
 

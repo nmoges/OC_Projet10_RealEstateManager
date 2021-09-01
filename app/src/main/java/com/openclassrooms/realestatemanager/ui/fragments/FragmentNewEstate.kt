@@ -6,7 +6,6 @@ import android.net.Uri
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.*
 import android.widget.ArrayAdapter
 import android.widget.FrameLayout
@@ -86,9 +85,6 @@ class FragmentNewEstate : Fragment() {
     /** Contains temporary value of a selected agent */
     private var agentSelected = 1
 
-    /** Contains temporary values of selected points of interest */
-    private var listPOI = mutableListOf<String>()
-
     /** Contains status error sliders */
     private var errorSliders = false
 
@@ -106,8 +102,9 @@ class FragmentNewEstate : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initializeListPOI()
+        initializeListPOI(savedInstanceState)
         updateTagsDisplay()
+        updatePOIButtonTextDisplay()
         initializeDialogs()
         if (savedInstanceState != null) {
             confirmExit = savedInstanceState.getBoolean(AppInfo.CONFIRM_EXIT_KEY, false)
@@ -227,7 +224,7 @@ class FragmentNewEstate : Fragment() {
      */
     private fun initializeDialogAddPOI() {
         val itemsBoolean = BooleanArray(8)
-        listPOI.forEach {
+        listEstatesViewModel.listPOI.forEach {
             val index = POIProvider.provideIndexFromPointOfInterest(it)
             itemsBoolean[index] = true
         }
@@ -235,9 +232,13 @@ class FragmentNewEstate : Fragment() {
             .setTitle(resources.getString(R.string.str_dialog_ad_poi_title))
             .setMultiChoiceItems(R.array.poi, itemsBoolean) { _, which, isChecked ->
                 val pointOfInterest = POIProvider.providePointOfInterest(which)
-                if (isChecked) listPOI.add(pointOfInterest)
-                else { if (listPOI.contains(pointOfInterest)) listPOI.remove(pointOfInterest) }
-                listEstatesViewModel.updatePointOfInterestSelectedEstate(listPOI)
+                if (isChecked) {
+                    listEstatesViewModel.listPOI.add(pointOfInterest)
+                }
+                else {
+                    if (listEstatesViewModel.listPOI.contains(pointOfInterest))
+                        listEstatesViewModel.listPOI.remove(pointOfInterest)
+                }
                 updateTagsDisplay()
                 updatePOIButtonTextDisplay()
             }
@@ -645,8 +646,10 @@ class FragmentNewEstate : Fragment() {
                                              surface = binding.sliderSurface.value.toInt())
                 updateDateSelectedEstate(false)
                 updateAgentSelectedEstate(agentSelected, updateEstate)
-                updatePointOfInterestSelectedEstate(this@FragmentNewEstate.listPOI)}
-             }
+                updatePointOfInterestSelectedEstate()
+            }
+
+        }
         confirmExit = true
         (activity as MainActivity).onBackPressed()
     }
@@ -730,16 +733,31 @@ class FragmentNewEstate : Fragment() {
     private fun updateTagsDisplay() {
         binding.tagContainerLayout.let {  itContainer ->
             itContainer.removeAllTags()
-            listPOI.forEach { itPOI -> itContainer.addTag(itPOI) }
+            listEstatesViewModel.listPOI.forEach { itPOI -> itContainer.addTag(itPOI) }
         }
     }
 
     /**
      * Initializes the list of POI used for container updates.
      */
-    private fun initializeListPOI() {
-        listEstatesViewModel.selectedEstate?.let { it ->
-            it.listPointOfInterest.forEach { itPOI -> listPOI.add(itPOI.name) }
+    private fun initializeListPOI(savedInstanceState: Bundle?) {
+        listEstatesViewModel.selectedEstate?.let { itEstate ->
+            binding.tagContainerLayout.let {  itContainer ->
+                itContainer.removeAllTags()
+                itEstate.listPointOfInterest.forEach { itPOI -> itContainer.addTag(itPOI.name) }
+            }
+            if (savedInstanceState == null) {
+                itEstate.listPointOfInterest.forEach {
+                    listEstatesViewModel.listPOI.add(it.name)
+                }
+            }
         }
+    }
+
+    /**
+     * Clears temporary value contained in [ListEstatesViewModel] field.
+     */
+    fun clearListPOIViewModel() {
+        listEstatesViewModel.listPOI.clear()
     }
 }

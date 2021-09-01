@@ -427,6 +427,7 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
             status = fragment.confirmExit
             // If true, user has confirmed cancellation or creation/update
             if (status) {
+                fragment.clearListPOIViewModel()
                 cleanBackStack()
                 restoreViewsInFragmentListEstate()
             }
