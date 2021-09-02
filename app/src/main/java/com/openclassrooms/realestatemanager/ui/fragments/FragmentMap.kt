@@ -63,7 +63,7 @@ class FragmentMap : Fragment(), OnMapReadyCallback {
     private var locationListener = LocationListener {
         map.let { itMap ->
             itMap.clear()
-            displayEstatesMarkersOnMap(itMap)
+            displayEstatesMarkersOnMap()
         }
     }
 
@@ -149,7 +149,7 @@ class FragmentMap : Fragment(), OnMapReadyCallback {
      * displayed (distance < 1000m).
      * @param map : Google map
      */
-    private fun displayEstatesMarkersOnMap(map: GoogleMap) {
+    private fun displayEstatesMarkersOnMap() {
         currentPosition?.let { itPosition ->
             listEstatesViewModel.listEstates.observe(viewLifecycleOwner, {
                 it.forEach { itEstate ->
@@ -180,6 +180,7 @@ class FragmentMap : Fragment(), OnMapReadyCallback {
                         val cameraUpdate = CameraUpdateFactory.newLatLngZoom(itLatLng,
                                                                         AppInfo.DEFAULT_CAMERA_ZOOM)
                         map.moveCamera(cameraUpdate)
+                        displayEstatesMarkersOnMap()
                     }
                 }
         }
@@ -196,7 +197,6 @@ class FragmentMap : Fragment(), OnMapReadyCallback {
                 initializeMapOptions()
                 displayOldUserLocation()
                 initializeCameraPositionOnMap()
-                displayEstatesMarkersOnMap(it)
             }
             else GPSAccessHandler.requestPermissionLocation(activity as MainActivity)
         }
@@ -349,8 +349,8 @@ class FragmentMap : Fragment(), OnMapReadyCallback {
         if (latitude != null && longitude != null)
             sharedPrefLocation?.let {
                 with(it.edit()) {
-                    putLong(AppInfo.PREF_USER_LOC_LATITUDE, latitude.toLong())
-                    putLong(AppInfo.PREF_USER_LOC_LONGITUDE, longitude.toLong())
+                    putString(AppInfo.PREF_USER_LOC_LATITUDE, latitude.toString()).apply()
+                    putString(AppInfo.PREF_USER_LOC_LONGITUDE, longitude.toString()).apply()
                 }
             }
     }
@@ -361,10 +361,11 @@ class FragmentMap : Fragment(), OnMapReadyCallback {
     private fun displayOldUserLocation() {
         if (GPSAccessHandler.isGPSEnabled(locationManager)) {
             val latitude = sharedPrefLocation
-                                   ?.getLong(AppInfo.PREF_USER_LOC_LATITUDE, 0L)?.toDouble()
+                ?.getString(AppInfo.PREF_USER_LOC_LATITUDE, "0.0")?.toDouble()
             val longitude = sharedPrefLocation
-                                  ?.getLong(AppInfo.PREF_USER_LOC_LONGITUDE, 0L)?.toDouble()
+                ?.getString(AppInfo.PREF_USER_LOC_LONGITUDE, "0.0")?.toDouble()
             if (latitude != null && longitude != null) {
+                currentPosition = LatLng(latitude, longitude)
                 val cameraUpdate = CameraUpdateFactory.newLatLngZoom(LatLng(latitude, longitude),
                                                                         AppInfo.DEFAULT_CAMERA_ZOOM)
                 map.moveCamera(cameraUpdate)

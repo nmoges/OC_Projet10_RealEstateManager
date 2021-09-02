@@ -12,6 +12,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.text.Editable
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewPropertyAnimator
@@ -556,7 +557,8 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
         fragment.apply {
             if (GPSAccessHandler.checkLocationPermission(activity as MainActivity)) {
                 initializeMapOptions()
-                initializeCameraPositionOnMap() } }
+                initializeCameraPositionOnMap()
+            } }
         val nbRequestSaved = getSharedPreferences(AppInfo.FILE_SHARED_PREF, Context.MODE_PRIVATE)
         // Reset number of permission requests
         nbRequestSaved.edit { putInt(AppInfo.PREF_PERMISSION_LOCATION, 0).apply() }
@@ -720,8 +722,16 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
      * @param position : position in list
      */
     fun handleClickOnEstateView(position: Int) {
-        val fragmentListEstate = supportFragmentManager
-                          .findFragmentByTag(AppInfo.TAG_FRAGMENT_LIST_ESTATE) as FragmentListEstate
-        fragmentListEstate.handleClickOnEstateItem(position)
+        if (typeOrientation) {
+            val fragmentListEstate = supportFragmentManager
+                .findFragmentByTag(AppInfo.TAG_FRAGMENT_LIST_ESTATE) as FragmentListEstate
+            fragmentListEstate.let {
+                it.handleClickOnEstateItem(position)
+            }
+        }
+        else {
+            listEstatesViewModel.setSelectedEstate(position)
+            displayFragmentDetails()
+        }
     }
 }
