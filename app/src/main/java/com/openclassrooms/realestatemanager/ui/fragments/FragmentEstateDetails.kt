@@ -1,6 +1,7 @@
 package com.openclassrooms.realestatemanager.ui.fragments
 
 import android.app.AlertDialog
+import android.os.Build
 import android.os.Bundle
 import android.view.*
 import android.widget.FrameLayout
@@ -11,7 +12,7 @@ import com.bumptech.glide.Glide
 import com.openclassrooms.realestatemanager.AppInfo
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.databinding.FragmentEstateDetailsBinding
-import com.openclassrooms.realestatemanager.model.Estate
+import com.openclassrooms.data.model.Estate
 import com.openclassrooms.realestatemanager.ui.MediaDisplayHandler
 import com.openclassrooms.realestatemanager.ui.activities.MainActivity
 import com.openclassrooms.realestatemanager.utils.MapHandler
@@ -181,7 +182,6 @@ class FragmentEstateDetails : Fragment() {
      * Updates "publish date" MaterialTextView.
      */
     private fun displayPublishDate() {
-        //TODO() : utiliser parametre string
         selectedEstateToDisplay?.run {
             val entryDateText = dates.dateEntry
             val textToDisplay = resources.getString(R.string.str_published_on) + ": $entryDateText"
@@ -192,7 +192,6 @@ class FragmentEstateDetails : Fragment() {
     /**
      * Updates "sale date" MaterialTextView.
      */
-    //TODO() : utiliser parametre string
     private fun displaySaleDate() {
         selectedEstateToDisplay?.run {
             val saleDateText = dates.dateSale
@@ -200,7 +199,10 @@ class FragmentEstateDetails : Fragment() {
                 val textToDisplay = resources.getString(R.string.str_sold_status) + ": $saleDateText"
                 binding.saleStatus.apply {
                     text = textToDisplay
-                    setTextColor(resources.getColor(R.color.red_google))
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+                        setTextColor(resources.getColor(R.color.red_google, null))
+                    else
+                        setTextColor(resources.getColor(R.color.red_google))
                 }
             }
         }

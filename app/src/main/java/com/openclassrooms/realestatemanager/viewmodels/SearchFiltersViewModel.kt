@@ -13,9 +13,8 @@ import com.openclassrooms.data.entities.FullEstateData
 import com.openclassrooms.data.repository.RealEstateRepositoryAccess
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.Utils
-import com.openclassrooms.realestatemanager.model.Estate
+import com.openclassrooms.data.model.Estate
 import com.openclassrooms.realestatemanager.ui.fragments.FragmentSearch
-import com.openclassrooms.realestatemanager.utils.Converters
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.launch
@@ -157,8 +156,7 @@ class SearchFiltersViewModel @Inject constructor(@ApplicationContext context: Co
      */
     fun convertDataFromSearchRequest(searchResults: List<FullEstateData>) {
         viewModelScope.launch {
-            _searchResults.postValue(Converters.convertListFullEstateDataToListEstate(searchResults,
-                                                                                  repositoryAccess))
+            _searchResults.postValue(repositoryAccess.convertListFullEstateDataToListEstate(searchResults))
         }
     }
 

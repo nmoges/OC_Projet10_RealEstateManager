@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.openclassrooms.realestatemanager.AppInfo
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.databinding.FragmentListEstateBinding
-import com.openclassrooms.realestatemanager.model.Estate
+import com.openclassrooms.data.model.Estate
 import com.openclassrooms.realestatemanager.ui.activities.MainActivity
 import com.openclassrooms.realestatemanager.ui.adapters.ListEstatesAdapter
 import com.openclassrooms.realestatemanager.viewmodels.ListEstatesViewModel
@@ -57,6 +57,7 @@ class FragmentListEstate : Fragment() {
      * Handles click events on recycler view items.
      * @param position : position of the clicked item
      */
+    @SuppressLint("NotifyDataSetChanged")
     fun handleClickOnEstateItem(position: Int) {
         (binding.recyclerViewListEstates.adapter as ListEstatesAdapter).apply {
             clearPreviousSelection(position)
@@ -119,6 +120,7 @@ class FragmentListEstate : Fragment() {
     /**
      * Handles [listEstatesViewModel] observer.
      */
+    @SuppressLint("NotifyDataSetChanged")
     private fun addObserverToViewModel() {
         listEstatesViewModel.listEstates.observe(viewLifecycleOwner, {
             (binding.recyclerViewListEstates.adapter as ListEstatesAdapter).apply {
@@ -130,7 +132,7 @@ class FragmentListEstate : Fragment() {
                 }
                 notifyDataSetChanged()
                 // Update background text
-                handleBackgroundMaterialTextVisibility(if (listEstates.size > 0) View.INVISIBLE
+                handleBackgroundMaterialTextVisibility(if (it.isNotEmpty()) View.INVISIBLE
                                                        else View.VISIBLE)
             }
         })

@@ -192,7 +192,17 @@ class FragmentSearch : Fragment() {
     }
 
     fun handleClickOnEstateItem(position: Int) {
-
+      //  (activity as MainActivity).test(position)
+        (binding.recyclerViewResults.adapter as ListEstatesAdapter).apply {
+            clearPreviousSelection(position)
+            val status: Boolean = updateItemSelectionStatus(position)
+            notifyDataSetChanged()
+            if (status) {
+                activity.handleBackgroundGridVisibility(View.INVISIBLE)
+                listEstates[position].selected = true
+                activity.displayFragmentDetails()
+            }
+        }
     }
 
     /**

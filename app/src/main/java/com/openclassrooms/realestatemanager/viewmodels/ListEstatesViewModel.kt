@@ -8,14 +8,11 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.libraries.places.api.model.Place
-import com.openclassrooms.data.entities.FullEstateData
 import com.openclassrooms.data.entities.PointOfInterestData
+import com.openclassrooms.data.model.*
 import com.openclassrooms.data.repository.RealEstateRepositoryAccess
 import com.openclassrooms.realestatemanager.Utils
-import com.openclassrooms.realestatemanager.model.*
-import com.openclassrooms.realestatemanager.model.Dates
 import com.openclassrooms.realestatemanager.service.DummyListAgentGenerator
-import com.openclassrooms.realestatemanager.utils.*
 import com.openclassrooms.realestatemanager.utils.poi.POIComparator
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -27,7 +24,7 @@ import javax.inject.Inject
  */
 @HiltViewModel
 class ListEstatesViewModel @Inject constructor(
-    val repositoryAccess: RealEstateRepositoryAccess): ViewModel() {
+    private val repositoryAccess: RealEstateRepositoryAccess): ViewModel() {
 
     /** Contains list of existing [Estate] objects.  */
     private val _listEstates: MutableLiveData<List<Estate>> = MutableLiveData()
@@ -50,7 +47,10 @@ class ListEstatesViewModel @Inject constructor(
     /** Contains selected [Estate]. */
     var selectedEstate: Estate? = null
 
-    init { restoreListAgents() }
+    init {
+        insertDummyListAgentInDb()
+        restoreData()
+    }
 
     // -------------------- Estate update --------------------
     /**
@@ -81,8 +81,7 @@ class ListEstatesViewModel @Inject constructor(
      */
     fun updateAgentSelectedEstate(id: Int, updateEstate: Boolean) {
         viewModelScope.launch {
-            val agentData = repositoryAccess.getAgentById(id.toLong())
-            val agent = agentData.toAgent()
+            val agent = repositoryAccess.getAgentById(id.toLong())
             selectedEstate?.agent.apply {
                 this?.id = agent.id
                 this?.firstName = agent.firstName
@@ -141,13 +140,15 @@ class ListEstatesViewModel @Inject constructor(
         val geocoder = Geocoder(context, Locale.getDefault())
         place.latLng?.let {
             val addresses = geocoder.getFromLocation(it.latitude, it.longitude, 1)
-            val district = addresses.first().subLocality ?: addresses.first().locality
+            if (addresses.isNotEmpty()) {
+                val district = addresses.first().subLocality ?: addresses.first().locality
 
-            selectedEstate?.apply {
-                location.latitude = it.latitude
-                location.longitude = it.longitude
-                location.address = place.address ?: ""
-                location.district = district
+                selectedEstate?.apply {
+                    location.latitude = it.latitude
+                    location.longitude = it.longitude
+                    location.address = place.address ?: ""
+                    location.district = district
+                }
             }
         }
     }
@@ -201,48 +202,30 @@ class ListEstatesViewModel @Inject constructor(
     // -------------------- Data restoration --------------------
     /**
      * Restores data from database.
-     * @param list : list of data
      */
-    fun restoreData(list: List<FullEstateData>) {
-        viewModelScope.launch {
-            _listEstates.postValue(Converters.convertListFullEstateDataToListEstate(list,
-                                                                                  repositoryAccess))
-        }
+    private fun restoreData() {
+        // TODO() : listEState -> Mediator Live Data
+        viewModelScope.launch { _listEstates.postValue(repositoryAccess.loadAllEstates()) }
     }
 
     /**
      * Restores the list of existing agents in database.
      */
-    private fun restoreListAgents() {
-        viewModelScope.launch {
-            val listAgentData = repositoryAccess.getAllAgents()
-            val listAgents: MutableList<Agent> = mutableListOf()
-            listAgentData.forEach {
-                listAgents.add(it.toAgent())
-            }
-            _listAgents.postValue(listAgents)
-        }
-    }
+    fun restoreListAgents() =
+        viewModelScope.launch { _listAgents.postValue(repositoryAccess.getAllAgents()) }
 
     // -------------------- Data insertion --------------------
     /**
      * Access insert estate method from repository interface.
      * @param estate : estate data to store in table_photos
      */
-    private fun insertEstateInDatabase(estate: Estate) {
-        viewModelScope.launch {
-            val estateData = estate.toEstateData()
-            val id = repositoryAccess.insertEstate(estateData)
+    private suspend fun insertEstateInDatabase(estate: Estate) {
+            val id = repositoryAccess.insertEstate(estate)
             insertInteriorInDatabase(estate.interior, id)
             insertDatesInDatabase(estate.dates, id)
             insertLocationInDatabase(estate.location, id)
-            estate.listPhoto.forEach {
-                insertPhotoInDatabase(it, id)
-            }
-            estate.listPointOfInterest.forEach {
-                insertPointOfInterestInDatabase(it, id)
-            }
-        }
+            estate.listPhoto.forEach { insertPhotoInDatabase(it, id) }
+            estate.listPointOfInterest.forEach { insertPointOfInterestInDatabase(it, id) }
     }
 
     /**
@@ -250,72 +233,47 @@ class ListEstatesViewModel @Inject constructor(
      ** @param photo : Photo data to store in table_photos
      * @param associatedId : associated estate id
      */
-    private fun insertPhotoInDatabase(photo: Photo, associatedId: Long) {
-        viewModelScope.launch {
-            val photoData = photo.toPhotoData(associatedId)
-            repositoryAccess.insertPhoto(photoData)
-        }
-    }
+    private fun insertPhotoInDatabase(photo: Photo, associatedId: Long) =
+        viewModelScope.launch { repositoryAccess.insertPhoto(photo, associatedId) }
 
     /**
      * Access insert interior method from repository interface.
      * @param interior : interior data to store in table_interiors
      * @param associatedId : associated estate id
      */
-    private fun insertInteriorInDatabase(interior: Interior, associatedId: Long) {
-        viewModelScope.launch {
-            val interiorData = interior.toInteriorData(associatedId)
-            repositoryAccess.insertInterior(interiorData)
-        }
-    }
+    private fun insertInteriorInDatabase(interior: Interior, associatedId: Long) =
+        viewModelScope.launch { repositoryAccess.insertInterior(interior, associatedId) }
 
     /**
      * Access insert dates method from repository interface.
      * @param dates : dates data to store in table_dates
      * @param associatedId : associated estate id
      */
-    private fun insertDatesInDatabase(dates: Dates, associatedId: Long) {
-        viewModelScope.launch {
-            val datesData = dates.toDatesData(associatedId)
-            repositoryAccess.insertDates(datesData)
-        }
-    }
+    private fun insertDatesInDatabase(dates: Dates, associatedId: Long) =
+        viewModelScope.launch { repositoryAccess.insertDates(dates, associatedId) }
 
     /**
      * Access insert location method from repository interface.
      * @param location : location to store in table_locations
      * @param associatedId : associated estate id
      */
-    private fun insertLocationInDatabase(location: Location, associatedId: Long) {
-        viewModelScope.launch {
-            val locationData = location.toLocationData(associatedId)
-            repositoryAccess.insertLocation(locationData)
-        }
-    }
+    private fun insertLocationInDatabase(location: Location, associatedId: Long) =
+        viewModelScope.launch { repositoryAccess.insertLocation(location, associatedId) }
 
     /**
      * Access insert agent method from repository interface.
      * @param agent : agent to store in table_agents
      */
-    fun insertAgentInDatabase(agent: Agent) {
-        viewModelScope.launch {
-            val agentData = agent.toAgentData()
-            repositoryAccess.insertAgent(agentData)
-        }
-    }
+    fun insertAgentInDatabase(agent: Agent) =
+        viewModelScope.launch { repositoryAccess.insertAgent(agent) }
 
     /**
      * Access insert point of interest method from repository interface.
      * @param pointOfInterest : point of interest to store in table_poi
      * @param associatedId : associated estate id
      */
-    private fun insertPointOfInterestInDatabase(pointOfInterest: PointOfInterest, associatedId: Long) {
-        viewModelScope.launch {
-            val pointOfInterestData = pointOfInterest.toPointOfInterestData(associatedId)
-            repositoryAccess.insertPointOfInterest(pointOfInterestData)
-        }
-    }
-
+    private fun insertPointOfInterestInDatabase(pointOfInterest: PointOfInterest, associatedId: Long) =
+        viewModelScope.launch { repositoryAccess.insertPointOfInterest(pointOfInterest, associatedId) }
 
     // -------------------- Data update --------------------
     /**
@@ -324,25 +282,24 @@ class ListEstatesViewModel @Inject constructor(
      */
     fun updateDatabase(typeUpdate: Boolean) {
         val estate = selectedEstate ?: return
-        if (!typeUpdate) insertEstateInDatabase(estate)
-        else updateEstateInDatabase(estate)
+        viewModelScope.launch {
+            if (!typeUpdate) insertEstateInDatabase(estate)
+            else updateEstateInDatabase(estate)
+            restoreData()
+        }
     }
 
     /**
      * Updates table_estates from database.
      * @param estate : updated estate
      */
-    private fun updateEstateInDatabase(estate: Estate) {
-        viewModelScope.launch {
-            val estateData = estate.toEstateData()
-            estateData.idEstate = estate.id
-            repositoryAccess.updateEstate(estateData)             // Update table_estates
+    private suspend fun updateEstateInDatabase(estate: Estate) {
+            repositoryAccess.updateEstate(estate)             // Update table_estates
             updateInteriorInDatabase(estate.interior, estate.id)  // Update table_interiors
             updatePhotosInDatabase(estate)                        // Update table_photos
             updateDatesInDatabase(estate.dates, estate.id)        // Update table_dates
             updateLocationInDatabase(estate.location, estate.id)  // Update table_locations
             updatePointsOfInterestInDatabase(estate)              // Update table_poi
-        }
     }
 
     /**
@@ -350,39 +307,24 @@ class ListEstatesViewModel @Inject constructor(
      * @param interior : updated interior
      * @param idAssociatedEstate : estate associated id
      */
-    private fun updateInteriorInDatabase(interior: Interior, idAssociatedEstate: Long) {
-        viewModelScope.launch {
-            val interiorData = interior.toInteriorData(idAssociatedEstate)
-            interiorData.idInterior = idAssociatedEstate
-            repositoryAccess.updateInterior(interiorData)
-        }
-    }
+    private fun updateInteriorInDatabase(interior: Interior, idAssociatedEstate: Long) =
+        viewModelScope.launch { repositoryAccess.updateInterior(interior, idAssociatedEstate) }
 
     /**
      * Updates table_dates from database.
      * @param dates : updated dates
      * @param idAssociatedEstate : estate associated id
      */
-    private fun updateDatesInDatabase(dates: Dates, idAssociatedEstate: Long) {
-        viewModelScope.launch {
-            val datesData = dates.toDatesData(idAssociatedEstate)
-            datesData.idDates = idAssociatedEstate
-            repositoryAccess.updateDates(datesData)
-        }
-    }
+    private fun updateDatesInDatabase(dates: Dates, idAssociatedEstate: Long) =
+        viewModelScope.launch { repositoryAccess.updateDates(dates, idAssociatedEstate) }
 
     /**
      * Updates table_locations from database.
      * @param location : updated location
      * @param idAssociatedEstate : estate associated id
      */
-    private fun updateLocationInDatabase(location: Location, idAssociatedEstate: Long) {
-        viewModelScope.launch {
-            val locationData = location.toLocationData(idAssociatedEstate)
-            locationData.idLocation = idAssociatedEstate
-            repositoryAccess.updateLocation(locationData)
-        }
-    }
+    private fun updateLocationInDatabase(location: Location, idAssociatedEstate: Long) =
+        viewModelScope.launch { repositoryAccess.updateLocation(location, idAssociatedEstate) }
 
     /**
      * Updates table_photos from database.
@@ -403,9 +345,7 @@ class ListEstatesViewModel @Inject constructor(
      */
     private suspend fun updatePointsOfInterestInDatabase(estate: Estate) {
         val listPOIInDb: MutableList<PointOfInterest> = mutableListOf()
-        repositoryAccess.getPointsOfInterest(estate.id).forEach {
-            listPOIInDb.add(it.toPointOfInterest())
-        }
+        repositoryAccess.getPointsOfInterest(estate.id).forEach { listPOIInDb.add(it) }
         when {
             estate.listPointOfInterest.size > listPOIInDb.size -> {
                 for (i in 0 until estate.listPointOfInterest.size) {
@@ -417,9 +357,19 @@ class ListEstatesViewModel @Inject constructor(
             estate.listPointOfInterest.size < listPOIInDb.size -> {
                 for (i in 0 until listPOIInDb.size) {
                     if (!POIComparator.containsPOI(listPOIInDb[i], estate.listPointOfInterest)) {
-                        val pointOfInterestData = listPOIInDb[i].toPointOfInterestData(estate.id)
-                        pointOfInterestData.idPoi = listPOIInDb[i].id
-                        deletePointOfInterestFromDatabase(pointOfInterestData)
+                        deletePointOfInterestFromDatabase(listPOIInDb[i], estate.id)
+                    }
+                }
+            }
+            estate.listPointOfInterest.size == listPOIInDb.size -> {
+                for (i in 0 until listPOIInDb.size) {
+                    if (!POIComparator.containsPOI(listPOIInDb[i], estate.listPointOfInterest)) {
+                        deletePointOfInterestFromDatabase(listPOIInDb[i], estate.id)
+                    }
+                }
+                for (i in 0 until estate.listPointOfInterest.size) {
+                    if (!POIComparator.containsPOI(estate.listPointOfInterest[i], listPOIInDb)) {
+                        insertPointOfInterestInDatabase(estate.listPointOfInterest[i], estate.id)
                     }
                 }
             }
@@ -429,10 +379,12 @@ class ListEstatesViewModel @Inject constructor(
     // -------------------- Data removal --------------------
     /**
      * Removes a row in table_poi associated corresponding to a given [PointOfInterestData]
-     * @param pointOfInterestData : data to remove
+     * @param pointOfInterest : data to remove
+     * @param associatedId : associated estate id
      */
-    private suspend fun deletePointOfInterestFromDatabase(pointOfInterestData: PointOfInterestData) {
-        repositoryAccess.deletePointOfInterest(pointOfInterestData)
+    private suspend fun deletePointOfInterestFromDatabase(pointOfInterest: PointOfInterest,
+    associatedId: Long) {
+        repositoryAccess.deletePointOfInterest(pointOfInterest, associatedId)
     }
 
     // -------------------- Autocomplete --------------------
@@ -444,14 +396,17 @@ class ListEstatesViewModel @Inject constructor(
         repositoryAccess.performAutocompleteRequest(activity)
     }
 
-
-    // TODO() : test function to remove later : used to inject dummy agent data
-    fun test() {
+    /**
+     * Test method to insert fake date in table_agents from database.
+     */
+    private fun insertDummyListAgentInDb() {
         viewModelScope.launch {
-            DummyListAgentGenerator.listAgents.forEach {
-                repositoryAccess.insertAgent(it.toAgentData())
+            val nbAgents = repositoryAccess.getAllAgents().size
+            if (nbAgents == 0) {
+                DummyListAgentGenerator.listAgents.forEach {
+                    repositoryAccess.insertAgent(it)
+                }
             }
-            restoreListAgents()
         }
     }
 }

@@ -25,7 +25,7 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.openclassrooms.realestatemanager.AppInfo
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.databinding.FragmentMapBinding
-import com.openclassrooms.realestatemanager.model.Estate
+import com.openclassrooms.data.model.Estate
 import com.openclassrooms.realestatemanager.receiver.GPSBroadcastReceiver
 import com.openclassrooms.realestatemanager.ui.activities.MainActivity
 import com.openclassrooms.realestatemanager.utils.GPSAccessHandler

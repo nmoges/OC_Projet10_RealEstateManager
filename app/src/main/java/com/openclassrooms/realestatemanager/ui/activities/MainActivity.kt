@@ -37,7 +37,7 @@ import com.openclassrooms.realestatemanager.BuildConfig
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.authentication.AuthenticationFirebase
 import com.openclassrooms.realestatemanager.databinding.ActivityMainBinding
-import com.openclassrooms.realestatemanager.model.Agent
+import com.openclassrooms.data.model.Agent
 import com.openclassrooms.realestatemanager.notification.NotificationHandler
 import com.openclassrooms.realestatemanager.receiver.NetworkBroadcastReceiver
 import com.openclassrooms.realestatemanager.ui.fragments.*
@@ -117,7 +117,6 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
             findFragmentsFromSupportFragmentManager()
             removeExistingFragments()
             restoreFragments(containerId)
-            restoreSearchFragment()
             restoreDialogs(savedInstanceState)
             networkBarDisplayStatus = savedInstanceState.getBoolean(AppInfo.NETWORK_BAR_STATUS_KEY)
         }
@@ -127,7 +126,6 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
         listEstatesViewModel = ViewModelProvider(this)[ListEstatesViewModel::class.java]
         MediaAccessHandler.initializeNbPermissionRequests(this)
         GPSAccessHandler.initializeNbPermissionRequests(this)
-        accessDatabase()
         initializeMapClient()
     }
 
@@ -227,6 +225,15 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
             fragmentMap != null -> {
                 launchTransaction(typeContainer, fragmentMap as FragmentMap,
                     AppInfo.TAG_FRAGMENT_MAP) }
+            fragmentSearch != null -> {
+                val containerIdSearch: Int = if (typeOrientation && typeLayout) R.id.fragment_container_view_left
+                else R.id.fragment_container_view
+                if (fragmentSearch != null) {
+                    launchTransaction(containerIdSearch,
+                        fragmentSearch as FragmentSearch,
+                        AppInfo.TAG_FRAGMENT_SEARCH)
+                }
+            }
         }
     }
 
@@ -310,6 +317,18 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
     private fun launchTransaction(@IdRes containerId: Int, fragment: Fragment, tag: String) {
         supportFragmentManager.beginTransaction()
             .replace(containerId, fragment, tag)
+            .commit()
+    }
+
+    fun test(tagFragment: String) {
+        // launchTransaction(containerId,
+        //                           FragmentEstateDetails.newInstance(), AppInfo.TAG_FRAGMENT_ESTATE_DETAILS)
+        val fragmentBackStack = supportFragmentManager.findFragmentByTag(tagFragment).toString()
+        // handleBackgroundGridVisibility(View.INVISIBLE)
+        // listEstatesViewModel.setSelectedEstate(position)
+        supportFragmentManager.beginTransaction()
+            .add(containerId, FragmentEstateDetails.newInstance(), AppInfo.TAG_FRAGMENT_ESTATE_DETAILS) // replace
+            .addToBackStack(fragmentBackStack)
             .commit()
     }
 
@@ -448,7 +467,7 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
     }
 
     /**
-     * Restores all views in [FragmentNewEstate] when another fragment has been removed from stack.
+     * Restores all views in [FragmentListEstate] when another fragment has been removed from stack.
      */
     private fun restoreViewsInFragmentListEstate() {
         val fragment = supportFragmentManager.findFragmentByTag(AppInfo.TAG_FRAGMENT_LIST_ESTATE)
@@ -567,11 +586,6 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
     /**
      * Accesses RealEstateManager application database to restore existing data.
      */
-    private fun accessDatabase() {
-        listEstatesViewModel.repositoryAccess.loadAllEstates().observe(this, {
-            listEstatesViewModel.restoreData(it)
-             listEstatesViewModel.test() })
-    }
 
     /**
      * Displays an [AlertDialog] for new agent creation.

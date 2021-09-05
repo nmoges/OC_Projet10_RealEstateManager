@@ -2,11 +2,14 @@ package com.openclassrooms.data.repository
 
 import android.app.Activity
 import android.database.Cursor
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.sqlite.db.SimpleSQLiteQuery
+import com.openclassrooms.data.*
 import com.openclassrooms.data.dao.*
 import com.openclassrooms.data.entities.*
 import com.openclassrooms.data.entities.DatesData
+import com.openclassrooms.data.model.*
 import com.openclassrooms.data.service.AutocompleteService
 
 /**
@@ -14,59 +17,61 @@ import com.openclassrooms.data.service.AutocompleteService
  */
 interface RealEstateRepositoryAccess {
 
-    // EstateDao
-    suspend fun insertEstate(estateData: EstateData): Long
+    // -------------------------------- EstateDao --------------------------------
+    suspend fun insertEstate(estate: Estate): Long
 
-    suspend fun updateEstate(estateData: EstateData)
+    suspend fun updateEstate(estate: Estate)
 
-    // PhotoDao
-    suspend fun insertPhoto(photoData: PhotoData)
+    // -------------------------------- PhotoDao --------------------------------
+    suspend fun insertPhoto(photo: Photo, associatedId: Long)
 
-    suspend fun getPhotos(id: Long): List<PhotoData>
+    suspend fun getPhotos(id: Long): List<Photo>
 
-    // InteriorDao
-    suspend fun insertInterior(interiorData: InteriorData)
+    // -------------------------------- InteriorDao --------------------------------
+    suspend fun insertInterior(interior: Interior, associatedId: Long)
 
-    suspend fun updateInterior(interiorData: InteriorData)
+    suspend fun updateInterior(interior: Interior, associatedId: Long)
 
-    // AgentDao
-    suspend fun insertAgent(agentData: AgentData): Long
+    // -------------------------------- AgentDao --------------------------------
+    suspend fun insertAgent(agent: Agent): Long
 
-    suspend fun getAgentById(id: Long): AgentData
+    suspend fun getAgentById(id: Long): Agent
 
-    suspend fun getAllAgents(): List<AgentData>
+    suspend fun getAllAgents(): List<Agent>
 
-    // DatesDao
-    suspend fun insertDates(datesData: DatesData): Long
+    // -------------------------------- DatesDao --------------------------------
+    suspend fun insertDates(dates: Dates, associatedId: Long): Long
 
-    suspend fun updateDates(datesData: DatesData)
+    suspend fun updateDates(dates: Dates, associatedId: Long)
 
-    suspend fun getDatesById(id: Long): DatesData
+    suspend fun getDatesById(id: Long): Dates
 
-    // LocationDao
-    suspend fun insertLocation(locationData: LocationData): Long
+    // -------------------------------- LocationDao --------------------------------
+    suspend fun insertLocation(location: Location, associatedId: Long): Long
 
-    suspend fun updateLocation(locationData: LocationData)
+    suspend fun updateLocation(location: Location, associatedId: Long)
 
-    // PointOfInterestDao
-    suspend fun insertPointOfInterest(pointOfInterestData: PointOfInterestData)
+    // -------------------------------- PointOfInterestDao --------------------------------
+    suspend fun insertPointOfInterest(pointOfInterest: PointOfInterest, associatedId: Long)
 
-    suspend fun deletePointOfInterest(pointOfInterestData: PointOfInterestData)
+    suspend fun deletePointOfInterest(pointOfInterest: PointOfInterest, associatedId: Long)
 
-    suspend fun getPointsOfInterest(id: Long): List<PointOfInterestData>
+    suspend fun getPointsOfInterest(id: Long): List<PointOfInterest>
 
-    // EstateWithPhotosAndInteriorDao
-    fun loadAllEstates(): LiveData<List<FullEstateData>>
+    // -------------------------------- FullEstateDao --------------------------------
+    suspend fun loadAllEstates(): List<Estate>
 
-    // Autocomplete service
+    fun getSearchResults(price: ArrayList<Int?>, surface: ArrayList<Int?>,
+                         status: Boolean?, dates: ArrayList<String?>,
+                         listPoi : MutableList<String>?, _nbFilters: Int): LiveData<List<FullEstateData>>
+
+    // -------------------------------- Autocomplete service --------------------------------
     fun performAutocompleteRequest(activity: Activity)
 
     // --------------------- TEST ---------------------------------
     fun getEstateWithId(id: Long): Cursor
 
-    fun getSearchResults(price: ArrayList<Int?>, surface: ArrayList<Int?>,
-                         status: Boolean?, dates: ArrayList<String?>,
-                         listPoi : MutableList<String>?, _nbFilters: Int): LiveData<List<FullEstateData>>
+    suspend fun convertListFullEstateDataToListEstate(list: List<FullEstateData>): MutableList<Estate>
 }
 
 /**
@@ -83,76 +88,193 @@ class RealEstateRepository(
     private val fullEstateDao: FullEstateDao):
     RealEstateRepositoryAccess {
 
-    // EstateDao
+    // -------------------------------- EstateDao --------------------------------
+    /**
+     * Accesses DAO Estate insertion method
+     * @param estate : Estate to insert
+     * @return : id of the inserted row in database
+     */
+    override suspend fun insertEstate(estate: Estate): Long =
+        estateDao.insertEstateData(estate.toEstateData())
 
-    override suspend fun insertEstate(estateData: EstateData): Long =
-        estateDao.insertEstateData(estateData)
+    /**
+     * Accesses DAO Estate update method
+     * @param estate : Estate to update
+     */
+    override suspend fun updateEstate(estate: Estate) =
+        estateDao.updateEstateData(estate.toEstateData())
 
-    override suspend fun updateEstate(estateData: EstateData) =
-        estateDao.updateEstateData(estateData)
 
-    // PhotoDao
-    override suspend fun insertPhoto(photoData: PhotoData) =
-        photoDao.insertPhotoData(photoData)
 
-    override suspend fun getPhotos(id: Long): List<PhotoData> =
-        photoDao.getPhotos(id)
+    // -------------------------------- PhotoDao --------------------------------
+    /**
+     * Accesses DAO Photo insertion method
+     * @param photo : Photo to insert
+     * @param associatedId : Associated Estate id
+     * @return : id of the inserted row in database
+     */
+    override suspend fun insertPhoto(photo: Photo, associatedId: Long) =
+        photoDao.insertPhotoData(photo.toPhotoData(associatedId))
 
-    // InteriorDao
-    override suspend fun insertInterior(interiorData: InteriorData) =
-        interiorDao.insertInteriorData(interiorData)
-
-    override suspend fun updateInterior(interiorData: InteriorData) {
-        interiorDao.updateInteriorData(interiorData)
+    /**
+     * Accesses DAO Photo getter method
+     * @param id : id of the request row in database
+     * @return : list of results
+     */
+    override suspend fun getPhotos(id: Long): List<Photo> {
+        val listPhoto = mutableListOf<Photo>()
+        photoDao.getPhotos(id).forEach { listPhoto.add(it.toPhoto()) }
+        return listPhoto
     }
 
-    // AgentDao
-    override suspend fun insertAgent(agentData: AgentData): Long =
-        agentDao.insertAgentData(agentData)
+    // -------------------------------- InteriorDao --------------------------------
+    /**
+     * Accesses DAO Photo insertion method
+     * @param interior : Interior to insert
+     * @param associatedId : Associated Estate id
+     * @return : id of the inserted row in database
+     */
+    override suspend fun insertInterior(interior: Interior, associatedId: Long) =
+        interiorDao.insertInteriorData(interior.toInteriorData(associatedId))
 
-    override suspend fun getAgentById(id: Long): AgentData =
-        agentDao.getAgentById(id)
-
-    override suspend fun getAllAgents(): List<AgentData> =
-        agentDao.getAllAgents()
-
-    // DatesDao
-    override suspend fun insertDates(datesData: DatesData): Long = datesDao.insertDateData(datesData)
-
-    override suspend fun updateDates(datesData: DatesData) = datesDao.updateDateData(datesData)
-
-    override suspend fun getDatesById(id: Long): DatesData = datesDao.getDatesById(id)
-
-    // LocationDao
-    override suspend fun insertLocation(locationData: LocationData): Long =
-                                                        locationDao.insertLocationData(locationData)
-
-    override suspend fun updateLocation(locationData: LocationData) =
-                                                        locationDao.updateLocationData(locationData)
-
-    // PointOfInterestDao
-    override suspend fun insertPointOfInterest(pointOfInterestData: PointOfInterestData) =
-        pointOfInterestDao.insertPointOfInterestData(pointOfInterestData)
-
-
-    override suspend fun deletePointOfInterest(pointOfInterestData: PointOfInterestData) =
-        pointOfInterestDao.deletePointOfInterestData(pointOfInterestData)
-
-    override suspend fun getPointsOfInterest(id: Long): List<PointOfInterestData>
-    = pointOfInterestDao.getPointsOfInterest(id)
-
-    // EstateWithPhotosAndInteriorDao
-    override fun loadAllEstates(): LiveData<List<FullEstateData>> =
-                                                     fullEstateDao.loadAllEstates()
-
-    // Autocomplete Service
-    override fun performAutocompleteRequest(activity: Activity) {
-        AutocompleteService.performAutocompleteRequest(activity)
+    /**
+     * Accesses DAO Estate update method
+     * @param interior : Interior to update
+     * @param associatedId : Associated Estate id
+     */
+    override suspend fun updateInterior(interior: Interior, associatedId: Long) {
+        interiorDao.updateInteriorData(interior.toInteriorData(associatedId))
     }
 
-    // --------------------- TEST ---------------------------------
-    override fun getEstateWithId(id: Long): Cursor = estateDao.getEstateWithId(id)
+    // -------------------------------- AgentDao --------------------------------
+    /**
+     * Accesses DAO Agent insertion method
+     * @param agent : Estate to insert
+     * @return : id of the inserted row in database
+     */
+    override suspend fun insertAgent(agent: Agent): Long =
+        agentDao.insertAgentData(agent.toAgentData())
 
+    /**
+     * Accesses DAO Agent getter method
+     * @param id : id of the request row in database
+     * @return : list of results
+     */
+    override suspend fun getAgentById(id: Long): Agent =
+        agentDao.getAgentById(id).toAgent()
+
+    /**
+     * Accesses DAO List Agent getter method
+     * @return : list of results
+     */
+    override suspend fun getAllAgents(): List<Agent> {
+        val listAgent = mutableListOf<Agent>()
+        agentDao.getAllAgents().forEach { listAgent.add(it.toAgent()) }
+        return listAgent
+    }
+
+    // -------------------------------- DatesDao --------------------------------
+    /**
+     * Accesses DAO Dates insertion method
+     * @param dates : Dates to insert
+     * @param associatedId : Associated Estate id
+     * @return : id of the inserted row in database
+     */
+    override suspend fun insertDates(dates: Dates, associatedId: Long): Long =
+        datesDao.insertDateData(dates.toDatesData(associatedId))
+
+    /**
+     * Accesses DAO Dates update method
+     * @param dates : Dates to update
+     * @param associatedId : Associated Estate id
+     */
+    override suspend fun updateDates(dates: Dates, associatedId: Long) =
+        datesDao.updateDateData(dates.toDatesData(associatedId))
+
+    /**
+     * Accesses DAO Photo getter method
+     * @param id : id of the request row in database
+     * @return : result
+     */
+    override suspend fun getDatesById(id: Long): Dates = datesDao.getDatesById(id).toDates()
+
+    // -------------------------------- LocationDao --------------------------------
+    /**
+     * Accesses DAO Location insertion method
+     * @param location : Location to insert
+     * @param associatedId : Associated Estate id
+     * @return : id of the inserted row in database
+     */
+    override suspend fun insertLocation(location: Location, associatedId: Long): Long =
+        locationDao.insertLocationData(location.toLocationData(associatedId))
+
+    /**
+     * Accesses DAO Location update method
+     * @param location : Location to update
+     * @param associatedId : Associated Estate id
+     */
+    override suspend fun updateLocation(location: Location, associatedId: Long) =
+        locationDao.updateLocationData(location.toLocationData(associatedId))
+
+    // -------------------------------- PointOfInterestDao --------------------------------
+    /**
+     * Accesses DAO PointOfInterest insertion method
+     * @param pointOfInterest : PointOfInterest to insert
+     * @param associatedId : Associated Estate id
+     * @return : id of the inserted row in database
+     */
+    override suspend fun insertPointOfInterest(pointOfInterest: PointOfInterest, associatedId: Long) =
+        pointOfInterestDao.insertPointOfInterestData(pointOfInterest.toPointOfInterestData(associatedId))
+
+    /**
+     * Accesses DAO PointOfInterest delete method
+     * @param pointOfInterest : PointOfInterest to delete
+     * @param associatedId : Associated Estate id
+     */
+    override suspend fun deletePointOfInterest(pointOfInterest: PointOfInterest, associatedId: Long) =
+        pointOfInterestDao.deletePointOfInterestData(pointOfInterest.toPointOfInterestData(associatedId))
+
+    /**
+     * Accesses DAO PointOfInterest getter method
+     * @param id : id of the request row in database
+     * @return : result
+     */
+    override suspend fun getPointsOfInterest(id: Long): List<PointOfInterest> {
+        val listPointsOfInterest = mutableListOf<PointOfInterest>()
+        pointOfInterestDao.getPointsOfInterest(id).forEach {
+            listPointsOfInterest.add(it.toPointOfInterest())
+        }
+        return listPointsOfInterest
+    }
+
+    // -------------------------------- FullEstateDao --------------------------------
+    /**
+     * Accesses DAO load Estates method
+     * @return : list of results
+     */
+    override suspend fun loadAllEstates(): List<Estate> {
+        val list = fullEstateDao.loadAllEstates()
+
+        val listConverted: MutableList<Estate> = mutableListOf()
+        list.forEach { it ->
+            val interior = it.interiorData.toInterior()
+            val listPhoto: MutableList<Photo> = mutableListOf()
+            it.listPhotosData.forEach {
+                listPhoto.add(it.toPhoto())
+            }
+            val listPointOfInterest: MutableList<PointOfInterest> = mutableListOf()
+            it.listPointOfInterestData.forEach {
+                listPointOfInterest.add(it.toPointOfInterest())
+            }
+            val agent = getAgentById(it.estateData.idAgent)
+            val dates = getDatesById(it.estateData.idEstate)
+            val location = it.locationData.toLocation()
+            val estate = it.estateData.toEstate(interior, listPhoto, agent, dates,
+                location, listPointOfInterest)
+            listConverted.add(estate)
+        }
+        return listConverted
+    }
 
     companion object {
         const val TABLE_ESTATE = EstateData.TABLE_NAME
@@ -171,6 +293,8 @@ class RealEstateRepository(
      * @param _nbFilters : number of filters enabled
      *
      */
+    //TODO() : replace ArrayList by List
+    // A déplacer dans une data classe
     override fun getSearchResults(price: ArrayList<Int?>, surface: ArrayList<Int?>,
                                   status: Boolean?, dates: ArrayList<String?>,
                                   listPoi : MutableList<String>?, _nbFilters: Int): LiveData<List<FullEstateData>> {
@@ -246,5 +370,37 @@ class RealEstateRepository(
             if (nbFilters != 0) updatedQuery += " AND"
         }
         return updatedQuery
+    }
+
+
+
+    // Autocomplete Service
+    override fun performAutocompleteRequest(activity: Activity) {
+        AutocompleteService.performAutocompleteRequest(activity)
+    }
+
+    // --------------------- TEST ---------------------------------
+    override fun getEstateWithId(id: Long): Cursor = estateDao.getEstateWithId(id)
+
+    override suspend fun convertListFullEstateDataToListEstate(list: List<FullEstateData>): MutableList<Estate>{
+        val listConverted: MutableList<Estate> = mutableListOf()
+        list.forEach { it ->
+            val interior = it.interiorData.toInterior()
+            val listPhoto: MutableList<Photo> = mutableListOf()
+            it.listPhotosData.forEach {
+                listPhoto.add(it.toPhoto())
+            }
+            val listPointOfInterest: MutableList<PointOfInterest> = mutableListOf()
+            it.listPointOfInterestData.forEach {
+                listPointOfInterest.add(it.toPointOfInterest())
+            }
+            val agent = getAgentById(it.estateData.idAgent)
+            val dates = getDatesById(it.estateData.idEstate)
+            val location = it.locationData.toLocation()
+            val estate = it.estateData.toEstate(interior, listPhoto, agent, dates,
+                location, listPointOfInterest)
+            listConverted.add(estate)
+        }
+        return listConverted
     }
 }

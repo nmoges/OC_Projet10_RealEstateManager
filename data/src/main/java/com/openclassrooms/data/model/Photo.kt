@@ -1,4 +1,4 @@
-package com.openclassrooms.realestatemanager.model
+package com.openclassrooms.data.model
 
 /**
  * Defines a photo.

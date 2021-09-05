@@ -16,12 +16,13 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
+import com.openclassrooms.data.model.Agent
+import com.openclassrooms.data.model.Estate
+import com.openclassrooms.data.model.Photo
 import com.openclassrooms.realestatemanager.AppInfo
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.Utils
 import com.openclassrooms.realestatemanager.databinding.FragmentNewEstateBinding
-import com.openclassrooms.realestatemanager.model.Estate
-import com.openclassrooms.realestatemanager.model.Photo
 import com.openclassrooms.realestatemanager.ui.LayoutInflaterProvider
 import com.openclassrooms.realestatemanager.ui.MediaDisplayHandler
 import com.openclassrooms.realestatemanager.ui.activities.MainActivity
@@ -212,17 +213,23 @@ class FragmentNewEstate : Fragment() {
      * Initializes an [AlertDialog.Builder] for [builderListAgentsDialog] property.
      */
     private fun initializeDialogListAgents() {
-        val context = context
-        if (context != null) {
-            val adapter: ArrayAdapter<String> = ArrayAdapter(context,android.R.layout.select_dialog_item)
-            val list = listEstatesViewModel.listAgents.value
-            if (list != null) {
-                list.forEach { adapter.add("${it.firstName} ${it.lastName}") }
-                builderListAgentsDialog = AlertDialog.Builder(activity)
-                    .setTitle(resources.getString(R.string.str_dialog_select_agent_title))
-                    .setAdapter(adapter) { _, which ->
-                        updateNameAgentEditText(which+1, adapter.getItem(which)) }.create() }
-        }
+        listEstatesViewModel.listAgents.observe(viewLifecycleOwner, { itList ->
+            val listAgents = mutableListOf<Agent>()
+            itList.forEach { itAgent ->
+                listAgents.add(itAgent)
+            }
+            val context = context
+            if (context != null) {
+                val adapter: ArrayAdapter<String> = ArrayAdapter(context,android.R.layout.select_dialog_item)
+                if (listAgents != null) {
+                    listAgents.forEach { adapter.add("${it.firstName} ${it.lastName}") }
+                    builderListAgentsDialog = AlertDialog.Builder(activity)
+                        .setTitle(resources.getString(R.string.str_dialog_select_agent_title))
+                        .setAdapter(adapter) { _, which ->
+                            updateNameAgentEditText(which+1, adapter.getItem(which)) }.create() }
+            }
+        })
+        listEstatesViewModel.restoreListAgents()
     }
 
     /**
@@ -660,8 +667,8 @@ class FragmentNewEstate : Fragment() {
                                              numberBedrooms = binding.sliderBedrooms.value.toInt(),
                                              surface = binding.sliderSurface.value.toInt())
                 updateDateSelectedEstate(false)
-                updateAgentSelectedEstate(agentSelected, updateEstate)
                 updatePointOfInterestSelectedEstate()
+                updateAgentSelectedEstate(agentSelected, updateEstate)
             }
 
         }

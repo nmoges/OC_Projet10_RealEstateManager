@@ -1,44 +1,13 @@
-package com.openclassrooms.realestatemanager.utils
+package com.openclassrooms.data
 
 import com.openclassrooms.data.entities.*
 import com.openclassrooms.data.entities.DatesData
 import com.openclassrooms.data.repository.RealEstateRepositoryAccess
-import com.openclassrooms.realestatemanager.model.*
-import com.openclassrooms.realestatemanager.model.Dates
-
-object Converters {
-    /**
-     * Handles conversion of a list of [FullEstateData] object to a list of [Estate].
-     * @param list : list to convert
-     * @param repositoryAccess : repository for database access
-     */
-    suspend fun convertListFullEstateDataToListEstate(list: List<FullEstateData>,
-                                                      repositoryAccess: RealEstateRepositoryAccess): MutableList<Estate>{
-        val listConverted: MutableList<Estate> = mutableListOf()
-        list.forEach { it ->
-            val interior = it.interiorData.toInterior()
-            val listPhoto: MutableList<Photo> = mutableListOf()
-            it.listPhotosData.forEach {
-                listPhoto.add(it.toPhoto())
-            }
-            val listPointOfInterest: MutableList<PointOfInterest> = mutableListOf()
-            it.listPointOfInterestData.forEach {
-                listPointOfInterest.add(it.toPointOfInterest())
-            }
-            val agent = repositoryAccess.getAgentById(it.estateData.idAgent).toAgent()
-            val dates = repositoryAccess.getDatesById(it.estateData.idEstate).toDates()
-            val location = it.locationData.toLocation()
-            val estate = it.estateData.toEstate(interior, listPhoto, agent, dates,
-                location, listPointOfInterest)
-            listConverted.add(estate)
-        }
-        return listConverted
-    }
-}
-
+import com.openclassrooms.data.model.*
+import com.openclassrooms.data.model.Dates
 
 // Estate converters
-fun Estate.toEstateData() = EstateData(type = this.type, price = this.price,
+fun Estate.toEstateData() = EstateData(idEstate = this.id, type = this.type, price = this.price,
     description = this.description,
     status = this.status, idAgent = this.agent.id)
 
@@ -59,7 +28,7 @@ fun Photo.toPhotoData(associatedId: Long) = PhotoData(uriConverted = this.uriCon
 fun PhotoData.toPhoto() = Photo(uriConverted = this.uriConverted, name = this.name)
 
 // Interior converters
-fun Interior.toInteriorData(associatedId: Long) = InteriorData(numberRooms = numberRooms,
+fun Interior.toInteriorData(associatedId: Long) = InteriorData(idInterior = this.id, numberRooms = numberRooms,
     numberBathrooms = numberBathrooms, numberBedrooms = numberBedrooms,
     surface = surface, associatedId = associatedId)
 
@@ -70,6 +39,7 @@ fun InteriorData.toInterior() = Interior(
 
 // Location converters
 fun Location.toLocationData(associatedId: Long) = LocationData(
+    idLocation = id,
     latitude = latitude,
     longitude = longitude,
     address = address,
@@ -87,6 +57,7 @@ fun LocationData.toLocation() = Location(
 
 // PointOfInterest converters
 fun PointOfInterest.toPointOfInterestData(associatedId: Long) = PointOfInterestData(
+    idPoi = id,
     name = name,
     associatedId = associatedId
 )
@@ -111,12 +82,13 @@ fun Agent.toAgentData() = AgentData(
 
 // Date converters
 fun Dates.toDatesData(associatedId: Long) = DatesData(
+    idDates = id,
     dateEntry = dateEntry,
     dateSale = dateSale,
     associatedId = associatedId
 )
 
-fun DatesData.toDates() = Dates(
+fun DatesData.toDates(): Dates = Dates(
     id = idDates,
     dateSale = dateSale,
     dateEntry = dateEntry

@@ -11,7 +11,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.net.toUri
 import com.bumptech.glide.Glide
-import com.openclassrooms.realestatemanager.model.Photo
+import com.openclassrooms.data.model.Photo
 import com.openclassrooms.realestatemanager.ui.activities.MainActivity
 
 /**

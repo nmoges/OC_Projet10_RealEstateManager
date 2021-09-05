@@ -1,6 +1,6 @@
 package com.openclassrooms.realestatemanager.service
 
-import com.openclassrooms.realestatemanager.model.Agent
+import com.openclassrooms.data.model.Agent
 
 /**
  * Dummy generator providing a fake agent list.

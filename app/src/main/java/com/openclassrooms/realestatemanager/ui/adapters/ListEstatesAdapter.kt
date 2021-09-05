@@ -1,5 +1,6 @@
 package com.openclassrooms.realestatemanager.ui.adapters
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Build
 import android.view.LayoutInflater
@@ -14,7 +15,7 @@ import com.google.android.material.textview.MaterialTextView
 import com.openclassrooms.realestatemanager.AppInfo
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.Utils
-import com.openclassrooms.realestatemanager.model.Estate
+import com.openclassrooms.data.model.Estate
 import com.openclassrooms.realestatemanager.ui.activities.MainActivity
 import com.openclassrooms.realestatemanager.utils.ProgressBarHandler
 
@@ -157,6 +158,7 @@ class ListEstatesAdapter(private val context: Context, private val onItemClicked
     /**
      * Clears current selected item.
      */
+    @SuppressLint("NotifyDataSetChanged")
     fun clearCurrentSelection() {
         var found = false
         var index = 0
