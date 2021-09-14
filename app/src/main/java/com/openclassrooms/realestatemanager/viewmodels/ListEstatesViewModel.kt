@@ -1,22 +1,17 @@
 package com.openclassrooms.realestatemanager.viewmodels
 
 import android.app.Activity
-import android.content.Context
-import android.location.Geocoder
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.android.libraries.places.api.model.Place
 import com.openclassrooms.data.entities.PointOfInterestData
 import com.openclassrooms.data.model.*
 import com.openclassrooms.data.repository.RealEstateRepositoryAccess
-import com.openclassrooms.realestatemanager.Utils
 import com.openclassrooms.realestatemanager.service.DummyListAgentGenerator
 import com.openclassrooms.realestatemanager.utils.poi.POIComparator
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import java.util.*
 import javax.inject.Inject
 
 /**
@@ -31,18 +26,10 @@ class ListEstatesViewModel @Inject constructor(
     val listEstates: LiveData<List<Estate>>
         get() = _listEstates
 
-    /** Contains a temporary photo uri converted value. */
-    private val _photoUriEstate: MutableLiveData<String> = MutableLiveData()
-    private val photoUriEstate: LiveData<String>
-        get() = _photoUriEstate
-
     /** Contains a list of agents. */
     private val _listAgents: MutableLiveData<List<Agent>> = MutableLiveData()
     val listAgents: LiveData<List<Agent>>
         get() = _listAgents
-
-    /** Contains a temporary list of points of interest */
-    val listPOI: MutableList<String> = mutableListOf()
 
     /** Contains selected [Estate]. */
     var selectedEstate: Estate? = null
@@ -54,159 +41,16 @@ class ListEstatesViewModel @Inject constructor(
 
     // -------------------- Estate update --------------------
     /**
-     * Creates a new [Estate].
-     */
-    fun createNewEstate() {
-        selectedEstate =
-            Estate(
-                id = 1, type = "", price = 0, description = "", status = false, selected = false,
-                location = Location(id = 1, address = "", district = "",
-                                    latitude = 0.0, longitude = 0.0),
-                interior = Interior(id= 1, numberRooms = 5, numberBathrooms = 1,
-                                    numberBedrooms = 1, surface = 50),
-                agent = Agent(id = 1, firstName = "", lastName = ""),
-                dates = Dates(id = 1, dateEntry = "", dateSale = "")
-            )
-    }
-
-    /**
      * Set a selected [Estate] by user (click on item) to [selectedEstate]
      */
     fun setSelectedEstate(position: Int) { selectedEstate = listEstates.value?.get(position) }
-
-    /**
-     * Update [selectedEstate] field with [Agent] values.
-     * @param id : selected id agent
-     * @param updateEstate : defines type of operation (creation or update estate)
-     */
-    fun updateAgentSelectedEstate(id: Int, updateEstate: Boolean) {
-        viewModelScope.launch {
-            val agent = repositoryAccess.getAgentById(id.toLong())
-            selectedEstate?.agent.apply {
-                this?.id = agent.id
-                this?.firstName = agent.firstName
-                this?.lastName = agent.lastName
-            }
-            updateDatabase(updateEstate)
-        }
-    }
-
-    /**
-     * Updates [selectedEstate] field with [Interior] values.
-     * @param numberRooms : number of rooms
-     * @param numberBathrooms : number of bathrooms
-     * @param numberBedrooms : number of bedrooms
-     * @param surface : surface estate
-     */
-    fun updateInteriorSelectedEstate(numberRooms: Int, numberBathrooms: Int,
-                                     numberBedrooms: Int, surface: Int ) {
-        selectedEstate?.interior.apply {
-            this?.numberRooms = numberRooms
-            this?.numberBedrooms = numberBedrooms
-            this?.numberBathrooms = numberBathrooms
-            this?.surface = surface
-        }
-    }
-
-    /**
-     * Updates [selectedEstate] field values.
-     * @param type : type of estate
-     * @param description : description of the estate
-     * @param price : price of the estate
-     */
-    fun updateSelectedEstate(type: String, description: String, price: Int) {
-        selectedEstate?.apply {
-            this.type = type
-            this.description = description
-            this.price = price
-        }
-    }
-
-    /**
-     * Adds date to selected estate.
-     * @param type : type of date to add (entry date or sale date)
-     */
-    fun updateDateSelectedEstate(type: Boolean) {
-        if (!type) selectedEstate?.dates?.dateEntry = Utils.getDate()
-        else selectedEstate?.dates?.dateSale = Utils.getDate()
-    }
-
-    /**
-     * Updates [selectedEstate] location field value.
-     * @param place : Place returned from an autocomplete request
-     * @param context : Context
-     */
-    fun updateLocationSelectedEstate(place : Place, context: Context) {
-        val geocoder = Geocoder(context, Locale.getDefault())
-        place.latLng?.let {
-            val addresses = geocoder.getFromLocation(it.latitude, it.longitude, 1)
-            if (addresses.isNotEmpty()) {
-                val district = addresses.first().subLocality ?: addresses.first().locality
-
-                selectedEstate?.apply {
-                    location.latitude = it.latitude
-                    location.longitude = it.longitude
-                    location.address = place.address ?: ""
-                    location.district = district
-                }
-            }
-        }
-    }
-
-    /**
-     * Updates [selectedEstate] point of interest field value.
-     */
-    fun updatePointOfInterestSelectedEstate() {
-        selectedEstate?.apply {
-            listPointOfInterest.apply {
-                clear()
-                for (i in 0 until listPOI.size) {
-                    add(PointOfInterest((i+1).toLong(), listPOI[i]))
-                }
-                listPOI.clear()
-            }
-        }
-    }
-    // -------------------- Handle photo --------------------
-    /**
-     * Creates a new [Photo] object for an [Estate]
-     */
-    fun createNewPhoto(namePhoto: String): Photo? {
-        val uri = photoUriEstate.value
-        return if (uri != null && uri.isNotEmpty()) { Photo(uri, namePhoto) } else null
-    }
-
-    /**
-     * Adds new uri value.
-     * @param photoUri : converted uri
-     */
-    fun updatePhotoUri(photoUri: String) = _photoUriEstate.postValue(photoUri)
-
-    /**
-     * Clears temporary uri values.
-     */
-    fun clearTempPhotoUri() = _photoUriEstate.postValue(null)
-
-    /**
-     * Removes photos added to an [Estate] if user cancelled its modifications.
-     * @param numberPhotosAdded : Number of photos added since the beginning of the modifications.
-     */
-    fun removePhotosIfEstateCreationCancelled(numberPhotosAdded: Int) {
-        var indice = numberPhotosAdded
-        while (indice > 0) {
-            selectedEstate?.listPhoto?.removeLast()
-            indice--
-        }
-    }
 
     // -------------------- Data restoration --------------------
     /**
      * Restores data from database.
      */
-    private fun restoreData() {
-        // TODO() : listEState -> Mediator Live Data
+    private fun restoreData() =
         viewModelScope.launch { _listEstates.postValue(repositoryAccess.loadAllEstates()) }
-    }
 
     /**
      * Restores the list of existing agents in database.
@@ -280,8 +124,7 @@ class ListEstatesViewModel @Inject constructor(
      * Determines if database operation is an insertion or an update.
      * @param typeUpdate : type of operation in database
      */
-    fun updateDatabase(typeUpdate: Boolean) {
-        val estate = selectedEstate ?: return
+    fun updateDatabase(typeUpdate: Boolean, estate: Estate) {
         viewModelScope.launch {
             if (!typeUpdate) insertEstateInDatabase(estate)
             else updateEstateInDatabase(estate)
@@ -294,7 +137,7 @@ class ListEstatesViewModel @Inject constructor(
      * @param estate : updated estate
      */
     private suspend fun updateEstateInDatabase(estate: Estate) {
-            repositoryAccess.updateEstate(estate)             // Update table_estates
+            repositoryAccess.updateEstate(estate)                 // Update table_estates
             updateInteriorInDatabase(estate.interior, estate.id)  // Update table_interiors
             updatePhotosInDatabase(estate)                        // Update table_photos
             updateDatesInDatabase(estate.dates, estate.id)        // Update table_dates
@@ -376,6 +219,7 @@ class ListEstatesViewModel @Inject constructor(
         }
 
     }
+
     // -------------------- Data removal --------------------
     /**
      * Removes a row in table_poi associated corresponding to a given [PointOfInterestData]
@@ -383,18 +227,16 @@ class ListEstatesViewModel @Inject constructor(
      * @param associatedId : associated estate id
      */
     private suspend fun deletePointOfInterestFromDatabase(pointOfInterest: PointOfInterest,
-    associatedId: Long) {
+                                                          associatedId: Long) =
         repositoryAccess.deletePointOfInterest(pointOfInterest, associatedId)
-    }
 
     // -------------------- Autocomplete --------------------
     /**
      * Performs an autocomplete request.
      * @param activity : Main activity
      */
-    fun performAutocompleteRequest(activity: Activity) {
+    fun performAutocompleteRequest(activity: Activity) =
         repositoryAccess.performAutocompleteRequest(activity)
-    }
 
     /**
      * Test method to insert fake date in table_agents from database.

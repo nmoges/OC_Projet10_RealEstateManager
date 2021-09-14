@@ -153,7 +153,7 @@
     <string name="str_text_delete_account">Supprimer votre compte Real Estate Manager</string>
 
     <!-- fragment_list_estate_item.xml -->
-    <string name="str_sold_status_item">vendu</string>
+    <string name="str_sold_status_item">Vendu</string>
     <string name="str_no_real_estate">Aucun bien</string>
 
     <!-- NotificationHandler.kt -->

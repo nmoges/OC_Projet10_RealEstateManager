@@ -9,10 +9,12 @@ import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.edit
+import androidx.lifecycle.ViewModelProvider
 import com.openclassrooms.realestatemanager.AppInfo
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.databinding.FragmentSettingsBinding
 import com.openclassrooms.realestatemanager.ui.activities.MainActivity
+import com.openclassrooms.realestatemanager.viewmodels.DialogsViewModel
 
 /**
  * [Fragment] subclass used to display the settings of the RealEstateManager application.
@@ -28,12 +30,16 @@ class FragmentSettings : Fragment() {
     private lateinit var builderCurrencySelectionDialog: AlertDialog
     private lateinit var builderDeleteAccountDialog: AlertDialog
 
+    /** Contains a reference to a [DialogsViewModel] */
+    private lateinit var dialogsViewModel: DialogsViewModel
+
     /** SharedPreferences contains the saved currency value */
     private lateinit var filePreferences: SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
+        dialogsViewModel = ViewModelProvider(requireActivity())[DialogsViewModel::class.java]
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -52,6 +58,7 @@ class FragmentSettings : Fragment() {
         initializeCardViewsDisplay()
         initializeCurrencySelectionDialog()
         initializeDeleteAccountDialog()
+        checkDialogStatusInViewModel()
         initCurrencyCardView()
         handleClickCurrencyCardListener()
         handleClicksDeleteAccountCardListener()
@@ -112,6 +119,7 @@ class FragmentSettings : Fragment() {
             }
         }
     }
+
     /**
      * Initializes currency symbol displayed.
      */
@@ -126,14 +134,11 @@ class FragmentSettings : Fragment() {
     private fun initializeCurrencySelectionDialog() {
         val inflater: LayoutInflater? = context?.getSystemService(Context.LAYOUT_INFLATER_SERVICE)
         as? LayoutInflater
-
         val viewCurrencySelection: View? = inflater?.inflate(R.layout.dialog_currency_selection, null)
-
         builderCurrencySelectionDialog = AlertDialog.Builder(activity)
             .setTitle(resources.getString(R.string.str_title_select_currency_dialog))
             .setView(viewCurrencySelection)
             .create()
-
         handleCurrencySelectionDialogButtons(viewCurrencySelection)
     }
 
@@ -201,5 +206,25 @@ class FragmentSettings : Fragment() {
      */
     private fun updateDisplayedCurrencyInCardView(selectedCurrency: String) {
         binding.currencyTextSymbol.text = selectedCurrency
+    }
+
+    /**
+     * Checks in [DialogsViewModel] if dialogs status before configuration change.
+     */
+    private fun checkDialogStatusInViewModel() {
+        if (dialogsViewModel.deleteAccountDialogStatus) builderDeleteAccountDialog.show()
+        if (dialogsViewModel.currencySelectionDialogStatus) builderCurrencySelectionDialog.show()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        builderDeleteAccountDialog.let { dialogsViewModel.deleteAccountDialogStatus = it.isShowing }
+        builderCurrencySelectionDialog.let { dialogsViewModel.currencySelectionDialogStatus = it.isShowing }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        builderDeleteAccountDialog.let { if (it.isShowing) it.dismiss() }
+        builderCurrencySelectionDialog.let { if (it.isShowing) it.dismiss() }
     }
 }

@@ -1,17 +1,15 @@
 package com.openclassrooms.realestatemanager.ui.fragments
 
+import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.app.DatePickerDialog
-import android.opengl.Visibility
 import android.os.Build
 import android.os.Bundle
 import android.util.DisplayMetrics
-import android.util.Log
 import android.view.*
 import android.widget.CheckBox
 import android.widget.LinearLayout
 import androidx.annotation.ColorRes
-import androidx.annotation.IntegerRes
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -20,7 +18,6 @@ import com.google.android.material.slider.RangeSlider
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.google.android.material.textview.MaterialTextView
-import com.openclassrooms.realestatemanager.AppInfo
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.Utils
 import com.openclassrooms.realestatemanager.databinding.FragmentSearchBinding
@@ -29,9 +26,9 @@ import com.openclassrooms.realestatemanager.ui.activities.MainActivity
 import com.openclassrooms.realestatemanager.ui.adapters.ListEstatesAdapter
 import com.openclassrooms.realestatemanager.utils.DateComparator
 import com.openclassrooms.realestatemanager.utils.StringHandler
+import com.openclassrooms.realestatemanager.viewmodels.DialogsViewModel
 import com.openclassrooms.realestatemanager.viewmodels.SearchFiltersViewModel
 import java.util.*
-import kotlin.collections.ArrayList
 
 /**
  * [Fragment] subclass used to display search results.
@@ -51,20 +48,23 @@ class FragmentSearch : Fragment() {
     /** Contains ViewModel reference */
     private lateinit var searchFiltersViewModel: SearchFiltersViewModel
 
+    /** Contains a reference to a [DialogsViewModel] */
+    private lateinit var dialogsViewModel: DialogsViewModel
+
     /** Contains a reference to an [AlertDialog] for search functionality. */
-    private lateinit var builderSearchDialog: AlertDialog
+    private var builderSearchDialog: AlertDialog? = null
 
     /** Layout associated to the [builderSearchDialog] alert dialog. */
     private var viewLayoutDialog : View? = null
 
     /** [DatePickerDialog] for "start date" filter. */
-    private lateinit var builderStartDatePickerDialog : DatePickerDialog
+    private var builderStartDatePickerDialog : DatePickerDialog? = null
 
     /** [DatePickerDialog] for "end date" filter. */
-    private lateinit var builderEndDatePickerDialog: DatePickerDialog
+    private var builderEndDatePickerDialog: DatePickerDialog? = null
 
     /** Contains a reference to an [AlertDialog] for reset confirmation */
-    private lateinit var builderConfirmReset: AlertDialog
+    private var builderConfirmReset: AlertDialog? = null
 
     /** Layout containing the list of "point of interest" tag filters*/
     private lateinit var linearLayoutTags: LinearLayout
@@ -112,10 +112,10 @@ class FragmentSearch : Fragment() {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
         searchFiltersViewModel = ViewModelProvider(requireActivity())[SearchFiltersViewModel::class.java]
+        dialogsViewModel = ViewModelProvider(requireActivity())[DialogsViewModel::class.java]
     }
 
-    override fun onCreateView(inflater: LayoutInflater,
-                              container: ViewGroup?,
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         binding = FragmentSearchBinding.inflate(inflater, container, false)
         return binding.root
@@ -134,6 +134,7 @@ class FragmentSearch : Fragment() {
         initializeStatusMaterialButtons()
         initializeListPOISelectionInDialog()
         initializeDatePickerDialogs()
+        checkDialogsStatusInViewModel()
         initializeTextInputDate()
         handleCheckboxPrice()
         handleCheckBoxSurface()
@@ -143,8 +144,6 @@ class FragmentSearch : Fragment() {
         handleDateTextInputClicks()
         handleMaterialButtonsStatus()
         handleMaterialButtonsPOI()
-        restoreCheckBoxesCheckedStatus(savedInstanceState)
-        restoresDialog(savedInstanceState)
         handleRangeSlidersObservers()
         handleDateObserver()
         handleStatusObserver()
@@ -161,12 +160,23 @@ class FragmentSearch : Fragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             android.R.id.home -> {
+                dialogsViewModel.apply {
+                    searchDialogStatus = false
+                    confirmResetDialogStatus = false
+                    startDatePickerDialogStatus = false
+                    endDatePickerDialogStatus = false }
                 resetAllFilters()
                 resetSearchResults()
-                (activity as MainActivity).onBackPressed()
-            }
-            R.id.filter -> { builderSearchDialog.show() }
-            R.id.reset -> { builderConfirmReset.show() } }
+                (activity as MainActivity).onBackPressed() }
+            R.id.filter -> {
+                builderSearchDialog?.let {
+                    dialogsViewModel.searchDialogStatus = true
+                    it.show() }}
+            R.id.reset -> {
+                builderConfirmReset?.let {
+                    dialogsViewModel.confirmResetDialogStatus = true
+                    it.show() }}
+        }
         return super.onOptionsItemSelected(item)
     }
 
@@ -191,8 +201,12 @@ class FragmentSearch : Fragment() {
         }
     }
 
-    fun handleClickOnEstateItem(position: Int) {
-      //  (activity as MainActivity).test(position)
+    /**
+     * Handles click events in list items.
+     * @param position : item position
+     */
+    @SuppressLint("NotifyDataSetChanged")
+    private fun handleClickOnEstateItem(position: Int) {
         (binding.recyclerViewResults.adapter as ListEstatesAdapter).apply {
             clearPreviousSelection(position)
             val status: Boolean = updateItemSelectionStatus(position)
@@ -299,15 +313,13 @@ class FragmentSearch : Fragment() {
             val valuesPrice = searchFiltersViewModel.valuesPrice
             rangeSliderPrice.apply {
                 isEnabled = it
-                setValues(valuesPrice[0].toFloat(), valuesPrice[1].toFloat())
-            }
+                setValues(valuesPrice[0].toFloat(), valuesPrice[1].toFloat()) }
         })
         searchFiltersViewModel.checkBoxSurfaceValue.observe(viewLifecycleOwner, {
             val valuesSurface = searchFiltersViewModel.valuesSurface
             rangeSliderSurface.apply {
                 isEnabled = it
-                setValues(valuesSurface[0].toFloat(), valuesSurface[1].toFloat())
-            }
+                setValues(valuesSurface[0].toFloat(), valuesSurface[1].toFloat()) }
         })
     }
 
@@ -347,14 +359,14 @@ class FragmentSearch : Fragment() {
     /**
      * Handles [searchFiltersViewModel] observer.
      */
+    @SuppressLint("NotifyDataSetChanged")
     private fun handleViewModelObserver() {
         searchFiltersViewModel.searchResults.observe(viewLifecycleOwner, {
             (binding.recyclerViewResults.adapter as ListEstatesAdapter).apply {
                 listEstates.apply {
                     clear()
                     addAll(it)
-                    notifyDataSetChanged()
-                }
+                    notifyDataSetChanged() }
                 val visibility = if (it.isEmpty()) View.VISIBLE else View.INVISIBLE
                 handleBackgroundMaterialTextVisibility(visibility)
             }
@@ -367,8 +379,7 @@ class FragmentSearch : Fragment() {
     private fun initializeStatusMaterialButtons() {
         viewLayoutDialog?.let {
             availableButton = it.findViewById(R.id.button_available)
-            soldButton = it.findViewById(R.id.button_sold)
-        }
+            soldButton = it.findViewById(R.id.button_sold) }
     }
 
     /**
@@ -440,44 +451,13 @@ class FragmentSearch : Fragment() {
     }
 
     /**
-     * Restores displayed [builderSearchDialog] alert dialog after a configuration change
-     * @param savedInstanceState : Bundle
-     */
-    private fun restoresDialog(savedInstanceState: Bundle?) {
-        savedInstanceState?.let {
-            when {
-                it.getBoolean(AppInfo.DIALOG_SEARCH_KEY) == true -> {
-                    builderSearchDialog.show()
-                    checkTextInputEditTextFields()
-                }
-                it.getBoolean(AppInfo.DIALOG_RESET_FILTERS_KEY) == true -> {
-                    builderConfirmReset.show()
-                }
-            }
-        }
-    }
-
-    /**
-     * Restores "checked" [CheckBox] status.
-     * @param savedInstanceState : Bundle
-     */
-    private fun restoreCheckBoxesCheckedStatus(savedInstanceState: Bundle?) {
-        savedInstanceState?.let {
-            checkBoxPrice.isChecked = it.getBoolean(AppInfo.CHECKBOX_PRICE_KEY)
-            checkBoxSurface.isChecked = it.getBoolean(AppInfo.CHECKBOX_SURFACE_KEY)
-            checkBoxDate.isChecked = it.getBoolean(AppInfo.CHECKBOX_DATE_KEY)
-            checkBoxStatus.isChecked = it.getBoolean(AppInfo.CHECKBOX_STATUS_KEY)
-            checkBoxPOI.isChecked = it.getBoolean(AppInfo.CHECKBOX_POI_KEY)
-        }
-    }
-
-    /**
      * Handles click events on "Price" [CheckBox].
      */
     private fun handleCheckboxPrice() {
         viewLayoutDialog?.let {
             checkBoxPrice = it.findViewById<CheckBox>(R.id.checkbox_price)
             checkBoxPrice.apply {
+                this.isChecked = searchFiltersViewModel.checkBoxPriceStatus
                 setOnCheckedChangeListener { _, isChecked ->
                     rangeSliderPrice.isEnabled = isChecked
                     searchFiltersViewModel.updateCheckBoxPriceValue(isChecked)
@@ -493,6 +473,7 @@ class FragmentSearch : Fragment() {
         viewLayoutDialog?.let {
             checkBoxSurface = it.findViewById<CheckBox>(R.id.checkbox_surface)
             checkBoxSurface.apply {
+                this.isChecked = searchFiltersViewModel.checkBoxSurfaceStatus
                 setOnCheckedChangeListener { _, isChecked ->
                     rangeSliderSurface.isEnabled = isChecked
                     searchFiltersViewModel.updateCheckBoxSurfaceValue(isChecked)
@@ -508,6 +489,7 @@ class FragmentSearch : Fragment() {
         viewLayoutDialog?.let {
             checkBoxDate = it.findViewById<CheckBox>(R.id.checkbox_date)
             checkBoxDate.apply {
+                this.isChecked = searchFiltersViewModel.checkBoxDateStatus
                 setOnCheckedChangeListener { _, isChecked ->
                     textInputStartDate.isEnabled = isChecked
                     textInputEndDate.isEnabled = isChecked
@@ -524,6 +506,7 @@ class FragmentSearch : Fragment() {
         viewLayoutDialog?.let {
             checkBoxStatus = it.findViewById<CheckBox>(R.id.checkbox_status)
             checkBoxStatus.apply {
+                this.isChecked = searchFiltersViewModel.checkBoxTypeStatus
                 setOnCheckedChangeListener { _, isChecked ->
                     updateStatusMaterialButtons(isChecked)
                     availableButton.isClickable = isChecked
@@ -538,14 +521,15 @@ class FragmentSearch : Fragment() {
      * Handles click events on "Points of interest" [CheckBox].
      */
     private fun handleCheckBoxPOIStatus() {
-        viewLayoutDialog?.let {
-            checkBoxPOI = it.findViewById<CheckBox>(R.id.checkbox_poi)
+        viewLayoutDialog?.let { itView ->
+            checkBoxPOI = itView.findViewById<CheckBox>(R.id.checkbox_poi)
             checkBoxPOI.apply {
+                this.isChecked = searchFiltersViewModel.checkBoxPOIStatus
                 setOnCheckedChangeListener { _, isChecked ->
-                    isChecked.let {
+                    isChecked.let { itBoolean ->
                         for (i in 0 until linearLayoutTags.childCount) {
                             val materialButton = linearLayoutTags.getChildAt(i) as MaterialButton
-                            if (it) {
+                            if (itBoolean) {
                                 materialButton.isClickable = true
                                 if (searchFiltersViewModel.listPOIStatus[i])
                                     setColorsMaterialButton(R.color.colorPrimary,
@@ -558,7 +542,7 @@ class FragmentSearch : Fragment() {
                                 setColorsMaterialButton(R.color.grey41, R.color.grey93, materialButton)
                             }
                         }
-                        searchFiltersViewModel.updateCheckBoxPOIValue(it)
+                        searchFiltersViewModel.updateCheckBoxPOIValue(itBoolean)
                     }
                 }
             }
@@ -600,8 +584,8 @@ class FragmentSearch : Fragment() {
      */
     private fun handleDateTextInputClicks() {
         viewLayoutDialog?.let {
-            textInputStartDate.setOnClickListener { builderStartDatePickerDialog.show() }
-            textInputEndDate.setOnClickListener { builderEndDatePickerDialog.show() }
+            textInputStartDate.setOnClickListener { builderStartDatePickerDialog?.show() }
+            textInputEndDate.setOnClickListener { builderEndDatePickerDialog?.show() }
         }
     }
 
@@ -641,6 +625,10 @@ class FragmentSearch : Fragment() {
         }
     }
 
+    /**
+     * Updates [MaterialButton] status with associated color.
+     * @param status : button status
+     */
     private fun updateStatusMaterialButtons(status: Boolean) {
         if (status) { // Checkbox checked
             if (searchFiltersViewModel.availableStatus) { // "Available" button selected
@@ -666,7 +654,7 @@ class FragmentSearch : Fragment() {
      * @param resMax : [MaterialTextView] resource displaying the max value
      */
     private fun updateMaterialTextRangeSlider(minValue: Int, maxValue: Int,
-                                              @IntegerRes resMin: Int, @IntegerRes resMax: Int) {
+                                              resMin: Int, resMax: Int) {
         viewLayoutDialog?.let {
             it.findViewById<MaterialTextView>(resMin).apply {
                 when(resMin) {
@@ -719,7 +707,7 @@ class FragmentSearch : Fragment() {
             textLayoutStartDate.apply {
                 isErrorEnabled = !status
                 error = if (!status) "Error" else "" }
-            builderSearchDialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled = status
+            builderSearchDialog?.getButton(AlertDialog.BUTTON_POSITIVE)?.isEnabled = status
         }
     }
 
@@ -742,47 +730,30 @@ class FragmentSearch : Fragment() {
                 setBackgroundColor(resources.getColor(backgroundColor)) }
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.apply {
-            putBoolean(AppInfo.DIALOG_SEARCH_KEY, builderSearchDialog.isShowing)
-            putBoolean(AppInfo.CHECKBOX_PRICE_KEY, checkBoxPrice.isChecked)
-            putBoolean(AppInfo.CHECKBOX_SURFACE_KEY, checkBoxSurface.isChecked)
-            putBoolean(AppInfo.CHECKBOX_DATE_KEY, checkBoxDate.isChecked)
-            putBoolean(AppInfo.CHECKBOX_STATUS_KEY, checkBoxStatus.isChecked)
-            putBoolean(AppInfo.CHECKBOX_POI_KEY, checkBoxPOI.isChecked)
-            putBoolean(AppInfo.DIALOG_RESET_FILTERS_KEY, builderConfirmReset.isShowing)}
-    }
-
     /**
      * Initializes filters to perform a search request.
      */
     private fun performSearch() {
         // Reset number of selected filters
         searchFiltersViewModel.nbFilters = 0
-
         // Initialize filters
         val surfaceFilter: ArrayList<Int?> = searchFiltersViewModel.initializeSurfaceFilter(
             minSurface = rangeSliderSurface.values[0].toInt(),
             maxSurface = rangeSliderSurface.values[1].toInt(),
-            checkBoxStatus = checkBoxSurface.isChecked
-        )
+            checkBoxStatus = checkBoxSurface.isChecked)
         val priceFilter: ArrayList<Int?> = searchFiltersViewModel.initializePriceFilter(
             minPrice = rangeSliderPrice.values[0].toInt(),
             maxPrice = rangeSliderPrice.values[1].toInt(),
-            checkBoxStatus = checkBoxPrice.isChecked
-        )
+            checkBoxStatus = checkBoxPrice.isChecked)
         val statusFilter: Boolean? = searchFiltersViewModel
                                     .initializeStatusFilter(checkBoxStatus.isChecked)
         val listPOIFilters: MutableList<String>? = searchFiltersViewModel.initializePOIFilter(
             checkBoxStatus = checkBoxPOI.isChecked,
-            listPOI = listPOI
-        )
+            listPOI = listPOI)
         val datesFilter: ArrayList<String?> = searchFiltersViewModel.initializeDatesFilter(
             checkBoxStatus = checkBoxDate.isChecked,
             startDate = textInputStartDate.text,
-            endDate = textInputEndDate.text
-        )
+            endDate = textInputEndDate.text)
         // Send request
         if (searchFiltersViewModel.nbFilters > 0) {
             searchFiltersViewModel
@@ -790,7 +761,7 @@ class FragmentSearch : Fragment() {
                                                                         listPOIFilters, datesFilter)
                 .observe(viewLifecycleOwner,
                 {
-                    if (it.size > 0) searchFiltersViewModel.convertDataFromSearchRequest(it)
+                    if (it.isNotEmpty()) searchFiltersViewModel.convertDataFromSearchRequest(it)
                     else resetSearchResults()
                 })
         }
@@ -800,7 +771,53 @@ class FragmentSearch : Fragment() {
     /**
      * Resets search results displayed.
      */
-    private fun resetSearchResults() {
-        searchFiltersViewModel.resetSearchResults()
+    private fun resetSearchResults() = searchFiltersViewModel.resetSearchResults()
+
+    /**
+     * Checks in [DialogsViewModel] if dialogs status before configuration change.
+     */
+    private fun checkDialogsStatusInViewModel() {
+        if (dialogsViewModel.searchDialogStatus) builderSearchDialog?.show()
+        if (dialogsViewModel.confirmResetDialogStatus) builderConfirmReset?.show()
+        if (dialogsViewModel.startDatePickerDialogStatus) builderStartDatePickerDialog?.show()
+        if (dialogsViewModel.endDatePickerDialogStatus) builderEndDatePickerDialog?.show()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        saveInViewModels()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        dismissDisplayedDialogs()
+    }
+
+    /**
+     * Saves view values in view model.
+     */
+    private fun saveInViewModels() {
+        // Dialogs status
+        builderSearchDialog?.let { dialogsViewModel.searchDialogStatus = it.isShowing }
+        builderConfirmReset?.let { dialogsViewModel.confirmResetDialogStatus = it.isShowing}
+        builderStartDatePickerDialog?.let { dialogsViewModel.startDatePickerDialogStatus = it.isShowing }
+        builderEndDatePickerDialog?.let { dialogsViewModel.endDatePickerDialogStatus = it.isShowing }
+        // Checkbox status
+        searchFiltersViewModel.apply {
+            checkBoxPriceStatus = checkBoxPrice.isChecked
+            checkBoxSurfaceStatus = checkBoxSurface.isChecked
+            checkBoxDateStatus = checkBoxStatus.isChecked
+            checkBoxTypeStatus = checkBoxStatus.isChecked
+            checkBoxPOIStatus = checkBoxPOI.isChecked }
+    }
+
+    /**
+     * Dismiss displayed dialogs before configuration change.
+     */
+    private fun dismissDisplayedDialogs() {
+        builderSearchDialog?.let { if (it.isShowing) it.dismiss() }
+        builderConfirmReset?.let { if (it.isShowing) it.dismiss() }
+        builderStartDatePickerDialog?.let { if (it.isShowing) it.dismiss() }
+        builderEndDatePickerDialog?.let { if (it.isShowing) it.dismiss() }
     }
 }

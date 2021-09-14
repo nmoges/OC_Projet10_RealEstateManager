@@ -45,7 +45,9 @@ import com.openclassrooms.realestatemanager.utils.CustomTextWatcher
 import com.openclassrooms.realestatemanager.utils.GPSAccessHandler
 import com.openclassrooms.realestatemanager.utils.MediaAccessHandler
 import com.openclassrooms.realestatemanager.utils.StringHandler
+import com.openclassrooms.realestatemanager.viewmodels.EstateViewModel
 import com.openclassrooms.realestatemanager.viewmodels.ListEstatesViewModel
+import com.openclassrooms.realestatemanager.viewmodels.ListTagsFragmentViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 /**
@@ -67,23 +69,17 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
     /** Id of the container used to display fragments */
     private var containerId: Int = 0
 
-    /** Contains a reference to a [FragmentNewEstate] object */
-    private var fragmentNewEstate : Fragment? = null
+    /** Id of the container used to display list/search fragments */
+    private var containerIdLists: Int = 0
 
-    /** Contains a reference to a [FragmentEstateDetails] object */
-    private var fragmentEstateDetails: Fragment? = null
-
-    /** Contains a reference to a [FragmentSettings] object */
-    private var fragmentSettings: Fragment? = null
-
-    /** Contains a reference to a [FragmentMap] object */
-    private var fragmentMap: Fragment? = null
-
-    /** Contains a reference to a [FragmentSearch] object */
-    private var fragmentSearch: Fragment? = null
-
-    /** Contains ViewModels reference */
+    /** Contains reference to [ListEstatesViewModel] */
     lateinit var listEstatesViewModel: ListEstatesViewModel
+
+    /** Contains reference to [ListTagsFragmentViewModel] */
+    lateinit var listFragmentsViewModel: ListTagsFragmentViewModel
+
+    /** Contains reference to [EstateViewModel] */
+    lateinit var estatesViewModel: EstateViewModel
 
     /** Contains a reference to a [NetworkBroadcastReceiver] object */
     private val networkBroadcastReceiver: NetworkBroadcastReceiver = NetworkBroadcastReceiver(this)
@@ -91,6 +87,7 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
     /** Contain a [NotificationHandler] object reference */
     lateinit var notificationHandler: NotificationHandler
 
+    /** Location provider */
     lateinit var locationProviderClient: FusedLocationProviderClient
 
     /** Defines an [AlertDialog] allowing user to enter a new agent */
@@ -103,27 +100,28 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
     /** Defines an [AlertDialog] for logout */
     private lateinit var builderLogoutDialog: AlertDialog
 
+    /** Status of the network bar */
     private var networkBarDisplayStatus = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        listEstatesViewModel = ViewModelProvider(this)[ListEstatesViewModel::class.java]
+        listFragmentsViewModel = ViewModelProvider(this)[ListTagsFragmentViewModel::class.java]
+        estatesViewModel = ViewModelProvider(this)[EstateViewModel::class.java]
         checkScreenProperties()
-        initializeFragmentListEstate()
         initializeDialogAddAgent()
         initializeDialogLogout()
         if (savedInstanceState != null) {
-            findFragmentsFromSupportFragmentManager()
-            removeExistingFragments()
-            restoreFragments(containerId)
+            deleteOldFragments()
+            restoreFragmentsFromBackStack()
             restoreDialogs(savedInstanceState)
             networkBarDisplayStatus = savedInstanceState.getBoolean(AppInfo.NETWORK_BAR_STATUS_KEY)
         }
         initializeToolbar()
         initializeNotificationHandler()
         handleConnectivityBarBtnListener()
-        listEstatesViewModel = ViewModelProvider(this)[ListEstatesViewModel::class.java]
         MediaAccessHandler.initializeNbPermissionRequests(this)
         GPSAccessHandler.initializeNbPermissionRequests(this)
         initializeMapClient()
@@ -133,6 +131,7 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
         super.onResume()
         registerReceiver(networkBroadcastReceiver,
             IntentFilter("android.net.conn.CONNECTIVITY_CHANGE"))
+        updateActivityViewsIfBackStackIsEmpty()
     }
 
     override fun onPause() {
@@ -158,153 +157,15 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
     }
 
     /**
-     * Handles fragment removal operations.
-     */
-    private fun removeExistingFragments() {
-        when {
-            fragmentNewEstate != null -> {
-                fragmentNewEstate?.let {
-                    supportFragmentManager.beginTransaction().remove(it).commit()
-                    supportFragmentManager.executePendingTransactions() } }
-            fragmentEstateDetails != null -> {
-                fragmentEstateDetails?.let {
-                    supportFragmentManager.beginTransaction().remove(it).commit()
-                    supportFragmentManager.executePendingTransactions() } }
-            fragmentSettings != null -> {
-                fragmentSettings?.let {
-                    supportFragmentManager.beginTransaction().remove(it).commit()
-                    supportFragmentManager.executePendingTransactions() } }
-            fragmentMap != null -> {
-                fragmentMap?.let {
-                    supportFragmentManager.beginTransaction().remove(it).commit()
-                    supportFragmentManager.executePendingTransactions() } }
-            fragmentSearch != null -> {
-                fragmentSearch?.let {
-                    supportFragmentManager.beginTransaction().remove(it).commit()
-                    supportFragmentManager.executePendingTransactions() } }
-        }
-    }
-
-    /**
      * Checks the size and orientation screen properties to define the fragment container.
      */
     private fun checkScreenProperties() {
         typeLayout = findViewById<View>(R.id.fragment_container_view) == null
         typeOrientation = resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
         containerId = if (typeOrientation && typeLayout) R.id.fragment_container_view_right
-        else R.id.fragment_container_view
-    }
-
-    /**
-     * Initializes child fragments
-     */
-    private fun findFragmentsFromSupportFragmentManager() {
-        fragmentNewEstate = supportFragmentManager.findFragmentByTag(AppInfo.TAG_FRAGMENT_NEW_ESTATE)
-        fragmentEstateDetails =
-            supportFragmentManager.findFragmentByTag(AppInfo.TAG_FRAGMENT_ESTATE_DETAILS)
-        fragmentSettings = supportFragmentManager.findFragmentByTag(AppInfo.TAG_FRAGMENT_SETTINGS)
-        fragmentMap = supportFragmentManager.findFragmentByTag(AppInfo.TAG_FRAGMENT_MAP)
-        fragmentSearch = supportFragmentManager.findFragmentByTag(AppInfo.TAG_FRAGMENT_SEARCH)
-    }
-
-    /**
-     * Restores fragments display after a configuration change.
-     * @param typeContainer : type of container.
-     */
-    private fun restoreFragments(@IdRes typeContainer: Int) {
-        when {
-            fragmentNewEstate != null -> {
-                launchTransaction(typeContainer, fragmentNewEstate as FragmentNewEstate,
-                    AppInfo.TAG_FRAGMENT_NEW_ESTATE) }
-            fragmentEstateDetails != null -> {
-                launchTransaction(typeContainer, fragmentEstateDetails as FragmentEstateDetails,
-                    AppInfo.TAG_FRAGMENT_ESTATE_DETAILS) }
-            fragmentSettings != null -> {
-                launchTransaction(typeContainer, fragmentSettings as FragmentSettings,
-                    AppInfo.TAG_FRAGMENT_SETTINGS) }
-            fragmentMap != null -> {
-                launchTransaction(typeContainer, fragmentMap as FragmentMap,
-                    AppInfo.TAG_FRAGMENT_MAP) }
-            fragmentSearch != null -> {
-                val containerIdSearch: Int = if (typeOrientation && typeLayout) R.id.fragment_container_view_left
-                else R.id.fragment_container_view
-                if (fragmentSearch != null) {
-                    launchTransaction(containerIdSearch,
-                        fragmentSearch as FragmentSearch,
-                        AppInfo.TAG_FRAGMENT_SEARCH)
-                }
-            }
-        }
-    }
-
-    /**
-     * Restores [FragmentSearch] fragment.
-     */
-    private fun restoreSearchFragment() {
-        val containerIdSearch: Int = if (typeOrientation && typeLayout) R.id.fragment_container_view_left
-        else R.id.fragment_container_view
-        if (fragmentSearch != null) {
-            launchTransaction(containerIdSearch,
-                              fragmentSearch as FragmentSearch,
-                              AppInfo.TAG_FRAGMENT_SEARCH)
-        }
-    }
-
-    /**
-     * Displays [FragmentEstateDetails].
-     */
-    fun displayFragmentDetails() = launchTransaction(containerId,
-                           FragmentEstateDetails.newInstance(), AppInfo.TAG_FRAGMENT_ESTATE_DETAILS)
-
-    /**
-     * Displays [FragmentSettings].
-     */
-    fun displayFragmentSettings() =
-       launchTransaction(containerId, FragmentSettings.newInstance(), AppInfo.TAG_FRAGMENT_SETTINGS)
-
-
-    /**
-     * Displays [FragmentMap].
-     */
-    fun displayFragmentMap() =
-                 launchTransaction(containerId, FragmentMap.newInstance(), AppInfo.TAG_FRAGMENT_MAP)
-
-    /**
-     * Displays [FragmentNewEstate].
-     * @param updateEstate : defines type of operation will be performed using [FragmentNewEstate] UI
-     * (Update of an existing estate, or creation of a new estate)
-     */
-    fun displayFragmentNewEstate(updateEstate: Boolean) {
-        val fragment: FragmentNewEstate = FragmentNewEstate.newInstance()
-        fragment.updateEstate = updateEstate
-        launchTransaction(containerId, fragment, AppInfo.TAG_FRAGMENT_NEW_ESTATE)
-    }
-
-    /**
-     * Displays [FragmentSearch].
-     */
-    fun displayFragmentSearch() {
-        val containerIdSearch: Int = if (typeOrientation && typeLayout) R.id.fragment_container_view_left
-        else R.id.fragment_container_view
-        val fragment: FragmentSearch = FragmentSearch.newInstance()
-        launchTransaction(containerIdSearch, fragment, AppInfo.TAG_FRAGMENT_SEARCH)
-    }
-
-    /**
-     * Initializes [FragmentListEstate] display with the corresponding container.
-     */
-    private fun initializeFragmentListEstate() {
-        // Define container
-        val container: Int = if (typeOrientation && typeLayout) R.id.fragment_container_view_left
-        else R.id.fragment_container_view
-        // Check if existing instance
-        if (isFragmentDisplayed(AppInfo.TAG_FRAGMENT_LIST_ESTATE)) {
-            val oldFragmentListEstate: FragmentListEstate =
-                supportFragmentManager.findFragmentByTag(AppInfo.TAG_FRAGMENT_LIST_ESTATE) as FragmentListEstate
-            supportFragmentManager.beginTransaction().remove(oldFragmentListEstate).commitNow()
-            supportFragmentManager.popBackStack() }
-        // Display new instance
-        launchTransaction(container, FragmentListEstate.newInstance(), AppInfo.TAG_FRAGMENT_LIST_ESTATE)
+                      else R.id.fragment_container_view
+        containerIdLists = if (typeOrientation && typeLayout) R.id.fragment_container_view_left
+                       else R.id.fragment_container_view
     }
 
     /**
@@ -317,19 +178,9 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
     private fun launchTransaction(@IdRes containerId: Int, fragment: Fragment, tag: String) {
         supportFragmentManager.beginTransaction()
             .replace(containerId, fragment, tag)
+            .addToBackStack(null)
             .commit()
-    }
-
-    fun test(tagFragment: String) {
-        // launchTransaction(containerId,
-        //                           FragmentEstateDetails.newInstance(), AppInfo.TAG_FRAGMENT_ESTATE_DETAILS)
-        val fragmentBackStack = supportFragmentManager.findFragmentByTag(tagFragment).toString()
-        // handleBackgroundGridVisibility(View.INVISIBLE)
-        // listEstatesViewModel.setSelectedEstate(position)
-        supportFragmentManager.beginTransaction()
-            .add(containerId, FragmentEstateDetails.newInstance(), AppInfo.TAG_FRAGMENT_ESTATE_DETAILS) // replace
-            .addToBackStack(fragmentBackStack)
-            .commit()
+        listFragmentsViewModel.addFragmentTagToList(tag)
     }
 
     /**
@@ -365,12 +216,12 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
     override fun updateConnectivityBarNetworkDisplay(status: Boolean) {
         if (status) networkBarDisplayStatus = true
         if (networkBarDisplayStatus) {
-            if (status) { // Hide bar - - Wifi/Data network active
+            if (status) { // Hide bar -- Wifi/Data network active
                 val fadeOutAnim: ViewPropertyAnimator = binding.barConnectivityInfo.animate()
                     .alpha(0.0f).setDuration(200)
                 fadeOutAnim.withEndAction { binding.barConnectivityInfo.visibility = View.GONE}
             }
-            else { // Display bar No network active
+            else { // Display bar -- No network active
                 binding.barConnectivityInfo.visibility = View.VISIBLE
                 ViewCompat.setElevation(binding.barConnectivityInfo, 10F)
                 val fadeInAnim: ViewPropertyAnimator = binding.barConnectivityInfo.animate()
@@ -390,17 +241,6 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
         }
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.apply {
-            putBoolean(AppInfo.DIALOG_ADD_AGENT_KEY, builderAddAgentDialog.isShowing)
-            putBoolean(AppInfo.DIALOG_LOGOUT_KEY, builderLogoutDialog.isShowing)
-            putString(AppInfo.FIRST_NAME_AGENT_KEY, firstNameAgent)
-            putString(AppInfo.LAST_NAME_AGENT_KEY, lastNameAgent)
-            putBoolean(AppInfo.NETWORK_BAR_STATUS_KEY, networkBarDisplayStatus)
-        }
-    }
-
     /**
      * Handles visibility of background MaterialText and ImageView for "large-land"
      * activity_main.xml only
@@ -410,83 +250,6 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
         binding.apply {
             imgBackground?.visibility = visibility
             txtBackground?.visibility = visibility }
-    }
-
-    /**
-     * Cleans back stack before initializing fragment containers.
-     * @return : true if an existing fragment has been popped off the back stack, else false.
-     */
-    private fun cleanBackStack(): Boolean {
-        val containerIdList: Int = if (typeOrientation && typeLayout) R.id.fragment_container_view_left
-        else R.id.fragment_container_view
-        supportFragmentManager.apply {
-            fragmentNewEstate = findFragmentByTag(AppInfo.TAG_FRAGMENT_NEW_ESTATE)
-            fragmentEstateDetails = findFragmentByTag(AppInfo.TAG_FRAGMENT_ESTATE_DETAILS)
-            fragmentSettings = findFragmentByTag(AppInfo.TAG_FRAGMENT_SETTINGS)
-            fragmentMap = findFragmentByTag(AppInfo.TAG_FRAGMENT_MAP)
-            fragmentSearch = findFragmentByTag(AppInfo.TAG_FRAGMENT_SEARCH)
-        }
-        if (fragmentNewEstate != null || fragmentEstateDetails != null
-            || fragmentSettings != null || fragmentMap != null || fragmentSearch != null) {
-            // Display FragmentListEstate if needed
-            if (!(typeOrientation && typeLayout) || fragmentSearch != null)
-                launchTransaction(containerIdList,
-                    FragmentListEstate.newInstance(), AppInfo.TAG_FRAGMENT_LIST_ESTATE)
-            // Reset item selection on list
-            val fragmentListEstate = supportFragmentManager.findFragmentByTag(AppInfo.TAG_FRAGMENT_LIST_ESTATE)
-            if (fragmentListEstate != null)
-                (fragmentListEstate as FragmentListEstate).clearCurrentSelection()
-            removeExistingFragments()
-            return true
-        }
-        return false
-    }
-
-    override fun onBackPressed() {
-        val status: Boolean
-        // Check if FragmentNewEstate is currently displayed
-        if (isFragmentDisplayed(AppInfo.TAG_FRAGMENT_NEW_ESTATE)) {
-            val fragment = supportFragmentManager.findFragmentByTag(AppInfo.TAG_FRAGMENT_NEW_ESTATE)
-                    as FragmentNewEstate
-            status = fragment.confirmExit
-            // If true, user has confirmed cancellation or creation/update
-            if (status) {
-                fragment.clearListPOIViewModel()
-                cleanBackStack()
-                restoreViewsInFragmentListEstate()
-            }
-            // If false, a "confirm cancellation" dialog must be displayed
-            else fragment.builderCancelEstateDialog.show()
-        }
-        else {
-            // If no fragment has been removed from stack, close app
-            if (!cleanBackStack()) finishAffinity()
-            // If a fragment has been removed, restore FragmentListEstate views
-            else restoreViewsInFragmentListEstate()
-        }
-    }
-
-    /**
-     * Restores all views in [FragmentListEstate] when another fragment has been removed from stack.
-     */
-    private fun restoreViewsInFragmentListEstate() {
-        val fragment = supportFragmentManager.findFragmentByTag(AppInfo.TAG_FRAGMENT_LIST_ESTATE)
-        if (fragment != null) {
-            (fragment as FragmentListEstate).handleFabVisibility(View.VISIBLE)
-            handleBackgroundGridVisibility(View.VISIBLE)
-            setToolbarProperties(R.string.str_toolbar_fragment_list_estate_title, false)
-        }
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        // From camera : Get Uri from saved value in SharedPreferences
-        if (resultCode == RESULT_OK && requestCode
-            == AppInfo.REQUEST_IMAGE_CAPTURE) handleCameraResult()
-        // From Gallery : get Uri from data Intent
-        if (resultCode == RESULT_OK && data != null) handleGalleryResult(data)
-        // Autocomplete request result
-        if (requestCode == 200) handleAutocompleteResult(resultCode, data)
     }
 
     /**
@@ -526,17 +289,10 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
                     val place = Autocomplete.getPlaceFromIntent(data)
                     val fragment = supportFragmentManager.findFragmentByTag(AppInfo.TAG_FRAGMENT_NEW_ESTATE)
                             as FragmentNewEstate
-                    listEstatesViewModel.updateLocationSelectedEstate(place, this)
+                    estatesViewModel.updateLocationSelectedEstate(place, this)
                     fragment.updateLocationDisplayed()} }
         }
     }
-
-    /**
-     * Check if main activity child fragment associated with specified [tag] is displayed.
-     * @param tag : Tag fragment
-     */
-    private fun isFragmentDisplayed(tag: String): Boolean =
-        supportFragmentManager.findFragmentByTag(tag) != null
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>,
                                             grantResults: IntArray) {
@@ -548,11 +304,11 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
             && grantResults[1] == PackageManager.PERMISSION_GRANTED
             && permissions[2] == android.Manifest.permission.CAMERA
             && grantResults[2] == PackageManager.PERMISSION_GRANTED)
-                handleMediaPermissionsRequestResult()
+            handleMediaPermissionsRequestResult()
         if (permissions[0] == android.Manifest.permission.ACCESS_FINE_LOCATION
             && grantResults[0] == PackageManager.PERMISSION_GRANTED
             && isFragmentDisplayed(AppInfo.TAG_FRAGMENT_MAP))
-                handleLocationPermissionRequestResult()
+            handleLocationPermissionRequestResult()
     }
 
     /**
@@ -582,10 +338,6 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
         // Reset number of permission requests
         nbRequestSaved.edit { putInt(AppInfo.PREF_PERMISSION_LOCATION, 0).apply() }
     }
-
-    /**
-     * Accesses RealEstateManager application database to restore existing data.
-     */
 
     /**
      * Displays an [AlertDialog] for new agent creation.
@@ -620,9 +372,9 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
     private fun initializeDialogAddAgent() {
         val viewAddNewAgent: View? = getViewFromLayoutInflater(R.layout.dialog_agent_creation)
         val firstNameAgentInputEdit = viewAddNewAgent
-                                  ?.findViewById<TextInputEditText>(R.id.first_name_text_input_edit)
+            ?.findViewById<TextInputEditText>(R.id.first_name_text_input_edit)
         val lastNameAgentInputEdit = viewAddNewAgent
-                                   ?.findViewById<TextInputEditText>(R.id.last_name_text_input_edit)
+            ?.findViewById<TextInputEditText>(R.id.last_name_text_input_edit)
         handleTextWatchersNameAgent(firstNameAgentInputEdit, lastNameAgentInputEdit)
         builderAddAgentDialog = AlertDialog.Builder(this)
             .setTitle(resources.getString(R.string.str_dialog_add_agent_title))
@@ -671,7 +423,7 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
      */
     private fun getViewFromLayoutInflater(@LayoutRes layout: Int): View? {
         val inflater: LayoutInflater? = getSystemService(Context.LAYOUT_INFLATER_SERVICE)
-                                        as? LayoutInflater
+                as? LayoutInflater
         return inflater?.inflate(layout, null)
     }
 
@@ -736,7 +488,7 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
      * @param position : position in list
      */
     fun handleClickOnEstateView(position: Int) {
-        if (typeOrientation) {
+        /*if (typeOrientation) {
             val fragmentListEstate = supportFragmentManager
                 .findFragmentByTag(AppInfo.TAG_FRAGMENT_LIST_ESTATE) as FragmentListEstate
             fragmentListEstate.let {
@@ -746,6 +498,217 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
         else {
             listEstatesViewModel.setSelectedEstate(position)
             displayFragmentDetails()
+        }*/
+    }
+
+    /**
+     * Check if main activity child fragment associated with specified [tag] is displayed.
+     * @param tag : Tag fragment
+     */
+    private fun isFragmentDisplayed(tag: String): Boolean =
+        supportFragmentManager.findFragmentByTag(tag) != null
+
+    /**
+     * Clear back stack after a configuration change.
+     */
+    private fun deleteOldFragments() {
+        // Handle FragmentListEstates
+        val fragment: Fragment?
+        if (containerIdLists == R.id.fragment_container_view_left) { // layout activity_main (large)
+            fragment = supportFragmentManager.findFragmentByTag(AppInfo.TAG_FRAGMENT_LIST_ESTATE)
+            if (fragment != null)
+                supportFragmentManager.beginTransaction().remove(fragment).commitNow()
         }
+        else { // layout activity_main
+            fragment = supportFragmentManager.findFragmentByTag(AppInfo.TAG_FRAGMENT_LIST_ESTATE_LARGE)
+            if (fragment != null)
+                supportFragmentManager.beginTransaction().remove(fragment).commitNow()
+        }
+        // Handle others fragments
+        for (i in 0 until supportFragmentManager.backStackEntryCount)
+            supportFragmentManager.popBackStackImmediate()
+    }
+
+    /**
+     * Recreates fragments after a configuration change.
+     */
+    private fun restoreFragmentsFromBackStack() {
+        val list = mutableListOf<String>()
+        list.addAll(listFragmentsViewModel.listTags)
+        listFragmentsViewModel.listTags.clear()
+        for (i in 0 until list.size) {
+            when(list[i]) {
+                AppInfo.TAG_FRAGMENT_ESTATE_DETAILS -> {
+                    launchTransaction(containerId, FragmentEstateDetails.newInstance(),
+                                                                AppInfo.TAG_FRAGMENT_ESTATE_DETAILS) }
+                AppInfo.TAG_FRAGMENT_NEW_ESTATE -> {
+                    launchTransaction(containerId, FragmentNewEstate.newInstance(),
+                                                                  AppInfo.TAG_FRAGMENT_NEW_ESTATE) }
+                AppInfo.TAG_FRAGMENT_SETTINGS -> {
+                    launchTransaction(containerId, FragmentSettings.newInstance(),
+                                                                    AppInfo.TAG_FRAGMENT_SETTINGS) }
+                AppInfo.TAG_FRAGMENT_SEARCH -> {
+                    launchTransaction(containerIdLists, FragmentSearch.newInstance(),
+                                                                    AppInfo.TAG_FRAGMENT_SEARCH) }
+                AppInfo.TAG_FRAGMENT_MAP -> {
+                    launchTransaction(containerId, FragmentMap.newInstance(),
+                                                                    AppInfo.TAG_FRAGMENT_MAP) }
+            }
+        }
+    }
+
+    /**
+     * Remove fragment on top of back stack after a "back button pressed" event.
+     * @return : returns true if a fragment has been removed
+     */
+    private fun removeFragmentFromBackStack(): Boolean {
+        var removed = false
+        if (listFragmentsViewModel.listTags.isNotEmpty()) {
+            when (listFragmentsViewModel.listTags.last()){
+                AppInfo.TAG_FRAGMENT_ESTATE_DETAILS -> {
+                    removeFragment(AppInfo.TAG_FRAGMENT_ESTATE_DETAILS)
+                    removed = true
+                }
+                AppInfo.TAG_FRAGMENT_NEW_ESTATE -> {
+                    val fragment = supportFragmentManager.findFragmentByTag(AppInfo.TAG_FRAGMENT_NEW_ESTATE)
+                    if (!(fragment as FragmentNewEstate).confirmExit)
+                        fragment.builderCancelEstateDialog?.show()
+                    else removeFragment(AppInfo.TAG_FRAGMENT_NEW_ESTATE)
+                    removed = true
+                }
+                AppInfo.TAG_FRAGMENT_SETTINGS -> {
+                    removeFragment(AppInfo.TAG_FRAGMENT_SETTINGS)
+                    removed = true
+                }
+                AppInfo.TAG_FRAGMENT_SEARCH -> {
+                    removeFragment(AppInfo.TAG_FRAGMENT_SEARCH)
+                    removed = true
+                }
+                AppInfo.TAG_FRAGMENT_MAP -> {
+                    removeFragment(AppInfo.TAG_FRAGMENT_MAP)
+                    removed = true
+                }
+            }
+        }
+        return removed
+    }
+
+    /**
+     * Displays [FragmentEstateDetails].
+     */
+    fun displayFragmentDetails() = launchTransaction(containerId, FragmentEstateDetails.newInstance(),
+                                                                AppInfo.TAG_FRAGMENT_ESTATE_DETAILS)
+
+    /**
+     * Displays [FragmentSettings].
+     */
+    fun displayFragmentSettings() = launchTransaction(containerId, FragmentSettings.newInstance(),
+                                                                      AppInfo.TAG_FRAGMENT_SETTINGS)
+
+
+    /**
+     * Displays [FragmentSearch].
+     */
+    fun displayFragmentSearch() = launchTransaction(containerIdLists, FragmentSearch.newInstance(),
+                                                                        AppInfo.TAG_FRAGMENT_SEARCH)
+
+
+    /**
+     * Displays [FragmentMap].
+     */
+    fun displayFragmentMap() = launchTransaction(containerId, FragmentMap.newInstance(),
+                                                                           AppInfo.TAG_FRAGMENT_MAP)
+
+    /**
+     * Displays [FragmentNewEstate].
+     */
+    fun displayFragmentNewEstate() {
+        val fragment: FragmentNewEstate = FragmentNewEstate.newInstance()
+        launchTransaction(containerId, fragment, AppInfo.TAG_FRAGMENT_NEW_ESTATE)
+    }
+
+    /**
+     * Removes a fragment.
+     * @param tag :tag associated to the fragment to remove.
+     */
+    fun removeFragment(tag: String) {
+        // Remove fragment
+        val fragment = supportFragmentManager.findFragmentByTag(tag)
+        fragment?.let {
+            supportFragmentManager.beginTransaction().remove(it).commit()
+            supportFragmentManager.popBackStackImmediate() }
+        // Handle views update for landscape orientation (large screen)
+        updateActivityViewsIfBackStackIsEmpty()
+        // Update viewModel
+        listFragmentsViewModel.removeTagToList(tag)
+        // Update views
+        if (tag == AppInfo.TAG_FRAGMENT_ESTATE_DETAILS) clearSelectionInFragmentListEstate()
+    }
+
+    /**
+     * Updates parent activity views according to the back stack status.
+     */
+    private fun updateActivityViewsIfBackStackIsEmpty() {
+        if (supportFragmentManager.backStackEntryCount == 0) {
+            if (typeOrientation && typeLayout) handleBackgroundGridVisibility(View.VISIBLE)
+            setToolbarProperties(R.string.str_toolbar_fragment_list_estate_title, false)
+            getFragmentList()?.let {
+                (it as FragmentListEstate).handleFabVisibility(View.VISIBLE)
+            }
+        }
+    }
+
+    /**
+     * Clear status of the selected item in list.
+     */
+    private fun clearSelectionInFragmentListEstate() {
+        val fragmentListEstate: Fragment? = getFragmentList()
+        if (fragmentListEstate != null) {
+            (fragmentListEstate as FragmentListEstate).apply {
+                clearCurrentSelection()
+            }
+        }
+    }
+    /**
+     * Gets which [FragmentListEstate] is displayed according to the type of screen and orientation.
+     * @return : fragment displayed
+     */
+    private fun getFragmentList(): Fragment? =
+        if (typeOrientation && typeLayout)
+            supportFragmentManager.findFragmentByTag(AppInfo.TAG_FRAGMENT_LIST_ESTATE_LARGE)
+        else
+            supportFragmentManager.findFragmentByTag(AppInfo.TAG_FRAGMENT_LIST_ESTATE)
+
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        // From camera : Get Uri from saved value in SharedPreferences
+        if (resultCode == RESULT_OK && requestCode
+            == AppInfo.REQUEST_IMAGE_CAPTURE) handleCameraResult()
+        // From Gallery : get Uri from data Intent
+        if (resultCode == RESULT_OK && data != null) handleGalleryResult(data)
+        // Autocomplete request result
+        if (requestCode == 200) handleAutocompleteResult(resultCode, data)
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.apply {
+            putBoolean(AppInfo.DIALOG_ADD_AGENT_KEY, builderAddAgentDialog.isShowing)
+            putBoolean(AppInfo.DIALOG_LOGOUT_KEY, builderLogoutDialog.isShowing)
+            putString(AppInfo.FIRST_NAME_AGENT_KEY, firstNameAgent)
+            putString(AppInfo.LAST_NAME_AGENT_KEY, lastNameAgent)
+            putBoolean(AppInfo.NETWORK_BAR_STATUS_KEY, networkBarDisplayStatus)
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        if (builderAddAgentDialog.isShowing) builderAddAgentDialog.dismiss()
+        if (builderLogoutDialog.isShowing) builderLogoutDialog.dismiss()
+    }
+
+    override fun onBackPressed() {
+        if (!removeFragmentFromBackStack()) finishAffinity()
     }
 }

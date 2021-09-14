@@ -54,18 +54,13 @@ class FragmentMap : Fragment(), OnMapReadyCallback {
     private lateinit var gpsBroadcastReceiver: GPSBroadcastReceiver
 
     /** Contains reference to a google map */
-    private lateinit var map: GoogleMap
+    private var map: GoogleMap? = null
 
     /** Contains current user position */
     private var currentPosition: LatLng? = null
 
     /** Location listener for user location updates */
-    private var locationListener = LocationListener {
-        map.let { itMap ->
-            itMap.clear()
-            displayEstatesMarkersOnMap()
-        }
-    }
+    private lateinit var locationListener: LocationListener
 
     /** Shared preferences for saving user location */
     private var sharedPrefLocation: SharedPreferences? = null
@@ -74,14 +69,12 @@ class FragmentMap : Fragment(), OnMapReadyCallback {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
-        listEstatesViewModel = ViewModelProvider(requireActivity())
-                                                .get(ListEstatesViewModel::class.java)
+        listEstatesViewModel = ViewModelProvider(requireActivity())[ListEstatesViewModel::class.java]
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
+        savedInstanceState: Bundle?): View {
         binding = FragmentMapBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -95,6 +88,12 @@ class FragmentMap : Fragment(), OnMapReadyCallback {
         initializeMap()
         initializeGPSBroadcast()
         handleFloatingButtonClickEvents()
+        locationListener = LocationListener {
+            map?.let { itMap ->
+                itMap.clear()
+                displayEstatesMarkersOnMap()
+            }
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -156,7 +155,7 @@ class FragmentMap : Fragment(), OnMapReadyCallback {
                     if (GPSAccessHandler.checkDistanceEstateFromGPSLocation(
                             LatLng(itPosition.latitude, itPosition.longitude),
                             itPosition)) {
-                        map.addMarker(MarkerOptions()
+                        map?.addMarker(MarkerOptions()
                             .position(LatLng(itEstate.location.latitude, itEstate.location.longitude))
                             .title(itEstate.type))
                     }
@@ -179,7 +178,7 @@ class FragmentMap : Fragment(), OnMapReadyCallback {
                     currentPosition?.let { itLatLng ->
                         val cameraUpdate = CameraUpdateFactory.newLatLngZoom(itLatLng,
                                                                         AppInfo.DEFAULT_CAMERA_ZOOM)
-                        map.moveCamera(cameraUpdate)
+                        map?.moveCamera(cameraUpdate)
                         displayEstatesMarkersOnMap()
                     }
                 }
@@ -207,7 +206,7 @@ class FragmentMap : Fragment(), OnMapReadyCallback {
      */
     @RequiresPermission(android.Manifest.permission.ACCESS_FINE_LOCATION)
     fun initializeMapOptions() {
-        map.apply {
+        map?.apply {
             isMyLocationEnabled = true
             uiSettings.apply {
                 isMyLocationButtonEnabled = false
@@ -260,7 +259,7 @@ class FragmentMap : Fragment(), OnMapReadyCallback {
     private fun centerCursorInCurrentUserLocation() {
         currentPosition?.let {
             val cameraUpdate = CameraUpdateFactory.newLatLngZoom(it, 18.0f)
-            map.animateCamera(cameraUpdate)
+            map?.animateCamera(cameraUpdate)
         }
     }
 
@@ -307,7 +306,7 @@ class FragmentMap : Fragment(), OnMapReadyCallback {
     @SuppressLint("PotentialBehaviorOverride")
     private fun handleClicksOnMarkers(list: List<Estate>) {
         map.let { itMap ->
-            itMap.setOnInfoWindowClickListener { itMarker ->
+            itMap?.setOnInfoWindowClickListener { itMarker ->
                 var index = 0
                 var found = false
                 var position = 0
@@ -368,7 +367,7 @@ class FragmentMap : Fragment(), OnMapReadyCallback {
                 currentPosition = LatLng(latitude, longitude)
                 val cameraUpdate = CameraUpdateFactory.newLatLngZoom(LatLng(latitude, longitude),
                                                                         AppInfo.DEFAULT_CAMERA_ZOOM)
-                map.moveCamera(cameraUpdate)
+                map?.moveCamera(cameraUpdate)
             }
         }
     }

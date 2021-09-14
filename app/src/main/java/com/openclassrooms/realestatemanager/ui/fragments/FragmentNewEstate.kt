@@ -7,10 +7,12 @@ import android.net.Uri
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.*
 import android.widget.ArrayAdapter
 import android.widget.FrameLayout
 import android.widget.Toast
+import androidx.annotation.ColorRes
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -30,6 +32,8 @@ import com.openclassrooms.realestatemanager.utils.CustomTextWatcher
 import com.openclassrooms.realestatemanager.utils.MediaAccessHandler
 import com.openclassrooms.realestatemanager.utils.StringHandler
 import com.openclassrooms.realestatemanager.utils.poi.POIProvider
+import com.openclassrooms.realestatemanager.viewmodels.DialogsViewModel
+import com.openclassrooms.realestatemanager.viewmodels.EstateViewModel
 import com.openclassrooms.realestatemanager.viewmodels.ListEstatesViewModel
 
 /**
@@ -41,35 +45,38 @@ class FragmentNewEstate : Fragment() {
     /** View Binding parameter */
     private lateinit var binding: FragmentNewEstateBinding
 
-    /** Contains ViewModel reference */
+    /** Contains a reference to a [ListEstatesViewModel]  */
     private lateinit var listEstatesViewModel: ListEstatesViewModel
 
+    /** Contains a reference to a [DialogsViewModel] */
+    private lateinit var dialogsViewModel: DialogsViewModel
+
+    /** Contains a reference to a [EstateViewModel] */
+    private lateinit var estateViewModel: EstateViewModel
+
     /** Defines new estate creation (false) or to modification of an existing one (true). */
-    var updateEstate: Boolean = false
+     var updateEstate: Boolean = false
 
     /** Defines [AlertDialog] for "Add point of interest" functionality */
-    private lateinit var builderAddPOIDialog: AlertDialog
+    private var builderAddPOIDialog: AlertDialog? = null
 
     /** Defines [AlertDialog] for list of agents access */
-    private lateinit var builderListAgentsDialog: AlertDialog
+    private var builderListAgentsDialog: AlertDialog? = null
 
     /** Defines an [AlertDialog] allowing user to reset [Estate] information. */
-    private lateinit var builderResetEstateDialog: AlertDialog
+    private var builderResetEstateDialog: AlertDialog? = null
 
     /** Defines an [AlertDialog] allowing user to add a new photo. */
-    private lateinit var builderAddMediaDialog: AlertDialog
+    private var builderAddMediaDialog: AlertDialog? = null
 
     /** Defines an [AlertDialog] allowing user to cancel creation or modification of an [Estate]. */
-    lateinit var builderCancelEstateDialog: AlertDialog
+    var builderCancelEstateDialog: AlertDialog? = null
 
     /** Defines an [AlertDialog] allowing user to confirm photo addition. */
-    private lateinit var builderNameMediaDialog: AlertDialog
+    private var builderNameMediaDialog: AlertDialog? = null
 
     /** Contains text value of an [AlertDialog] */
     private var textNameMediaDialog: String = ""
-
-    /** Contains the number of added photos during estate creation/update */
-    private var numberPhotosAdded = 0
 
     /** Defines if fragment must be removed or if a confirmation dialog must be showed after an
      * onBackPressed event */
@@ -80,13 +87,10 @@ class FragmentNewEstate : Fragment() {
         override fun afterTextChanged(sequence: Editable?) {
             if (sequence != null) {
                 textNameMediaDialog = sequence.toString()
-                builderNameMediaDialog.getButton(AlertDialog.BUTTON_POSITIVE)
-                    .isEnabled = sequence.isNotEmpty() }
+                builderNameMediaDialog?.getButton(AlertDialog.BUTTON_POSITIVE)?.isEnabled =
+                                                                             sequence.isNotEmpty() }
         }
     }
-
-    /** Contains temporary value of a selected agent */
-    private var agentSelected = 1
 
     /** Contains status error sliders */
     private var errorSliders = false
@@ -98,6 +102,8 @@ class FragmentNewEstate : Fragment() {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
         listEstatesViewModel = ViewModelProvider(requireActivity())[ListEstatesViewModel::class.java]
+        dialogsViewModel = ViewModelProvider(requireActivity())[DialogsViewModel::class.java]
+        estateViewModel = ViewModelProvider(requireActivity())[EstateViewModel::class.java]
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -108,23 +114,14 @@ class FragmentNewEstate : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        updateEstate = estateViewModel.typeOperation
         updatePriceUnitDisplayed()
-        initializeListPOI(savedInstanceState)
+        initializeListPOI()
         updateTagsDisplay()
         updatePOIButtonTextDisplay()
         initializeDialogs()
-        if (savedInstanceState != null) {
-            confirmExit = savedInstanceState.getBoolean(AppInfo.CONFIRM_EXIT_KEY, false)
-            numberPhotosAdded = savedInstanceState.getInt(AppInfo.NUMBER_PHOTO_KEY, 0)
-            textNameMediaDialog = savedInstanceState.getString(AppInfo.TEXT_DIALOG_CONFIRM_MEDIA_KEY, "")
-            restoreDialogs(savedInstanceState)
-            updateEstate = savedInstanceState.getBoolean(AppInfo.UPDATE_ESTATE_KEY, false)
-            agentSelected = savedInstanceState.getInt(AppInfo.ESTATE_AGENT_KEY, 1)
-            errorSliders = savedInstanceState.getBoolean(AppInfo.ERROR_SLIDERS_KEY)
-        }
         updateToolbarTitle()
         updateMaterialButtonText()
-        if (updateEstate) updateFragmentViewsWithEstateProperties()
         updateHorizontalScrollViewWithPhotos()
         handleAddPhotoButton()
         initializeSlidersValues()
@@ -135,6 +132,8 @@ class FragmentNewEstate : Fragment() {
         handleNameAgentEditListener()
         editLocation()
         handleAddPOIButton()
+        checkDialogStatusInViewModel()
+        updateFragmentViewsWithEstateProperties()
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -145,44 +144,14 @@ class FragmentNewEstate : Fragment() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId) {
-            android.R.id.home -> { builderCancelEstateDialog.show() }
-            R.id.reset -> { builderResetEstateDialog.show() }
+            android.R.id.home -> {
+                dialogsViewModel.cancelEstateDialogStatus = true
+                builderCancelEstateDialog?.show() }
+            R.id.reset -> {
+                dialogsViewModel.resetEstateDialogStatus = true
+                builderResetEstateDialog?.show() }
         }
         return super.onOptionsItemSelected(item)
-    }
-
-    /**
-     * Restores displayed dialog after a configuration change.
-     * @param savedInstanceState : Bundle
-     */
-    private fun restoreDialogs(savedInstanceState: Bundle?) {
-        when {
-            savedInstanceState?.getBoolean(AppInfo.DIALOG_CANCEL_KEY) == true -> {
-                builderCancelEstateDialog.show() }
-            savedInstanceState?.getBoolean(AppInfo.DIALOG_RESET_KEY) == true -> {
-                builderResetEstateDialog.show() }
-            savedInstanceState?.getBoolean(AppInfo.DIALOG_ADD_MEDIA_KEY) == true -> {
-                builderAddMediaDialog.show() }
-            savedInstanceState?.getBoolean(AppInfo.DIALOG_CONFIRM_MEDIA_KEY) == true -> {
-                builderNameMediaDialog.show()
-                restoreBuildNameMediaDialogProperties() }
-            savedInstanceState?.getBoolean(AppInfo.DIALOG_LIST_AGENTS_KEY) == true -> {
-                builderListAgentsDialog.show() }
-            savedInstanceState?.getBoolean(AppInfo.DIALOG_ADD_POI_KEY) == true -> {
-                builderAddPOIDialog.show()
-            }
-        }
-    }
-
-    /**
-     * Handles edit text and button status restoration after configuration change.
-     */
-    private fun restoreBuildNameMediaDialogProperties() {
-        builderNameMediaDialog.apply {
-            val editText = this.findViewById<TextInputEditText>(R.id.new_media_text_input_edit)
-            editText.text = Editable.Factory.getInstance().newEditable(textNameMediaDialog)
-            getButton(AlertDialog.BUTTON_POSITIVE)
-                .isEnabled = textNameMediaDialog.isNotEmpty() }
     }
 
     /**
@@ -237,7 +206,7 @@ class FragmentNewEstate : Fragment() {
      */
     private fun initializeDialogAddPOI() {
         val itemsBoolean = BooleanArray(8)
-        listEstatesViewModel.listPOI.forEach {
+        estateViewModel.listPOI.forEach {
             val index = POIProvider.provideIndexFromPointOfInterest(it)
             itemsBoolean[index] = true
         }
@@ -245,13 +214,11 @@ class FragmentNewEstate : Fragment() {
             .setTitle(resources.getString(R.string.str_dialog_ad_poi_title))
             .setMultiChoiceItems(R.array.poi, itemsBoolean) { _, which, isChecked ->
                 val pointOfInterest = POIProvider.providePointOfInterest(which)
-                if (isChecked) {
-                    listEstatesViewModel.listPOI.add(pointOfInterest)
-                }
-                else {
-                    if (listEstatesViewModel.listPOI.contains(pointOfInterest))
-                        listEstatesViewModel.listPOI.remove(pointOfInterest)
-                }
+                if (isChecked)
+                    estateViewModel.listPOI.add(pointOfInterest)
+                else
+                    if (estateViewModel.listPOI.contains(pointOfInterest))
+                        estateViewModel.listPOI.remove(pointOfInterest)
                 updateTagsDisplay()
                 updatePOIButtonTextDisplay()
             }
@@ -263,15 +230,16 @@ class FragmentNewEstate : Fragment() {
      * Initializes an [AlertDialog.Builder] for [builderCancelEstateDialog] property.
      */
     private fun initializeDialogCancelEstate() {
-        val title = if (updateEstate) resources.getString(R.string.str_dialog_cancel_modification_title)
+          val title = if (updateEstate) resources.getString(R.string.str_dialog_cancel_modification_title)
         else resources.getString(R.string.str_dialog_cancel_creation_title)
         val message = if (updateEstate) resources.getString(R.string.str_dialog_cancel_modifications_message)
         else resources.getString(R.string.str_dialog_cancel_creation_message)
         builderCancelEstateDialog = AlertDialog.Builder(activity)
             .setTitle(title).setMessage(message)
             .setPositiveButton(resources.getString(R.string.str_dialog_button_yes)) {_, _ ->
-                builderCancelEstateDialog.dismiss()
-                listEstatesViewModel.removePhotosIfEstateCreationCancelled(numberPhotosAdded)
+                builderCancelEstateDialog?.dismiss()
+                estateViewModel.removePhotosIfEstateCreationCancelled()
+                estateViewModel.resetEstate()
                 confirmExit = true
                 (activity as MainActivity).onBackPressed() }
             .setNegativeButton(resources.getString(R.string.str_dialog_button_no)) {_, _ -> }.create()
@@ -298,6 +266,7 @@ class FragmentNewEstate : Fragment() {
         val textInputEditText: TextInputEditText? =
             viewNameMediaDialog?.findViewById(R.id.new_media_text_input_edit)
         textInputEditText?.addTextChangedListener(textWatcher)
+        textInputEditText?.text = StringHandler.convertStringToEditable(dialogsViewModel.textNameMediaDialog)
         builderNameMediaDialog = AlertDialog.Builder(activity)
             .setTitle(resources.getString(R.string.str_dialog_name_media_title))
             .setView(viewNameMediaDialog)
@@ -313,12 +282,13 @@ class FragmentNewEstate : Fragment() {
      */
     private fun initializeSlidersValues() {
         binding.apply {
-            val interior = listEstatesViewModel.selectedEstate?.interior
-            if (interior != null) {
-                sliderSurface.value = interior.surface.toFloat()
-                sliderRooms.value = interior.numberRooms.toFloat()
-                sliderBathrooms.value = interior.numberBathrooms.toFloat()
-                sliderBedrooms.value = interior.numberBedrooms.toFloat() }
+            estateViewModel.let {
+                this.sliderSurface.value = it.estate.interior.surface.toFloat()
+                this.sliderRooms.value = it.estate.interior.numberRooms.toFloat()
+                this.sliderBathrooms.value = it.estate.interior.numberBathrooms.toFloat()
+                this.sliderBedrooms.value = it.estate.interior.numberBedrooms.toFloat()
+            }
+            checkSlidersValues()
         }
     }
 
@@ -338,23 +308,20 @@ class FragmentNewEstate : Fragment() {
                            R.string.str_greater_than_or_equal, null, false, context)
             sliderBedroomsValue.text = StringHandler.getSliderString(10,
                            sliderBedrooms.value.toInt(),
-                           R.string.str_greater_than_or_equal, null, false, context)
-        }
+                           R.string.str_greater_than_or_equal, null, false, context) }
     }
 
     /**
      * Adds a selected photo from gallery of from camera to the list and display it.
      */
     private fun addNewPhoto() {
-        listEstatesViewModel.selectedEstate?.run {
-            val newPhoto: Photo? = listEstatesViewModel.createNewPhoto(textNameMediaDialog)
-            listEstatesViewModel.clearTempPhotoUri()
-            if (newPhoto != null) {
-                listPhoto.add(newPhoto)
-                numberPhotosAdded++
-                addNewFrameLayoutToBinding(listPhoto.last())
-            }
+        val newPhoto: Photo?  = estateViewModel.createNewPhoto(textNameMediaDialog)
+        newPhoto?.let {
+            estateViewModel.estate.listPhoto.add(it)
+            estateViewModel.numberPhotosAdded++
+            addNewFrameLayoutToBinding(estateViewModel.estate.listPhoto.last())
         }
+
     }
 
     /**
@@ -377,13 +344,13 @@ class FragmentNewEstate : Fragment() {
             if (MediaAccessHandler.checkPermissions(activity as MainActivity))
                 MediaAccessHandler.openCamera(activity as MainActivity)
             else MediaAccessHandler.requestPermission(activity as MainActivity)
-                builderAddMediaDialog.dismiss() }
+                builderAddMediaDialog?.dismiss() }
         // Item "Import from gallery"
         view?.findViewById<ConstraintLayout>(R.id.import_from_gallery_button)?.setOnClickListener {
             if (MediaAccessHandler.checkPermissions(activity as MainActivity))
                 MediaAccessHandler.openPhotosGallery(activity as MainActivity)
             else MediaAccessHandler.requestPermission(activity as MainActivity)
-                builderAddMediaDialog.dismiss() }
+                builderAddMediaDialog?.dismiss() }
     }
 
     /**
@@ -391,25 +358,23 @@ class FragmentNewEstate : Fragment() {
      */
     private fun updateFragmentViewsWithEstateProperties() {
         with(binding) {
-            val currentEstate = listEstatesViewModel.selectedEstate ?: return
             // TextInputEditText
-            nameSectionEdit.text = StringHandler.convertStringToEditable(currentEstate.type)
-            locationSectionEdit.text = StringHandler.convertStringToEditable(currentEstate.location.address)
-            descSectionEdit.text = StringHandler.convertStringToEditable(currentEstate.description)
-            agentSectionEdit.text = StringHandler.convertStringToEditable("" +
-                                 "${currentEstate.agent.firstName} ${currentEstate.agent.lastName}")
+            nameSectionEdit.text = StringHandler.convertStringToEditable(estateViewModel.estate.type)
+            locationSectionEdit.text = StringHandler.convertStringToEditable(estateViewModel.estate.location.address)
+            descSectionEdit.text = StringHandler.convertStringToEditable(estateViewModel.estate.description)
+            val nameAgent = "${estateViewModel.estate.agent.firstName} ${estateViewModel.estate.agent.lastName}"
+            agentSectionEdit.text = StringHandler.convertStringToEditable(nameAgent)
             if (currency == "EUR") {
-                val priceConverted = Utils.convertDollarToEuro(currentEstate.price)
+                val priceConverted = Utils.convertDollarToEuro(estateViewModel.estate.price)
                 priceSectionEdit.text = StringHandler.convertStringToEditable(priceConverted.toString())
             }
-            else {
-                priceSectionEdit.text = StringHandler.convertStringToEditable(currentEstate.price.toString())
-            }
+            else priceSectionEdit.text =
+                               StringHandler.convertStringToEditable(estateViewModel.estate.price.toString())
             // Sliders
-            sliderSurface.value = currentEstate.interior.surface.toFloat()
-            sliderRooms.value = currentEstate.interior.numberRooms.toFloat()
-            sliderBathrooms.value = currentEstate.interior.numberBathrooms.toFloat()
-            sliderBedrooms.value = currentEstate.interior.numberBedrooms.toFloat()
+            sliderSurface.value = estateViewModel.estate.interior.surface.toFloat()
+            sliderRooms.value = estateViewModel.estate.interior.numberRooms.toFloat()
+            sliderBathrooms.value = estateViewModel.estate.interior.numberBathrooms.toFloat()
+            sliderBedrooms.value = estateViewModel.estate.interior.numberBedrooms.toFloat()
         }
     }
 
@@ -437,7 +402,6 @@ class FragmentNewEstate : Fragment() {
      * Clears all views in fragment.
      */
     private fun confirmReset() {
-        val currentEstate = listEstatesViewModel.selectedEstate ?: return
         with(binding) {
             nameSectionEdit.text?.clear()
             locationSectionEdit.text?.clear()
@@ -448,29 +412,9 @@ class FragmentNewEstate : Fragment() {
             sliderRooms.value = 5.0F
             sliderBathrooms.value = 1.0F
             sliderBedrooms.value = 1.0F
-            linearLayoutMedia.removeViews(0, currentEstate.listPhoto.size)
+            linearLayoutMedia.removeViews(0, estateViewModel.estate.listPhoto.size)
             tagContainerLayout.removeAllTags()
             updatePOIButtonTextDisplay()}
-        currentEstate.listPhoto.clear()
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.apply {
-            putBoolean(AppInfo.DIALOG_RESET_KEY, builderResetEstateDialog.isShowing)
-            putBoolean(AppInfo.DIALOG_CANCEL_KEY, builderCancelEstateDialog.isShowing)
-            putBoolean(AppInfo.DIALOG_ADD_MEDIA_KEY, builderAddMediaDialog.isShowing)
-            putBoolean(AppInfo.DIALOG_CONFIRM_MEDIA_KEY, builderNameMediaDialog.isShowing)
-            putBoolean(AppInfo.DIALOG_LIST_AGENTS_KEY, builderListAgentsDialog.isShowing)
-            putBoolean(AppInfo.UPDATE_ESTATE_KEY, updateEstate)
-            putBoolean(AppInfo.DIALOG_ADD_POI_KEY, builderAddPOIDialog.isShowing)
-            putInt(AppInfo.ESTATE_AGENT_KEY, agentSelected)
-            putString(AppInfo.TEXT_DIALOG_CONFIRM_MEDIA_KEY, textNameMediaDialog)
-            putInt(AppInfo.NUMBER_PHOTO_KEY, numberPhotosAdded)
-            putBoolean(AppInfo.CONFIRM_EXIT_KEY, confirmExit)
-            putBoolean(AppInfo.ERROR_SLIDERS_KEY, errorSliders)
-            putBoolean(AppInfo.ERROR_SLIDERS_KEY, errorSliders)
-        }
     }
 
     /**
@@ -478,7 +422,12 @@ class FragmentNewEstate : Fragment() {
      */
     private fun handleAddPhotoButton() {
         binding.buttonAddPhoto.setOnClickListener {
-            if (!builderAddMediaDialog.isShowing) builderAddMediaDialog.show()
+            builderAddMediaDialog?.isShowing?.let {
+                if (!it) {
+                    dialogsViewModel.addMediaDialogStatus = true
+                    builderAddMediaDialog?.show()
+                }
+            }
         }
     }
 
@@ -487,18 +436,15 @@ class FragmentNewEstate : Fragment() {
      */
     private fun editLocation() {
         binding.locationSectionEdit.setOnClickListener {
-            listEstatesViewModel.performAutocompleteRequest(activity as MainActivity)
-        }
+            listEstatesViewModel.performAutocompleteRequest(activity as MainActivity) }
     }
 
     /**
      * Updates location estate displayed in the "Location" edit text view.
      */
     fun updateLocationDisplayed() {
-        listEstatesViewModel.selectedEstate?.let {
-            binding.locationSectionEdit.text =
-                StringHandler.convertStringToEditable(it.location.address)
-        }
+        binding.locationSectionEdit.text =
+                      StringHandler.convertStringToEditable(estateViewModel.estate.location.address)
     }
 
     /**
@@ -506,7 +452,7 @@ class FragmentNewEstate : Fragment() {
      */
     fun addNewPhotoUri(uri: Uri?) {
         if (uri != null) {
-            listEstatesViewModel.updatePhotoUri(uri.toString())
+            estateViewModel.photoUriEstate = uri.toString()
             displayNameMediaDialog()
         }
     }
@@ -516,8 +462,9 @@ class FragmentNewEstate : Fragment() {
      */
     private fun displayNameMediaDialog() {
         builderNameMediaDialog.apply {
-            show()
-            getButton(AlertDialog.BUTTON_POSITIVE).isEnabled = false
+            dialogsViewModel.nameMediaDialogStatus = true
+            this?.show()
+            this?.getButton(AlertDialog.BUTTON_POSITIVE)?.isEnabled = false
         }
     }
 
@@ -525,8 +472,8 @@ class FragmentNewEstate : Fragment() {
      * Restores the list of photo of an [Estate].
      */
     private fun updateHorizontalScrollViewWithPhotos() {
-        listEstatesViewModel.selectedEstate?.let {
-            it.listPhoto.forEach {  photo -> addNewFrameLayoutToBinding(photo) }
+        if (estateViewModel.estate != null) {
+            estateViewModel.estate.listPhoto.forEach { photo -> addNewFrameLayoutToBinding(photo) }
         }
     }
 
@@ -562,53 +509,40 @@ class FragmentNewEstate : Fragment() {
      * Checks and compares sliders values, to update sliders display.
      */
     private fun checkSlidersValues() {
-        if (binding.sliderBedrooms.value + binding.sliderBathrooms.value > binding.sliderRooms.value) {
-            binding.apply {
-                errorSliders = true
-                sliderRooms.apply {
-                    tickTintList = ColorStateList.valueOf(resources.getColor(R.color.red_google))
-                    thumbTintList = ColorStateList.valueOf(resources.getColor(R.color.red_google))
-                    trackActiveTintList = ColorStateList.valueOf(resources.getColor(R.color.red_google))
-                    trackInactiveTintList = ColorStateList.valueOf(resources.getColor(R.color.red_google_light))
-                }
-                sliderBathrooms.apply {
-                    tickTintList = ColorStateList.valueOf(resources.getColor(R.color.red_google))
-                    thumbTintList = ColorStateList.valueOf(resources.getColor(R.color.red_google))
-                    trackActiveTintList = ColorStateList.valueOf(resources.getColor(R.color.red_google))
-                    trackInactiveTintList = ColorStateList.valueOf(resources.getColor(R.color.red_google_light))
-                }
-                sliderBedrooms.apply {
-                    tickTintList = ColorStateList.valueOf(resources.getColor(R.color.red_google))
-                    thumbTintList = ColorStateList.valueOf(resources.getColor(R.color.red_google))
-                    trackActiveTintList = ColorStateList.valueOf(resources.getColor(R.color.red_google))
-                    trackInactiveTintList = ColorStateList.valueOf(resources.getColor(R.color.red_google_light))
-                }
+        errorSliders =
+            binding.sliderBedrooms.value + binding.sliderBathrooms.value > binding.sliderRooms.value
+        if (errorSliders) updateSlidersColor(R.color.red_google, R.color.red_google_light)
+        else updateSlidersColor(R.color.colorPrimary, R.color.colorPrimaryLight)
+    }
+
+    /**
+     * Updates sliders with selected colors
+     * @param color : color to apply
+     * @param colorLight : light color to apply
+     */
+    private fun updateSlidersColor(@ColorRes color: Int, @ColorRes colorLight: Int) {
+        binding.apply {
+            sliderRooms.apply {
+                tickTintList = ColorStateList.valueOf(resources.getColor(color))
+                thumbTintList = ColorStateList.valueOf(resources.getColor(color))
+                trackActiveTintList = ColorStateList.valueOf(resources.getColor(color))
+                trackInactiveTintList = ColorStateList.valueOf(resources.getColor(colorLight))
             }
-        }
-        else {
-            errorSliders = false
-            binding.apply {
-                sliderRooms.apply {
-                    tickTintList = ColorStateList.valueOf(resources.getColor(R.color.colorPrimary))
-                    thumbTintList = ColorStateList.valueOf(resources.getColor(R.color.colorPrimary))
-                    trackActiveTintList = ColorStateList.valueOf(resources.getColor(R.color.colorPrimary))
-                    trackInactiveTintList = ColorStateList.valueOf(resources.getColor(R.color.colorPrimaryLight))
-                }
-                sliderBathrooms.apply {
-                    tickTintList = ColorStateList.valueOf(resources.getColor(R.color.colorPrimary))
-                    thumbTintList = ColorStateList.valueOf(resources.getColor(R.color.colorPrimary))
-                    trackActiveTintList = ColorStateList.valueOf(resources.getColor(R.color.colorPrimary))
-                    trackInactiveTintList = ColorStateList.valueOf(resources.getColor(R.color.colorPrimaryLight))
-                }
-                sliderBedrooms.apply {
-                    tickTintList = ColorStateList.valueOf(resources.getColor(R.color.colorPrimary))
-                    thumbTintList = ColorStateList.valueOf(resources.getColor(R.color.colorPrimary))
-                    trackActiveTintList = ColorStateList.valueOf(resources.getColor(R.color.colorPrimary))
-                    trackInactiveTintList = ColorStateList.valueOf(resources.getColor(R.color.colorPrimaryLight))
-                }
+            sliderBathrooms.apply {
+                tickTintList = ColorStateList.valueOf(resources.getColor(color))
+                thumbTintList = ColorStateList.valueOf(resources.getColor(color))
+                trackActiveTintList = ColorStateList.valueOf(resources.getColor(color))
+                trackInactiveTintList = ColorStateList.valueOf(resources.getColor(colorLight))
+            }
+            sliderBedrooms.apply {
+                tickTintList = ColorStateList.valueOf(resources.getColor(color))
+                thumbTintList = ColorStateList.valueOf(resources.getColor(color))
+                trackActiveTintList = ColorStateList.valueOf(resources.getColor(color))
+                trackInactiveTintList = ColorStateList.valueOf(resources.getColor(colorLight))
             }
         }
     }
+
     /**
      * Handle user interactions with confirmation button.
      */
@@ -622,12 +556,12 @@ class FragmentNewEstate : Fragment() {
                 val nameAgent: String = agentSectionEdit.text.toString()
                 if (name.isNotEmpty() && location.isNotEmpty() && nameAgent.isNotEmpty()
                     && description.isNotEmpty() && price.isNotEmpty()
-                    && listEstatesViewModel.selectedEstate?.listPhoto?.isNotEmpty() == true
+                    && estateViewModel.estate.listPhoto.isNotEmpty()
                     && !errorSliders) {
                     displayToastEstate(false)
                     (activity as MainActivity).notificationHandler.createNotification(updateEstate)
                     if (currency == "EUR") price = Utils.convertEuroToDollar(price.toInt()).toString()
-                    updateSelectedEstateFromViewModel(name, description, price)
+                    updateSelectedEstateFromViewModel()
                 }
                 else {
                     displayToastEstate(true)
@@ -653,27 +587,14 @@ class FragmentNewEstate : Fragment() {
 
     /**
      * Update selected estate from view model which is used to store database modifications.
-     * @param name : new name estate
-     * @param description : new description estate
-     * @param price : new price estate
      */
-    private fun updateSelectedEstateFromViewModel(name: String, description:
-                                                  String, price : String) {
-        listEstatesViewModel.apply {
-            selectedEstate?.apply {
-                updateSelectedEstate(name, description, price.toInt())
-                updateInteriorSelectedEstate(numberRooms = binding.sliderRooms.value.toInt(),
-                                             numberBathrooms = binding.sliderBathrooms.value.toInt(),
-                                             numberBedrooms = binding.sliderBedrooms.value.toInt(),
-                                             surface = binding.sliderSurface.value.toInt())
-                updateDateSelectedEstate(false)
-                updatePointOfInterestSelectedEstate()
-                updateAgentSelectedEstate(agentSelected, updateEstate)
-            }
-
-        }
-        confirmExit = true
-        (activity as MainActivity).onBackPressed()
+    private fun updateSelectedEstateFromViewModel() {
+        saveEstateValuesInViewModel()
+        estateViewModel.getNewEstate().observe(viewLifecycleOwner, {
+            listEstatesViewModel.updateDatabase(updateEstate, it)
+            confirmExit = true
+            (activity as MainActivity).onBackPressed()
+        })
     }
 
     /**
@@ -725,14 +646,17 @@ class FragmentNewEstate : Fragment() {
      * Handle user interactions with TextInputEditText field for agent selection.
      */
     private fun handleNameAgentEditListener() {
-        binding.agentSectionEdit.setOnClickListener { builderListAgentsDialog.show() }
+        binding.agentSectionEdit.setOnClickListener {
+            dialogsViewModel.listAgentsDialogStatus = true
+            builderListAgentsDialog?.show()
+        }
     }
 
     /**
      * Updates TextInputEditText field for agent selection.
      */
     private fun updateNameAgentEditText(position: Int, nameAgent: String?) {
-        agentSelected = position
+        estateViewModel.idAgentSelected = position.toLong()
         binding.agentSectionEdit.text = Editable.Factory.getInstance().newEditable(nameAgent)
     }
 
@@ -740,7 +664,10 @@ class FragmentNewEstate : Fragment() {
      * Handles click events on "Points of interest" button.
      */
     private fun handleAddPOIButton() {
-        binding.constraintLayoutAddPoi.setOnClickListener { builderAddPOIDialog.show() }
+        binding.constraintLayoutAddPoi.setOnClickListener {
+            dialogsViewModel.addPOIDialogStatus = true
+            builderAddPOIDialog?.show()
+        }
     }
 
     /**
@@ -758,32 +685,18 @@ class FragmentNewEstate : Fragment() {
     private fun updateTagsDisplay() {
         binding.tagContainerLayout.let {  itContainer ->
             itContainer.removeAllTags()
-            listEstatesViewModel.listPOI.forEach { itPOI -> itContainer.addTag(itPOI) }
+            estateViewModel.listPOI.forEach { itPOI -> itContainer.addTag(itPOI) }
         }
     }
 
     /**
      * Initializes the list of POI used for container updates.
      */
-    private fun initializeListPOI(savedInstanceState: Bundle?) {
-        listEstatesViewModel.selectedEstate?.let { itEstate ->
-            binding.tagContainerLayout.let {  itContainer ->
-                itContainer.removeAllTags()
-                itEstate.listPointOfInterest.forEach { itPOI -> itContainer.addTag(itPOI.name) }
-            }
-            if (savedInstanceState == null) {
-                itEstate.listPointOfInterest.forEach {
-                    listEstatesViewModel.listPOI.add(it.name)
-                }
-            }
+    private fun initializeListPOI() {
+        binding.tagContainerLayout.let { itContainer ->
+            itContainer.removeAllTags()
+            estateViewModel.listPOI.forEach { itPoi -> itContainer.addTag(itPoi) }
         }
-    }
-
-    /**
-     * Clears temporary value contained in [ListEstatesViewModel] field.
-     */
-    fun clearListPOIViewModel() {
-        listEstatesViewModel.listPOI.clear()
     }
 
     private fun updatePriceUnitDisplayed() {
@@ -792,12 +705,80 @@ class FragmentNewEstate : Fragment() {
                 currency = it
                 when (currency) {
                     "USD" -> { binding.newEstatePriceSectionUnit.text =
-                          resources.getString(R.string.str_new_estate_surface_section_price_dollar)
-                    }
+                          resources.getString(R.string.str_new_estate_surface_section_price_dollar) }
                     "EUR" -> { binding.newEstatePriceSectionUnit.text =
-                        resources.getString(R.string.str_new_estate_surface_section_price_euro)
-                    }
+                        resources.getString(R.string.str_new_estate_surface_section_price_euro) }
                 }
+            }
+        }
+    }
+
+    /**
+     * Dismiss displayed dialog before configuration change.
+     */
+    private fun dismissDialogDisplayed() {
+        builderListAgentsDialog?.let { if (it.isShowing) it.dismiss() }
+        builderAddPOIDialog?.let { if (it.isShowing) it.dismiss() }
+        builderCancelEstateDialog?.let { if (it.isShowing) it.dismiss() }
+        builderNameMediaDialog?.let { if (it.isShowing) it.dismiss() }
+        builderAddMediaDialog?.let { if (it.isShowing) it.dismiss() }
+        builderResetEstateDialog?.let { if (it.isShowing) it.dismiss() }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        saveDialogsStatusInViewModel()
+        saveEstateValuesInViewModel()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        dismissDialogDisplayed()
+    }
+
+    /**
+     * Checks in [DialogsViewModel] if dialogs status before configuration change.
+     */
+    private fun checkDialogStatusInViewModel() {
+        if (dialogsViewModel.listAgentsDialogStatus) builderAddMediaDialog?.show()
+        if (dialogsViewModel.addPOIDialogStatus) builderAddPOIDialog?.show()
+        if (dialogsViewModel.cancelEstateDialogStatus) builderCancelEstateDialog?.show()
+        if (dialogsViewModel.nameMediaDialogStatus) builderNameMediaDialog?.show()
+        if (dialogsViewModel.addMediaDialogStatus) builderAddMediaDialog?.show()
+        if (dialogsViewModel.resetEstateDialogStatus) builderResetEstateDialog?.show()
+    }
+
+    /**
+     * Saves dialog status values in view model.
+     */
+    private fun saveDialogsStatusInViewModel() {
+        builderListAgentsDialog?.let { dialogsViewModel.listAgentsDialogStatus = it.isShowing }
+        builderAddPOIDialog?.let { dialogsViewModel.addPOIDialogStatus = it.isShowing }
+        builderCancelEstateDialog?.let { dialogsViewModel.cancelEstateDialogStatus = it.isShowing }
+        builderNameMediaDialog?.let { dialogsViewModel.nameMediaDialogStatus = it.isShowing }
+        builderAddMediaDialog?.let { dialogsViewModel.addMediaDialogStatus = it.isShowing }
+        builderResetEstateDialog?.let { dialogsViewModel.resetEstateDialogStatus = it.isShowing }
+        dialogsViewModel.textNameMediaDialog = textNameMediaDialog
+    }
+
+    /**
+     * Saves view values in view model.
+     */
+    private fun saveEstateValuesInViewModel() {
+        binding.let {
+            estateViewModel.apply {
+                this.estate.type = it.nameSectionEdit.text.toString()
+                if (it.priceSectionEdit.text?.isNotEmpty() == true)
+                            this.estate.price = it.priceSectionEdit.text.toString().toInt()
+                this.estate.location.address = it.locationSectionEdit.text.toString()
+                this.estate.description = it.descSectionEdit.text.toString()
+                this.estate.interior.surface = binding.sliderSurface.value.toInt()
+                this.estate.interior.numberBathrooms = binding.sliderBathrooms.value.toInt()
+                this.estate.interior.numberBedrooms = binding.sliderBedrooms.value.toInt()
+                this.estate.interior.numberRooms = binding.sliderRooms.value.toInt()
+                this.typeOperation = updateEstate
+                this.errorSlidersStatus = errorSliders
+                this.nameAgentSelected = binding.agentSectionEdit.text.toString()
             }
         }
     }

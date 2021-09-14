@@ -2,22 +2,24 @@ package com.openclassrooms.realestatemanager.ui.fragments
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import androidx.appcompat.view.menu.MenuBuilder
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.openclassrooms.data.model.Estate
 import com.openclassrooms.realestatemanager.AppInfo
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.databinding.FragmentListEstateBinding
-import com.openclassrooms.data.model.Estate
 import com.openclassrooms.realestatemanager.ui.activities.MainActivity
 import com.openclassrooms.realestatemanager.ui.adapters.ListEstatesAdapter
+import com.openclassrooms.realestatemanager.viewmodels.EstateViewModel
 import com.openclassrooms.realestatemanager.viewmodels.ListEstatesViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 /**
- * [Fragment] subclass used to display the list of real estate.
+ * [Fragment] subclass used to display the list of real estate.C
  */
 @AndroidEntryPoint
 class FragmentListEstate : Fragment() {
@@ -30,10 +32,14 @@ class FragmentListEstate : Fragment() {
     /** Contains a reference  to [ListEstatesViewModel] */
     private lateinit var listEstatesViewModel: ListEstatesViewModel
 
+    /** Contains a reference to a [EstateViewModel] */
+    private lateinit var estateViewModel: EstateViewModel
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
         listEstatesViewModel = ViewModelProvider(requireActivity())[ListEstatesViewModel::class.java]
+        estateViewModel = ViewModelProvider(requireActivity())[EstateViewModel::class.java]
     }
 
     override fun onCreateView(inflater: LayoutInflater,
@@ -45,7 +51,6 @@ class FragmentListEstate : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        // Initialize toolbar
         (activity as MainActivity)
             .setToolbarProperties(R.string.str_toolbar_fragment_list_estate_title, false)
         initializeRecyclerView()
@@ -71,17 +76,19 @@ class FragmentListEstate : Fragment() {
                 // Display FragmentDetails with selected item
                 activity.displayFragmentDetails()
             }
-            else activity.onBackPressed()
+            else {
+                handleFabVisibility(View.VISIBLE)
+                activity.handleBackgroundGridVisibility(View.VISIBLE)
+                activity.removeFragment(AppInfo.TAG_FRAGMENT_ESTATE_DETAILS)
+            }
         }
     }
 
     /**
      * Clear "selected" status of the current selected item.
      */
-    fun clearCurrentSelection() {
+    fun clearCurrentSelection() =
         (binding.recyclerViewListEstates.adapter as ListEstatesAdapter).clearCurrentSelection()
-    }
-
 
     @SuppressLint("RestrictedApi")
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -124,7 +131,6 @@ class FragmentListEstate : Fragment() {
     private fun addObserverToViewModel() {
         listEstatesViewModel.listEstates.observe(viewLifecycleOwner, {
             (binding.recyclerViewListEstates.adapter as ListEstatesAdapter).apply {
-                resetSelection(it)
                 // Update list
                 listEstates.apply {
                     clear()
@@ -134,8 +140,27 @@ class FragmentListEstate : Fragment() {
                 // Update background text
                 handleBackgroundMaterialTextVisibility(if (it.isNotEmpty()) View.INVISIBLE
                                                        else View.VISIBLE)
+                checkIfListHasSelectedItem(it).let {
+                    handleFabVisibility(if (it) View.INVISIBLE else View.VISIBLE)
+                    activity.handleBackgroundGridVisibility(if (it) View.INVISIBLE else View.VISIBLE)
+                }
             }
         })
+    }
+
+    /**
+     * Checks if list of estates contains a selected item.
+     * @param list : list of estates
+     * @param : search status (false : no element found, true : selected item found)
+     */
+    private fun checkIfListHasSelectedItem(list: List<Estate>): Boolean {
+        var status = false
+        var index = 0
+        while (index < list.size && !status) {
+            if (list[index].selected) status = true
+            else index++
+        }
+        return status
     }
 
     /**
@@ -160,28 +185,15 @@ class FragmentListEstate : Fragment() {
     }
 
     /**
-     * Resets list item selection status.
-     * @param listEstate : list of [Estate]
-     */
-    private fun resetSelection(listEstate: List<Estate>) {
-        val orientation: Boolean = (activity as MainActivity).typeOrientation
-        val itemSelected: Boolean = parentFragmentManager
-                                     .findFragmentByTag(AppInfo.TAG_FRAGMENT_ESTATE_DETAILS) == null
-        if ((activity as MainActivity).typeLayout) {
-            if (!orientation && !itemSelected) {
-                for (i in listEstate.indices) listEstate[i].selected = false
-            }
-        }
-        else { for (i in listEstate.indices) { listEstate[i].selected = false } }
-    }
-
-    /**
      * Handles click event on Floating Action Button.
      */
     private fun handleFloatingActionButton() {
         binding.fab.setOnClickListener {
-            listEstatesViewModel.createNewEstate()
-            (activity as MainActivity).displayFragmentNewEstate(false)
+            estateViewModel.apply {
+                typeOperation = false
+                resetEstate()
+            }
+            (activity as MainActivity).displayFragmentNewEstate()
             handleFabVisibility(View.INVISIBLE)
             (activity as MainActivity).handleBackgroundGridVisibility(View.INVISIBLE)
         }
@@ -191,6 +203,7 @@ class FragmentListEstate : Fragment() {
      * Handle floating action button visibility.
      * @param visibility : Visibility status of the floating action button
      */
-    fun handleFabVisibility(visibility: Int) =
+    fun handleFabVisibility(visibility: Int) {
         binding.fab.apply { if (visibility == View.VISIBLE) show() else hide() }
+    }
 }

@@ -1,13 +1,10 @@
 package com.openclassrooms.data
 
 import com.openclassrooms.data.entities.*
-import com.openclassrooms.data.entities.DatesData
-import com.openclassrooms.data.repository.RealEstateRepositoryAccess
 import com.openclassrooms.data.model.*
-import com.openclassrooms.data.model.Dates
 
 // Estate converters
-fun Estate.toEstateData() = EstateData(idEstate = this.id, type = this.type, price = this.price,
+fun Estate.toEstateData() = EstateData(type = this.type, price = this.price,
     description = this.description,
     status = this.status, idAgent = this.agent.id)
 
@@ -24,11 +21,12 @@ fun EstateData.toEstate(interior: Interior, listPhoto: MutableList<Photo>, agent
 fun Photo.toPhotoData(associatedId: Long) = PhotoData(uriConverted = this.uriConverted,
     name = this.name,
     associatedId = associatedId)
+
 //TODO() : check id
 fun PhotoData.toPhoto() = Photo(uriConverted = this.uriConverted, name = this.name)
 
 // Interior converters
-fun Interior.toInteriorData(associatedId: Long) = InteriorData(idInterior = this.id, numberRooms = numberRooms,
+fun Interior.toInteriorData(associatedId: Long) = InteriorData(numberRooms = numberRooms,
     numberBathrooms = numberBathrooms, numberBedrooms = numberBedrooms,
     surface = surface, associatedId = associatedId)
 
@@ -39,7 +37,6 @@ fun InteriorData.toInterior() = Interior(
 
 // Location converters
 fun Location.toLocationData(associatedId: Long) = LocationData(
-    idLocation = id,
     latitude = latitude,
     longitude = longitude,
     address = address,
@@ -57,7 +54,6 @@ fun LocationData.toLocation() = Location(
 
 // PointOfInterest converters
 fun PointOfInterest.toPointOfInterestData(associatedId: Long) = PointOfInterestData(
-    idPoi = id,
     name = name,
     associatedId = associatedId
 )
@@ -82,7 +78,6 @@ fun Agent.toAgentData() = AgentData(
 
 // Date converters
 fun Dates.toDatesData(associatedId: Long) = DatesData(
-    idDates = id,
     dateEntry = dateEntry,
     dateSale = dateSale,
     associatedId = associatedId

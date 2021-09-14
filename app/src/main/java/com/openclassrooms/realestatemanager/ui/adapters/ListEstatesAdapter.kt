@@ -3,6 +3,7 @@ package com.openclassrooms.realestatemanager.ui.adapters
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Build
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -172,6 +173,10 @@ class ListEstatesAdapter(private val context: Context, private val onItemClicked
         notifyDataSetChanged()
     }
 
+    /**
+     * Updated "selection" status of a selected item in list.
+     * @param position : position in list
+     */
     fun updateItemSelectionStatus(position: Int): Boolean {
         listEstates[position].selected = !listEstates[position].selected
         return listEstates[position].selected

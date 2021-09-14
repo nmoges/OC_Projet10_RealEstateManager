@@ -27,6 +27,12 @@ import javax.inject.Inject
 class SearchFiltersViewModel @Inject constructor(@ApplicationContext context: Context,
     private val repositoryAccess: RealEstateRepositoryAccess): ViewModel() {
 
+    var checkBoxPriceStatus: Boolean = false
+    var checkBoxSurfaceStatus: Boolean = false
+    var checkBoxDateStatus: Boolean = false
+    var checkBoxTypeStatus: Boolean = false
+    var checkBoxPOIStatus: Boolean = false
+
     /** Contains boolean value for "Price" [CheckBox] */
     var checkBoxPriceValue: MutableLiveData<Boolean> = MutableLiveData(false)
 

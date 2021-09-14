@@ -97,14 +97,16 @@ class RealEstateRepository(
     override suspend fun insertEstate(estate: Estate): Long =
         estateDao.insertEstateData(estate.toEstateData())
 
+
     /**
      * Accesses DAO Estate update method
      * @param estate : Estate to update
      */
-    override suspend fun updateEstate(estate: Estate) =
-        estateDao.updateEstateData(estate.toEstateData())
-
-
+    override suspend fun updateEstate(estate: Estate) {
+        val estateData = estate.toEstateData()
+        estateData.idEstate = estate.id
+        estateDao.updateEstateData(estateData)
+    }
 
     // -------------------------------- PhotoDao --------------------------------
     /**
@@ -143,7 +145,9 @@ class RealEstateRepository(
      * @param associatedId : Associated Estate id
      */
     override suspend fun updateInterior(interior: Interior, associatedId: Long) {
-        interiorDao.updateInteriorData(interior.toInteriorData(associatedId))
+        val interiorData = interior.toInteriorData(associatedId)
+        interiorData.idInterior = interior.id
+        interiorDao.updateInteriorData(interiorData)
     }
 
     // -------------------------------- AgentDao --------------------------------
@@ -188,8 +192,12 @@ class RealEstateRepository(
      * @param dates : Dates to update
      * @param associatedId : Associated Estate id
      */
-    override suspend fun updateDates(dates: Dates, associatedId: Long) =
-        datesDao.updateDateData(dates.toDatesData(associatedId))
+    override suspend fun updateDates(dates: Dates, associatedId: Long) {
+        val datesData = dates.toDatesData(associatedId)
+        datesData.idDates = dates.id
+        datesDao.updateDateData(datesData)
+    }
+
 
     /**
      * Accesses DAO Photo getter method
@@ -213,8 +221,12 @@ class RealEstateRepository(
      * @param location : Location to update
      * @param associatedId : Associated Estate id
      */
-    override suspend fun updateLocation(location: Location, associatedId: Long) =
-        locationDao.updateLocationData(location.toLocationData(associatedId))
+    override suspend fun updateLocation(location: Location, associatedId: Long) {
+        val locationData = location.toLocationData(associatedId)
+        locationData.idLocation = location.id
+        locationDao.updateLocationData(locationData)
+    }
+
 
     // -------------------------------- PointOfInterestDao --------------------------------
     /**
@@ -254,23 +266,18 @@ class RealEstateRepository(
      */
     override suspend fun loadAllEstates(): List<Estate> {
         val list = fullEstateDao.loadAllEstates()
-
         val listConverted: MutableList<Estate> = mutableListOf()
         list.forEach { it ->
             val interior = it.interiorData.toInterior()
             val listPhoto: MutableList<Photo> = mutableListOf()
-            it.listPhotosData.forEach {
-                listPhoto.add(it.toPhoto())
-            }
+            it.listPhotosData.forEach { listPhoto.add(it.toPhoto()) }
             val listPointOfInterest: MutableList<PointOfInterest> = mutableListOf()
-            it.listPointOfInterestData.forEach {
-                listPointOfInterest.add(it.toPointOfInterest())
-            }
+            it.listPointOfInterestData.forEach { listPointOfInterest.add(it.toPointOfInterest()) }
             val agent = getAgentById(it.estateData.idAgent)
             val dates = getDatesById(it.estateData.idEstate)
             val location = it.locationData.toLocation()
             val estate = it.estateData.toEstate(interior, listPhoto, agent, dates,
-                location, listPointOfInterest)
+                                                location, listPointOfInterest)
             listConverted.add(estate)
         }
         return listConverted
@@ -371,8 +378,6 @@ class RealEstateRepository(
         }
         return updatedQuery
     }
-
-
 
     // Autocomplete Service
     override fun performAutocompleteRequest(activity: Activity) {
