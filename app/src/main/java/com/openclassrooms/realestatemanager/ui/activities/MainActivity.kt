@@ -488,9 +488,9 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
      * @param position : position in list
      */
     fun handleClickOnEstateView(position: Int) {
-        /*if (typeOrientation) {
+        if (typeOrientation && typeLayout) {
             val fragmentListEstate = supportFragmentManager
-                .findFragmentByTag(AppInfo.TAG_FRAGMENT_LIST_ESTATE) as FragmentListEstate
+                .findFragmentByTag(AppInfo.TAG_FRAGMENT_LIST_ESTATE_LARGE) as FragmentListEstate
             fragmentListEstate.let {
                 it.handleClickOnEstateItem(position)
             }
@@ -498,7 +498,7 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
         else {
             listEstatesViewModel.setSelectedEstate(position)
             displayFragmentDetails()
-        }*/
+        }
     }
 
     /**
@@ -538,21 +538,11 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
         listFragmentsViewModel.listTags.clear()
         for (i in 0 until list.size) {
             when(list[i]) {
-                AppInfo.TAG_FRAGMENT_ESTATE_DETAILS -> {
-                    launchTransaction(containerId, FragmentEstateDetails.newInstance(),
-                                                                AppInfo.TAG_FRAGMENT_ESTATE_DETAILS) }
-                AppInfo.TAG_FRAGMENT_NEW_ESTATE -> {
-                    launchTransaction(containerId, FragmentNewEstate.newInstance(),
-                                                                  AppInfo.TAG_FRAGMENT_NEW_ESTATE) }
-                AppInfo.TAG_FRAGMENT_SETTINGS -> {
-                    launchTransaction(containerId, FragmentSettings.newInstance(),
-                                                                    AppInfo.TAG_FRAGMENT_SETTINGS) }
-                AppInfo.TAG_FRAGMENT_SEARCH -> {
-                    launchTransaction(containerIdLists, FragmentSearch.newInstance(),
-                                                                    AppInfo.TAG_FRAGMENT_SEARCH) }
-                AppInfo.TAG_FRAGMENT_MAP -> {
-                    launchTransaction(containerId, FragmentMap.newInstance(),
-                                                                    AppInfo.TAG_FRAGMENT_MAP) }
+                AppInfo.TAG_FRAGMENT_ESTATE_DETAILS -> { displayFragmentDetails() }
+                AppInfo.TAG_FRAGMENT_NEW_ESTATE -> { displayFragmentNewEstate() }
+                AppInfo.TAG_FRAGMENT_SETTINGS -> { displayFragmentSettings() }
+                AppInfo.TAG_FRAGMENT_SEARCH -> { displayFragmentSearch() }
+                AppInfo.TAG_FRAGMENT_MAP -> { displayFragmentMap() }
             }
         }
     }
@@ -581,6 +571,11 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
                     removed = true
                 }
                 AppInfo.TAG_FRAGMENT_SEARCH -> {
+                    val fragment = supportFragmentManager.findFragmentByTag(AppInfo.TAG_FRAGMENT_SEARCH)
+                    (fragment as FragmentSearch).apply {
+                        this.resetAllFilters()
+                        this.resetSearchResults()
+                    }
                     removeFragment(AppInfo.TAG_FRAGMENT_SEARCH)
                     removed = true
                 }
@@ -596,28 +591,36 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
     /**
      * Displays [FragmentEstateDetails].
      */
-    fun displayFragmentDetails() = launchTransaction(containerId, FragmentEstateDetails.newInstance(),
-                                                                AppInfo.TAG_FRAGMENT_ESTATE_DETAILS)
+    fun displayFragmentDetails() {
+        launchTransaction(containerId, FragmentEstateDetails.newInstance(),
+            AppInfo.TAG_FRAGMENT_ESTATE_DETAILS)
+    }
 
     /**
      * Displays [FragmentSettings].
      */
-    fun displayFragmentSettings() = launchTransaction(containerId, FragmentSettings.newInstance(),
-                                                                      AppInfo.TAG_FRAGMENT_SETTINGS)
+    fun displayFragmentSettings() {
+        launchTransaction(containerId, FragmentSettings.newInstance(),
+            AppInfo.TAG_FRAGMENT_SETTINGS)
+    }
 
 
     /**
      * Displays [FragmentSearch].
      */
-    fun displayFragmentSearch() = launchTransaction(containerIdLists, FragmentSearch.newInstance(),
-                                                                        AppInfo.TAG_FRAGMENT_SEARCH)
+    fun displayFragmentSearch() {
+        launchTransaction(containerIdLists, FragmentSearch.newInstance(),
+            AppInfo.TAG_FRAGMENT_SEARCH)
+    }
 
 
     /**
      * Displays [FragmentMap].
      */
-    fun displayFragmentMap() = launchTransaction(containerId, FragmentMap.newInstance(),
-                                                                           AppInfo.TAG_FRAGMENT_MAP)
+    fun displayFragmentMap() {
+        launchTransaction(containerId, FragmentMap.newInstance(),
+            AppInfo.TAG_FRAGMENT_MAP)
+    }
 
     /**
      * Displays [FragmentNewEstate].
@@ -642,7 +645,11 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
         // Update viewModel
         listFragmentsViewModel.removeTagToList(tag)
         // Update views
-        if (tag == AppInfo.TAG_FRAGMENT_ESTATE_DETAILS) clearSelectionInFragmentListEstate()
+        if (tag == AppInfo.TAG_FRAGMENT_ESTATE_DETAILS) {
+            clearSelectionInFragmentListEstate()
+            clearSelectionInFragmentSearch()
+        }
+
     }
 
     /**
@@ -656,6 +663,11 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
                 (it as FragmentListEstate).handleFabVisibility(View.VISIBLE)
             }
         }
+        else {
+            getFragmentList()?.let {
+                (it as FragmentListEstate).handleFabVisibility(View.INVISIBLE)
+            }
+        }
     }
 
     /**
@@ -665,6 +677,19 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
         val fragmentListEstate: Fragment? = getFragmentList()
         if (fragmentListEstate != null) {
             (fragmentListEstate as FragmentListEstate).apply {
+                clearCurrentSelection()
+            }
+        }
+    }
+
+    /**
+     * Clear status of the selected item in search list.
+     */
+    private fun clearSelectionInFragmentSearch() {
+        val fragmentSearch: Fragment? =
+                               supportFragmentManager.findFragmentByTag(AppInfo.TAG_FRAGMENT_SEARCH)
+        if (fragmentSearch != null) {
+            (fragmentSearch as FragmentSearch).apply {
                 clearCurrentSelection()
             }
         }

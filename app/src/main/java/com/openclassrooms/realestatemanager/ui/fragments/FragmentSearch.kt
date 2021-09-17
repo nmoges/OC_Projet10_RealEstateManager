@@ -27,6 +27,7 @@ import com.openclassrooms.realestatemanager.ui.adapters.ListEstatesAdapter
 import com.openclassrooms.realestatemanager.utils.DateComparator
 import com.openclassrooms.realestatemanager.utils.StringHandler
 import com.openclassrooms.realestatemanager.viewmodels.DialogsViewModel
+import com.openclassrooms.realestatemanager.viewmodels.ListEstatesViewModel
 import com.openclassrooms.realestatemanager.viewmodels.SearchFiltersViewModel
 import java.util.*
 
@@ -45,8 +46,11 @@ class FragmentSearch : Fragment() {
     /** View Binding parameter */
     private lateinit var binding: FragmentSearchBinding
 
-    /** Contains ViewModel reference */
+    /** Contain [SearchFiltersViewModel] reference */
     private lateinit var searchFiltersViewModel: SearchFiltersViewModel
+
+    /** Contain [ListEstatesViewModel] reference */
+    private lateinit var listEstateViewModel: ListEstatesViewModel
 
     /** Contains a reference to a [DialogsViewModel] */
     private lateinit var dialogsViewModel: DialogsViewModel
@@ -111,6 +115,7 @@ class FragmentSearch : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
+        listEstateViewModel = ViewModelProvider(requireActivity())[ListEstatesViewModel::class.java]
         searchFiltersViewModel = ViewModelProvider(requireActivity())[SearchFiltersViewModel::class.java]
         dialogsViewModel = ViewModelProvider(requireActivity())[DialogsViewModel::class.java]
     }
@@ -214,15 +219,22 @@ class FragmentSearch : Fragment() {
             if (status) {
                 activity.handleBackgroundGridVisibility(View.INVISIBLE)
                 listEstates[position].selected = true
+                listEstateViewModel.setResultInSelectedEstate(listEstates[position])
                 activity.displayFragmentDetails()
             }
         }
     }
 
     /**
+     * Clear "selected" status of the current selected item.
+     */
+    fun clearCurrentSelection() =
+        (binding.recyclerViewResults.adapter as ListEstatesAdapter).clearCurrentSelection()
+
+    /**
      * Resets all filters.
      */
-    private fun resetAllFilters() {
+    fun resetAllFilters() {
         context?.let { itContext ->
             searchFiltersViewModel.let {
                 checkBoxPrice.isChecked = false
@@ -631,7 +643,7 @@ class FragmentSearch : Fragment() {
      */
     private fun updateStatusMaterialButtons(status: Boolean) {
         if (status) { // Checkbox checked
-            if (searchFiltersViewModel.availableStatus) { // "Available" button selected
+            if (!searchFiltersViewModel.availableStatus) { // "Available" button selected
                 setColorsMaterialButton(R.color.colorPrimary, R.color.white, availableButton)
                 setColorsMaterialButton(R.color.white, R.color.colorPrimary, soldButton)
             }
@@ -754,6 +766,8 @@ class FragmentSearch : Fragment() {
             checkBoxStatus = checkBoxDate.isChecked,
             startDate = textInputStartDate.text,
             endDate = textInputEndDate.text)
+
+       // Log.i("CHECK_VALUE", "${searchFiltersViewModel.initializeStatusFilter(checkBoxStatus.isChecked)}")
         // Send request
         if (searchFiltersViewModel.nbFilters > 0) {
             searchFiltersViewModel
@@ -771,7 +785,7 @@ class FragmentSearch : Fragment() {
     /**
      * Resets search results displayed.
      */
-    private fun resetSearchResults() = searchFiltersViewModel.resetSearchResults()
+    fun resetSearchResults() = searchFiltersViewModel.resetSearchResults()
 
     /**
      * Checks in [DialogsViewModel] if dialogs status before configuration change.

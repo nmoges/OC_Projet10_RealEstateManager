@@ -61,8 +61,8 @@ interface RealEstateRepositoryAccess {
     // -------------------------------- FullEstateDao --------------------------------
     suspend fun loadAllEstates(): List<Estate>
 
-    fun getSearchResults(price: ArrayList<Int?>, surface: ArrayList<Int?>,
-                         status: Boolean?, dates: ArrayList<String?>,
+    fun getSearchResults(price: List<Int?>, surface: List<Int?>,
+                         status: Boolean?, dates: List<String?>,
                          listPoi : MutableList<String>?, _nbFilters: Int): LiveData<List<FullEstateData>>
 
     // -------------------------------- Autocomplete service --------------------------------
@@ -300,14 +300,14 @@ class RealEstateRepository(
      * @param _nbFilters : number of filters enabled
      *
      */
-    //TODO() : replace ArrayList by List
-    // A déplacer dans une data classe
-    override fun getSearchResults(price: ArrayList<Int?>, surface: ArrayList<Int?>,
-                                  status: Boolean?, dates: ArrayList<String?>,
+    //TODO() : A déplacer dans une data classe
+    override fun getSearchResults(price: List<Int?>, surface: List<Int?>,
+                                  status: Boolean?, dates: List<String?>,
                                   listPoi : MutableList<String>?, _nbFilters: Int): LiveData<List<FullEstateData>> {
         var query = "SELECT DISTINCT $TABLE_ESTATE.* FROM $TABLE_ESTATE"
         query = addJoinClauseToSearchQuery(query, surface, dates, listPoi)
         query = addConditionsToSearchQuery(query, price, surface, status, dates, listPoi, _nbFilters)
+        Log.i("QUERY", "$query")
         return fullEstateDao.getSearchResults(SimpleSQLiteQuery(query))
     }
 
@@ -318,8 +318,8 @@ class RealEstateRepository(
      * @param dates : "Dates" filter
      * @param listPoi : "Points of interest" filter
      */
-    private fun addJoinClauseToSearchQuery(query: String, surface: ArrayList<Int?>,
-                                           dates: ArrayList<String?>,
+    private fun addJoinClauseToSearchQuery(query: String, surface: List<Int?>,
+                                           dates: List<String?>,
                                            listPoi : MutableList<String>?): String {
         var updatedQuery = query
         if(surface[0] != null && surface[1] != null)
@@ -341,9 +341,9 @@ class RealEstateRepository(
      * @param listPoi : "Points of interest" filter
      * @param _nbFilters : number of selected filters
      */
-    private fun addConditionsToSearchQuery(query: String, price: ArrayList<Int?>,
-                                           surface: ArrayList<Int?>,
-                                           status: Boolean?, dates: ArrayList<String?>,
+    private fun addConditionsToSearchQuery(query: String, price: List<Int?>,
+                                           surface: List<Int?>,
+                                           status: Boolean?, dates: List<String?>,
                                            listPoi: MutableList<String>?, _nbFilters: Int): String {
         var updatedQuery = query
         updatedQuery += " WHERE"

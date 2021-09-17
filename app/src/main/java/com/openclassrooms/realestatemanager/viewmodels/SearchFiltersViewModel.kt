@@ -149,9 +149,9 @@ class SearchFiltersViewModel @Inject constructor(@ApplicationContext context: Co
      * @param dates : Contains dates values for date filtering
      * @return : Request results
      */
-    fun getSearchResultsFromRepository(price: ArrayList<Int?>, surface: ArrayList<Int?>,
+    fun getSearchResultsFromRepository(price: List<Int?>, surface: List<Int?>,
                                        status: Boolean?, listPoi : MutableList<String>?,
-                                       dates: ArrayList<String?>): LiveData<List<FullEstateData>> {
+                                       dates: List<String?>): LiveData<List<FullEstateData>> {
         return repositoryAccess.getSearchResults(price, surface, status, dates, listPoi, nbFilters)
     }
 

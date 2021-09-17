@@ -1,6 +1,7 @@
 package com.openclassrooms.realestatemanager.viewmodels
 
 import android.app.Activity
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -45,6 +46,19 @@ class ListEstatesViewModel @Inject constructor(
      */
     fun setSelectedEstate(position: Int) { selectedEstate = listEstates.value?.get(position) }
 
+    fun setResultInSelectedEstate(estate: Estate) {
+        val list = listEstates.value
+        var index = 0
+        var found = false
+        list?.let {
+            while (!found && index < list.size) {
+                if (estate.id == it[index].id) found = true
+                else index++
+            }
+        }
+        setSelectedEstate(index)
+    }
+
     // -------------------- Data restoration --------------------
     /**
      * Restores data from database.
@@ -71,7 +85,7 @@ class ListEstatesViewModel @Inject constructor(
             estate.listPhoto.forEach { insertPhotoInDatabase(it, id) }
             estate.listPointOfInterest.forEach { insertPointOfInterestInDatabase(it, id) }
     }
-
+// TODO () : déplacer écriture db dans EstateVIewModel
     /**
      * Access insert photo method from repository interface.
      ** @param photo : Photo data to store in table_photos

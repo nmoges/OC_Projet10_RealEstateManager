@@ -30,6 +30,7 @@ import com.openclassrooms.realestatemanager.receiver.GPSBroadcastReceiver
 import com.openclassrooms.realestatemanager.ui.activities.MainActivity
 import com.openclassrooms.realestatemanager.utils.GPSAccessHandler
 import com.openclassrooms.realestatemanager.viewmodels.ListEstatesViewModel
+import java.lang.IllegalStateException
 
 /**
  * [Fragment] subclass used to display a google map.
@@ -150,18 +151,22 @@ class FragmentMap : Fragment(), OnMapReadyCallback {
      */
     private fun displayEstatesMarkersOnMap() {
         currentPosition?.let { itPosition ->
-            listEstatesViewModel.listEstates.observe(viewLifecycleOwner, {
-                it.forEach { itEstate ->
-                    if (GPSAccessHandler.checkDistanceEstateFromGPSLocation(
-                            LatLng(itPosition.latitude, itPosition.longitude),
-                            itPosition)) {
-                        map?.addMarker(MarkerOptions()
-                            .position(LatLng(itEstate.location.latitude, itEstate.location.longitude))
-                            .title(itEstate.type))
+            try {
+                listEstatesViewModel.listEstates.observe(viewLifecycleOwner, {
+                    it.forEach { itEstate ->
+                        if (GPSAccessHandler.checkDistanceEstateFromGPSLocation(
+                                LatLng(itPosition.latitude, itPosition.longitude),
+                                itPosition)) {
+                            map?.addMarker(MarkerOptions()
+                                .position(LatLng(itEstate.location.latitude, itEstate.location.longitude))
+                                .title(itEstate.type))
+                        }
                     }
-                }
-                handleClicksOnMarkers(it)
-            })
+                    handleClicksOnMarkers(it)
+                })
+            } catch (exception: IllegalStateException) {
+                exception.printStackTrace()
+            }
         }
     }
 
