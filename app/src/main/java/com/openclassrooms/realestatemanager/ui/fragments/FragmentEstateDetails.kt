@@ -185,14 +185,11 @@ class FragmentEstateDetails : Fragment() {
         selectedEstateToDisplay?.let { itEstate ->
             estateViewModel.initializeWithSelectedEstateValues(itEstate)
             estateViewModel.updateDateEstate(true)
-            estateViewModel.getNewEstate().observe(viewLifecycleOwner, { itUpdatedEstate ->
+            estateViewModel.getNewEstate((activity as MainActivity).getFirebaseAuth())
+                .observe(viewLifecycleOwner, { itUpdatedEstate ->
                 listEstatesViewModel.updateDatabase(true, itUpdatedEstate)
             })
         }
-
-       // listEstatesViewModel.selectedEstate = selectedEstateToDisplay
-       // listEstatesViewModel.updateDateSelectedEstate(true)
-      //  listEstatesViewModel.updateDatabase(true)
     }
 
     /**

@@ -25,6 +25,8 @@ class DialogsViewModel: ViewModel() {
 
     var textNameMediaDialog: String = ""
 
+    var progressBarDialogStatus: Boolean = false
+
     // FragmentSearch.kkt dialog
     var searchDialogStatus: Boolean = false
 

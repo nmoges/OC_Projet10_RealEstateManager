@@ -106,6 +106,8 @@
     <string name="str_toast_missing_information">Création impossible, informations manquantes</string>
     <string name="str_toast_new_estate_created">Nouveau bien crée</string>
     <string name="str_toast_estate_modified">Modifications sauvegardées</string>
+    <string name="str_dialog_progress_bar_creation_text">Création du bien</string>
+    <string name="str_dialog_progress_bar_update_text">Mise à jour du bien</string>
 
     <!-- FragmentEstateDetails.xml -->
     <string name="str_dialog_confirm_sale_tile">Confirmer la vente</string>

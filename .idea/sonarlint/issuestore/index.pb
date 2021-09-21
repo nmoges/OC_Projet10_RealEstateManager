@@ -25,14 +25,8 @@ G
 data/proguard-rules.pro,0\f\0fbb6d729d2f1271751b1eee2d01927256945f01
 ?
 settings.gradle,0\5\05efc8b1657769a27696d478ded1e95f38737233
-<
-build.gradle,f\0\f07866736216be0ee2aba49e392191aeae700a35
 X
 (gradle/wrapper/gradle-wrapper.properties,f\b\fbe448ebfc3eb2d4e308f6b8b043666f5b57235e
-@
-app/build.gradle,f\4\f4a01d6a4fcb971362ec00a83903fd3902f52164
-P
- app/src/main/AndroidManifest.xml,8\c\8c55c3ccc257e5907959013f99656e4c8ec3903e
 A
 gradle.properties,2\a\2afbb999f001938c88fa43fc2ef52abf0f8213e4
 ƒ
@@ -68,8 +62,6 @@ y
 Idata/src/main/java/com/openclassrooms/data/service/AutocompleteService.kt,e\0\e013f42cb3e2cecce53a1216ff4a2aab32121aa9
 
 Qapp/src/main/java/com/openclassrooms/realestatemanager/utils/CustomTextWatcher.kt,3\6\364820fa018f3aac6b3263a88946d3436999f781
-~
-Napp/src/main/java/com/openclassrooms/realestatemanager/utils/DateComparator.kt,9\4\94925802340b2483da9462e62bb359f234c0650e
 j
 :data/src/main/java/com/openclassrooms/data/dao/DatesDao.kt,9\3\93c2ff06aa6101fd97c0adfe22c91cecb7f19391
 k
@@ -126,16 +118,8 @@ q
 Aapp/src/main/java/com/openclassrooms/realestatemanager/AppInfo.kt,f\8\f8e7cae62fac8f3581a3f05de0e89e15f032b39e
 h
 8data/src/main/java/com/openclassrooms/data/Converters.kt,2\f\2fc8704203e81ede550fb13a356ab619955a9d84
-…
-Uapp/src/main/java/com/openclassrooms/realestatemanager/viewmodels/DialogsViewModel.kt,6\f\6fbe40807d0222bccf2c458bd98ed3b58241d59d
-„
-Tapp/src/main/java/com/openclassrooms/realestatemanager/viewmodels/EstateViewModel.kt,9\4\94ac78b5e1c7cf779cdf56a2f6074dd5d75f8542
-Œ
-\app/src/main/java/com/openclassrooms/realestatemanager/ui/fragments/FragmentEstateDetails.kt,b\9\b942265427bb7d6d6717bf6813fb573821668d1b
 ‰
 Yapp/src/main/java/com/openclassrooms/realestatemanager/ui/fragments/FragmentListEstate.kt,0\b\0b357c8f4a12d1fd6b84157cb7f44cffd452c782
-ˆ
-Xapp/src/main/java/com/openclassrooms/realestatemanager/ui/fragments/FragmentNewEstate.kt,1\0\10e9fd407e603b8e87eac8081b920670bdebfc8a
 ‡
 Wapp/src/main/java/com/openclassrooms/realestatemanager/ui/fragments/FragmentSettings.kt,b\1\b193deea59c9970fe6b0d46e03ea191e71f7b375
 l
@@ -144,3 +128,13 @@ l
 Xapp/src/main/java/com/openclassrooms/realestatemanager/ui/adapters/ListEstatesAdapter.kt,d\0\d06173742ed2234766d9661946f87a9e6e2a544f
 Ž
 ^app/src/main/java/com/openclassrooms/realestatemanager/viewmodels/ListTagsFragmentViewModel.kt,1\a\1aee7f56924dd466da2443c46f4cd9beac961a67
+x
+Hdata/src/androidTest/java/com/openclassrooms/data/ContentProviderTest.kt,f\7\f76c7e9ecf0eefe231d2870a6aed613862188e90
+‚
+Rapp/src/main/java/com/openclassrooms/realestatemanager/ui/fragments/FragmentMap.kt,d\f\df4c479f53f84cbfe4339d948ac2f6733360b003
+…
+Uapp/src/main/java/com/openclassrooms/realestatemanager/ui/fragments/FragmentSearch.kt,3\7\37821cd1226743e1f0344773b1d2a4fde1aeb286
+y
+Idata/src/main/java/com/openclassrooms/data/provider/RealEstateProvider.kt,8\9\898f309dfc5cc0cc61d64991673c29f7046189df
+‹
+[app/src/main/java/com/openclassrooms/realestatemanager/viewmodels/SearchFiltersViewModel.kt,8\e\8ebae4e1f238d3b748a05f4ad703655827ed6a98

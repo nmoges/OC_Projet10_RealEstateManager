@@ -85,6 +85,7 @@ class ListEstatesViewModel @Inject constructor(
             estate.listPhoto.forEach { insertPhotoInDatabase(it, id) }
             estate.listPointOfInterest.forEach { insertPointOfInterestInDatabase(it, id) }
     }
+
 // TODO () : déplacer écriture db dans EstateVIewModel
     /**
      * Access insert photo method from repository interface.

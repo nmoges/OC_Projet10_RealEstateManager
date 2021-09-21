@@ -32,6 +32,7 @@ import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.widget.Autocomplete
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
+import com.google.firebase.auth.FirebaseAuth
 import com.openclassrooms.realestatemanager.AppInfo
 import com.openclassrooms.realestatemanager.BuildConfig
 import com.openclassrooms.realestatemanager.R
@@ -103,10 +104,13 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
     /** Status of the network bar */
     private var networkBarDisplayStatus = true
 
+    private lateinit var auth: FirebaseAuth
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        auth = FirebaseAuth.getInstance()
         listEstatesViewModel = ViewModelProvider(this)[ListEstatesViewModel::class.java]
         listFragmentsViewModel = ViewModelProvider(this)[ListTagsFragmentViewModel::class.java]
         estatesViewModel = ViewModelProvider(this)[EstateViewModel::class.java]
@@ -715,6 +719,8 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
         // Autocomplete request result
         if (requestCode == 200) handleAutocompleteResult(resultCode, data)
     }
+
+    fun getFirebaseAuth(): FirebaseAuth = auth
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)

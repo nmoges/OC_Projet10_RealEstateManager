@@ -32,5 +32,4 @@ object DateComparator {
         } catch (exception: ParseException) { exception.printStackTrace() }
         return false
     }
-
 }

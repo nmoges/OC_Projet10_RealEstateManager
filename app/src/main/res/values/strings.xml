@@ -109,6 +109,8 @@
     <string name="str_toast_missing_information">Can\'t create Estate, missing information</string>
     <string name="str_toast_new_estate_created">New estate created</string>
     <string name="str_toast_estate_modified">Modifications saved</string>
+    <string name="str_dialog_progress_bar_creation_text">Creating estate</string>
+    <string name="str_dialog_progress_bar_update_text">Updating estate</string>
 
     <!-- FragmentEstateDetails.xml -->
     <string name="str_dialog_confirm_sale_tile">Confirm sale</string>

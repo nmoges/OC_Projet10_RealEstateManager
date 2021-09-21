@@ -2,11 +2,13 @@ package com.openclassrooms.realestatemanager.viewmodels
 
 import android.content.Context
 import android.location.Geocoder
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.libraries.places.api.model.Place
+import com.google.firebase.auth.FirebaseAuth
 import com.openclassrooms.data.model.*
 import com.openclassrooms.data.repository.RealEstateRepositoryAccess
 import com.openclassrooms.realestatemanager.Utils
@@ -127,7 +129,7 @@ class EstateViewModel @Inject constructor(
      * Returns a LiveData containing the new estate/updated estate to send to database.
      * @return : LiveData<Estate>
      */
-    fun getNewEstate(): LiveData<Estate> {
+    fun getNewEstate(auth: FirebaseAuth): LiveData<Estate> {
         val newEstate = MutableLiveData<Estate>()
         viewModelScope.launch {
             // Update agent
@@ -145,7 +147,16 @@ class EstateViewModel @Inject constructor(
                 estate.listPointOfInterest.add(PointOfInterest(i.toLong(), listPOI[i]))
             }
             listPOI.clear()
-            newEstate.postValue(estate)
+            // Send photos to cloud Storage
+            for (i in estate.listPhoto.size-numberPhotosAdded until estate.listPhoto.size) {
+                repositoryAccess.sendPhotosToCloudStorage(estate.listPhoto[i], auth) { itURL ->
+                    estate.listPhoto[i].uriConverted = itURL
+                    if (i == estate.listPhoto.size-1 && estate.listPhoto[i].uriConverted == itURL) {
+                        numberPhotosAdded = 0
+                        newEstate.postValue(estate)
+                    }
+                }
+            }
         }
         return newEstate
     }

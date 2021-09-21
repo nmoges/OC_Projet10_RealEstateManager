@@ -2,9 +2,13 @@ package com.openclassrooms.data.repository
 
 import android.app.Activity
 import android.database.Cursor
+import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.sqlite.db.SimpleSQLiteQuery
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.storage.FirebaseStorage
 import com.openclassrooms.data.*
 import com.openclassrooms.data.dao.*
 import com.openclassrooms.data.entities.*
@@ -72,6 +76,8 @@ interface RealEstateRepositoryAccess {
     fun getEstateWithId(id: Long): Cursor
 
     suspend fun convertListFullEstateDataToListEstate(list: List<FullEstateData>): MutableList<Estate>
+
+    fun sendPhotosToCloudStorage(photo: Photo, auth: FirebaseAuth, callbackURL: (String) -> Unit)
 }
 
 /**
@@ -382,6 +388,19 @@ class RealEstateRepository(
     // Autocomplete Service
     override fun performAutocompleteRequest(activity: Activity) {
         AutocompleteService.performAutocompleteRequest(activity)
+    }
+
+    // Cloud Storage access
+    override fun sendPhotosToCloudStorage(photo: Photo, auth: FirebaseAuth, callbackURL: (String) -> Unit) {
+        val storageReference = FirebaseStorage.getInstance().reference
+        val userID = auth.currentUser?.uid
+        Log.i("CALLBACK", "sendPhotosToCloudStorage")
+        val ref = storageReference.child("images/users/$userID/${photo.name}.jpg")
+        ref.putFile(Uri.parse(photo.uriConverted)).addOnSuccessListener { itTask ->
+            itTask.metadata?.reference?.downloadUrl?.addOnSuccessListener {
+                callbackURL(it.toString())
+            }
+        }.addOnFailureListener{ it.printStackTrace() }
     }
 
     // --------------------- TEST ---------------------------------

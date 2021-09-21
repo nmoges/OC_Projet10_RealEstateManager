@@ -18,6 +18,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
+import com.google.android.material.textview.MaterialTextView
 import com.openclassrooms.data.model.Agent
 import com.openclassrooms.data.model.Estate
 import com.openclassrooms.data.model.Photo
@@ -77,6 +78,9 @@ class FragmentNewEstate : Fragment() {
 
     /** Contains text value of an [AlertDialog] */
     private var textNameMediaDialog: String = ""
+
+    /** Defines an [AlertDialog] displaying a circular progress bar */
+    private var builderProgressBarDialog: AlertDialog? = null
 
     /** Defines if fragment must be removed or if a confirmation dialog must be showed after an
      * onBackPressed event */
@@ -164,6 +168,7 @@ class FragmentNewEstate : Fragment() {
         initializeDialogNameMedia()
         initializeDialogListAgents()
         initializeDialogAddPOI()
+        initializeDialogProgressBar()
     }
 
     /**
@@ -226,6 +231,17 @@ class FragmentNewEstate : Fragment() {
             .create()
     }
 
+    private fun initializeDialogProgressBar() {
+        val viewProgressBarDialog: View? = LayoutInflaterProvider
+            .getViewFromLayoutInflater(R.layout.dialog_progress_bar, context)
+        val message = viewProgressBarDialog?.findViewById<MaterialTextView>(R.id.message)
+        message?.text = if (updateEstate)
+                                   resources.getString(R.string.str_dialog_progress_bar_update_text)
+                       else resources.getString(R.string.str_dialog_progress_bar_creation_text)
+        builderProgressBarDialog = AlertDialog.Builder(activity)
+                                              .setView(viewProgressBarDialog)
+                                              .create()
+    }
     /**
      * Initializes an [AlertDialog.Builder] for [builderCancelEstateDialog] property.
      */
@@ -559,9 +575,10 @@ class FragmentNewEstate : Fragment() {
                     && estateViewModel.estate.listPhoto.isNotEmpty()
                     && !errorSliders) {
                     displayToastEstate(false)
-                    (activity as MainActivity).notificationHandler.createNotification(updateEstate)
+                  //  (activity as MainActivity).notificationHandler.createNotification(updateEstate)
                     if (currency == "EUR") price = Utils.convertEuroToDollar(price.toInt()).toString()
                     updateSelectedEstateFromViewModel()
+                    builderProgressBarDialog?.show()
                 }
                 else {
                     displayToastEstate(true)
@@ -590,10 +607,14 @@ class FragmentNewEstate : Fragment() {
      */
     private fun updateSelectedEstateFromViewModel() {
         saveEstateValuesInViewModel()
-        estateViewModel.getNewEstate().observe(viewLifecycleOwner, {
-            listEstatesViewModel.updateDatabase(updateEstate, it)
+        estateViewModel.getNewEstate((activity as MainActivity).getFirebaseAuth()).observe(viewLifecycleOwner, { itEstate ->
+            listEstatesViewModel.updateDatabase(updateEstate, itEstate)
             confirmExit = true
-            (activity as MainActivity).onBackPressed()
+            builderProgressBarDialog?.dismiss()
+            (activity as MainActivity).apply {
+                notificationHandler.createNotification(updateEstate)
+                onBackPressed()
+            }
         })
     }
 
@@ -723,6 +744,7 @@ class FragmentNewEstate : Fragment() {
         builderNameMediaDialog?.let { if (it.isShowing) it.dismiss() }
         builderAddMediaDialog?.let { if (it.isShowing) it.dismiss() }
         builderResetEstateDialog?.let { if (it.isShowing) it.dismiss() }
+        builderProgressBarDialog?.let { if (it.isShowing) it.dismiss() }
     }
 
     override fun onPause() {
@@ -746,6 +768,7 @@ class FragmentNewEstate : Fragment() {
         if (dialogsViewModel.nameMediaDialogStatus) builderNameMediaDialog?.show()
         if (dialogsViewModel.addMediaDialogStatus) builderAddMediaDialog?.show()
         if (dialogsViewModel.resetEstateDialogStatus) builderResetEstateDialog?.show()
+        if (dialogsViewModel.progressBarDialogStatus) builderProgressBarDialog?.show()
     }
 
     /**
@@ -759,6 +782,7 @@ class FragmentNewEstate : Fragment() {
         builderAddMediaDialog?.let { dialogsViewModel.addMediaDialogStatus = it.isShowing }
         builderResetEstateDialog?.let { dialogsViewModel.resetEstateDialogStatus = it.isShowing }
         dialogsViewModel.textNameMediaDialog = textNameMediaDialog
+        builderProgressBarDialog?.let { dialogsViewModel.progressBarDialogStatus = it.isShowing }
     }
 
     /**
