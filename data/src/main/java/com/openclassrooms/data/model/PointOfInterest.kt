@@ -6,6 +6,6 @@ package com.openclassrooms.data.model
  * @param name : point of interest name
  */
 class PointOfInterest(
-    var id: Long,
-    var name: String
+    var id: Long = 0,
+    var name: String = ""
 )

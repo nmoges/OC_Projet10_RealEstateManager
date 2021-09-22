@@ -6,5 +6,5 @@ package com.openclassrooms.data.model
  * @param name : name associated with a photo.
  */
 class Photo(
-    var uriConverted: String,
-    var name: String)
+    var uriConverted: String = "",
+    var name: String = "")

@@ -9,9 +9,9 @@ package com.openclassrooms.data.model
  * @param district : district of the estate
  */
 data class Location(
-    var id: Long,
-    var latitude: Double,
-    var longitude: Double,
-    var address: String,
-    var district: String
+    var id: Long = 0,
+    var latitude: Double = 0.0,
+    var longitude: Double = 0.0,
+    var address: String = "",
+    var district: String = ""
 )

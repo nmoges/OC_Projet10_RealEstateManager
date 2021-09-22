@@ -79,6 +79,9 @@ dependencies {
     def firebase_auth_version = "7.2.0"
     implementation "com.firebaseui:firebase-ui-auth:$firebase_auth_version"
 
+    // Firebase Realtime Database
+    implementation 'com.google.firebase:firebase-database-ktx'
+
     // Navigation
     def navigation_version = "2.3.5"
     implementation("androidx.navigation:navigation-fragment-ktx:$navigation_version")

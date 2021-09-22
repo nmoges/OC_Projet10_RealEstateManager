@@ -148,16 +148,20 @@ class EstateViewModel @Inject constructor(
             }
             listPOI.clear()
             // Send photos to cloud Storage
-            for (i in estate.listPhoto.size-numberPhotosAdded until estate.listPhoto.size) {
-                repositoryAccess.sendPhotosToCloudStorage(estate.listPhoto[i], auth) { itURL ->
-                    estate.listPhoto[i].uriConverted = itURL
-                    if (i == estate.listPhoto.size-1 && estate.listPhoto[i].uriConverted == itURL) {
-                        numberPhotosAdded = 0
-                        newEstate.postValue(estate)
+            if (numberPhotosAdded > 0) {
+                for (i in estate.listPhoto.size-numberPhotosAdded until estate.listPhoto.size) {
+                    repositoryAccess.sendPhotosToCloudStorage(estate.listPhoto[i], auth) { itURL ->
+                        estate.listPhoto[i].uriConverted = itURL
+                        if (i == estate.listPhoto.size-1 && estate.listPhoto[i].uriConverted == itURL) {
+                            numberPhotosAdded = 0
+                            newEstate.postValue(estate)
+                        }
                     }
                 }
             }
+            else newEstate.postValue(estate)
         }
         return newEstate
     }
+
 }

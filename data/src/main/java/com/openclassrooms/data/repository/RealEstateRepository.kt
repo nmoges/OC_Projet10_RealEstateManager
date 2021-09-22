@@ -8,6 +8,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.sqlite.db.SimpleSQLiteQuery
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.*
 import com.google.firebase.storage.FirebaseStorage
 import com.openclassrooms.data.*
 import com.openclassrooms.data.dao.*
@@ -21,63 +22,69 @@ import com.openclassrooms.data.service.AutocompleteService
  */
 interface RealEstateRepositoryAccess {
 
-    // -------------------------------- EstateDao --------------------------------
+    // -------------------------------- EstateDao --------------------------------------------------
     suspend fun insertEstate(estate: Estate): Long
 
     suspend fun updateEstate(estate: Estate)
 
-    // -------------------------------- PhotoDao --------------------------------
+    // -------------------------------- PhotoDao ---------------------------------------------------
     suspend fun insertPhoto(photo: Photo, associatedId: Long)
 
     suspend fun getPhotos(id: Long): List<Photo>
 
-    // -------------------------------- InteriorDao --------------------------------
+    // -------------------------------- InteriorDao ------------------------------------------------
     suspend fun insertInterior(interior: Interior, associatedId: Long)
 
     suspend fun updateInterior(interior: Interior, associatedId: Long)
 
-    // -------------------------------- AgentDao --------------------------------
+    // -------------------------------- AgentDao ---------------------------------------------------
     suspend fun insertAgent(agent: Agent): Long
 
     suspend fun getAgentById(id: Long): Agent
 
     suspend fun getAllAgents(): List<Agent>
 
-    // -------------------------------- DatesDao --------------------------------
+    // -------------------------------- DatesDao ---------------------------------------------------
     suspend fun insertDates(dates: Dates, associatedId: Long): Long
 
     suspend fun updateDates(dates: Dates, associatedId: Long)
 
     suspend fun getDatesById(id: Long): Dates
 
-    // -------------------------------- LocationDao --------------------------------
+    // -------------------------------- LocationDao ------------------------------------------------
     suspend fun insertLocation(location: Location, associatedId: Long): Long
 
     suspend fun updateLocation(location: Location, associatedId: Long)
 
-    // -------------------------------- PointOfInterestDao --------------------------------
+    // -------------------------------- PointOfInterestDao -----------------------------------------
     suspend fun insertPointOfInterest(pointOfInterest: PointOfInterest, associatedId: Long)
 
     suspend fun deletePointOfInterest(pointOfInterest: PointOfInterest, associatedId: Long)
 
     suspend fun getPointsOfInterest(id: Long): List<PointOfInterest>
 
-    // -------------------------------- FullEstateDao --------------------------------
+    // -------------------------------- FullEstateDao ----------------------------------------------
     suspend fun loadAllEstates(): List<Estate>
 
     fun getSearchResults(price: List<Int?>, surface: List<Int?>,
                          status: Boolean?, dates: List<String?>,
                          listPoi : MutableList<String>?, _nbFilters: Int): LiveData<List<FullEstateData>>
 
-    // -------------------------------- Autocomplete service --------------------------------
+    // -------------------------------- Autocomplete service ---------------------------------------
     fun performAutocompleteRequest(activity: Activity)
+
+    // -------------------------------- Cloud Storage Firebase -------------------------------------
+    fun sendPhotosToCloudStorage(photo: Photo, auth: FirebaseAuth, callbackURL: (String) -> Unit)
+
+    // -------------------------------- Realtime Database Firebase ---------------------------------
+    fun sendEstateToRealtimeDatabase(estate: Estate, dbReference: DatabaseReference)
+
+    fun initializeValueEventListener(dbReference: DatabaseReference, callbackList : (List<Estate>) -> (Unit))
 
     // --------------------- TEST ---------------------------------
     fun getEstateWithId(id: Long): Cursor
 
     suspend fun convertListFullEstateDataToListEstate(list: List<FullEstateData>): MutableList<Estate>
-
-    fun sendPhotosToCloudStorage(photo: Photo, auth: FirebaseAuth, callbackURL: (String) -> Unit)
 }
 
 /**
@@ -289,6 +296,7 @@ class RealEstateRepository(
         return listConverted
     }
 
+    // ------------------------------- Search queries for SQLite DB --------------------------------
     companion object {
         const val TABLE_ESTATE = EstateData.TABLE_NAME
         const val TABLE_INTERIOR = InteriorData.TABLE_NAME
@@ -385,22 +393,42 @@ class RealEstateRepository(
         return updatedQuery
     }
 
-    // Autocomplete Service
+    // ------------------------------- Autocomplete Service ----------------------------------------
     override fun performAutocompleteRequest(activity: Activity) {
         AutocompleteService.performAutocompleteRequest(activity)
     }
 
-    // Cloud Storage access
+    // ------------------------------- Cloud Storage access ----------------------------------------
     override fun sendPhotosToCloudStorage(photo: Photo, auth: FirebaseAuth, callbackURL: (String) -> Unit) {
         val storageReference = FirebaseStorage.getInstance().reference
         val userID = auth.currentUser?.uid
-        Log.i("CALLBACK", "sendPhotosToCloudStorage")
         val ref = storageReference.child("images/users/$userID/${photo.name}.jpg")
         ref.putFile(Uri.parse(photo.uriConverted)).addOnSuccessListener { itTask ->
             itTask.metadata?.reference?.downloadUrl?.addOnSuccessListener {
                 callbackURL(it.toString())
             }
         }.addOnFailureListener{ it.printStackTrace() }
+    }
+
+    // ------------------------------- Realtime Database access  -----------------------------------
+    override fun sendEstateToRealtimeDatabase(estate: Estate, dbReference: DatabaseReference) {
+        dbReference.child(estate.id.toString()).setValue(estate)
+    }
+
+    override fun initializeValueEventListener(dbReference: DatabaseReference, callbackList : (List<Estate>) -> (Unit)) {
+        val listener = object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val updatedList = mutableListOf<Estate>()
+                val children = snapshot.children
+                children.forEach {  itData ->
+                    val estate = itData.getValue(Estate::class.java)
+                    estate?.let { itEstate -> updatedList.add(itEstate) }
+                }
+                callbackList(updatedList)
+            }
+            override fun onCancelled(error: DatabaseError) { error.toException().printStackTrace() }
+        }
+        dbReference.addValueEventListener(listener)
     }
 
     // --------------------- TEST ---------------------------------

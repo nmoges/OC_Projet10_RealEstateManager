@@ -33,6 +33,10 @@ import com.google.android.libraries.places.widget.Autocomplete
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
 import com.openclassrooms.realestatemanager.AppInfo
 import com.openclassrooms.realestatemanager.BuildConfig
 import com.openclassrooms.realestatemanager.R
@@ -104,16 +108,22 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
     /** Status of the network bar */
     private var networkBarDisplayStatus = true
 
+    /** To access user Firebase Authentication information */
     private lateinit var auth: FirebaseAuth
+
+    private lateinit var dbFirebase: FirebaseDatabase
+
+    private lateinit var dbReference: DatabaseReference
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        auth = FirebaseAuth.getInstance()
+        initializeFirebase()
         listEstatesViewModel = ViewModelProvider(this)[ListEstatesViewModel::class.java]
         listFragmentsViewModel = ViewModelProvider(this)[ListTagsFragmentViewModel::class.java]
         estatesViewModel = ViewModelProvider(this)[EstateViewModel::class.java]
+        listEstatesViewModel.initializeValueEventListener(dbReference)
         checkScreenProperties()
         initializeDialogAddAgent()
         initializeDialogLogout()
@@ -141,6 +151,16 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
     override fun onPause() {
         super.onPause()
         unregisterReceiver(networkBroadcastReceiver)
+    }
+
+    /**
+     * Initialize Firebase tools.
+     */
+    private fun initializeFirebase() {
+        Firebase.database.setPersistenceEnabled(true)
+        auth = FirebaseAuth.getInstance()
+        dbFirebase = FirebaseDatabase.getInstance()
+        dbReference = dbFirebase.getReference("estates")
     }
 
     /**
@@ -721,6 +741,8 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
     }
 
     fun getFirebaseAuth(): FirebaseAuth = auth
+
+    fun getFirebaseDatabaseReference(): DatabaseReference = dbReference
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)

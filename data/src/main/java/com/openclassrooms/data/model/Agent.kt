@@ -7,7 +7,7 @@ package com.openclassrooms.data.model
  * @param lastName : last name
  */
 class Agent(
-    var id: Long,
-    var firstName: String,
-    var lastName: String
+    var id: Long = 0,
+    var firstName: String =  "",
+    var lastName: String = ""
 )

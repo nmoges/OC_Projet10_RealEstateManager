@@ -8,8 +8,8 @@ package com.openclassrooms.data.model
  * @param surface : surface (sq m)
  */
 class Interior(
-    var id: Long,
-    var numberRooms: Int,
-    var numberBathrooms: Int,
-    var numberBedrooms : Int,
-    var surface: Int)
+    var id: Long = 0,
+    var numberRooms: Int = 0,
+    var numberBathrooms: Int = 0,
+    var numberBedrooms : Int = 0,
+    var surface: Int = 0)

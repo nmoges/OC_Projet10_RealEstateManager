@@ -15,14 +15,14 @@ package com.openclassrooms.data.model
  * @param listPointOfInterest : List of points of interest
  */
 data class Estate(
-    var id: Long,
-    var type: String,
-    var price: Int,
-    var interior: Interior,
-    var description: String,
-    var location: Location,
-    var agent: Agent,
-    var dates: Dates,
+    var id: Long = 0,
+    var type: String = "",
+    var price: Int = 0,
+    var interior: Interior = Interior(0,0, 0, 0, 0),
+    var description: String = "",
+    var location: Location = Location(0, 0.0, 0.0, "", ""),
+    var agent: Agent = Agent(0, "", ""),
+    var dates: Dates = Dates(0, "", ""),
     var status: Boolean = false,
     var selected: Boolean = false,
     var listPhoto: MutableList<Photo> = mutableListOf(),

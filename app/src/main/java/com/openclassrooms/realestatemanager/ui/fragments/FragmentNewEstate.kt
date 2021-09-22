@@ -607,8 +607,10 @@ class FragmentNewEstate : Fragment() {
      */
     private fun updateSelectedEstateFromViewModel() {
         saveEstateValuesInViewModel()
-        estateViewModel.getNewEstate((activity as MainActivity).getFirebaseAuth()).observe(viewLifecycleOwner, { itEstate ->
-            listEstatesViewModel.updateDatabase(updateEstate, itEstate)
+        estateViewModel.getNewEstate((activity as MainActivity).getFirebaseAuth()).observe(viewLifecycleOwner,
+            { itEstate ->
+            listEstatesViewModel.updateDatabase(updateEstate, itEstate,
+                                          (activity as MainActivity).getFirebaseDatabaseReference())
             confirmExit = true
             builderProgressBarDialog?.dismiss()
             (activity as MainActivity).apply {

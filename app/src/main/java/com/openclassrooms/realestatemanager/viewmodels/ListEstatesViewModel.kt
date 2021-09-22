@@ -6,6 +6,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.database.DatabaseReference
 import com.openclassrooms.data.entities.PointOfInterestData
 import com.openclassrooms.data.model.*
 import com.openclassrooms.data.repository.RealEstateRepositoryAccess
@@ -38,6 +39,14 @@ class ListEstatesViewModel @Inject constructor(
     init {
         insertDummyListAgentInDb()
         restoreData()
+    }
+
+    fun initializeValueEventListener(dbReference: DatabaseReference) {
+        repositoryAccess.initializeValueEventListener(dbReference) { getRealtimeDatabaseUpdate(it) }
+    }
+
+    private fun getRealtimeDatabaseUpdate(updatedList: List<Estate>) {
+        _listEstates.postValue(updatedList)
     }
 
     // -------------------- Estate update --------------------
@@ -77,13 +86,15 @@ class ListEstatesViewModel @Inject constructor(
      * Access insert estate method from repository interface.
      * @param estate : estate data to store in table_photos
      */
-    private suspend fun insertEstateInDatabase(estate: Estate) {
+    private suspend fun insertEstateInDatabase(estate: Estate, dbReference: DatabaseReference) {
             val id = repositoryAccess.insertEstate(estate)
+            estate.id = id
             insertInteriorInDatabase(estate.interior, id)
             insertDatesInDatabase(estate.dates, id)
             insertLocationInDatabase(estate.location, id)
             estate.listPhoto.forEach { insertPhotoInDatabase(it, id) }
             estate.listPointOfInterest.forEach { insertPointOfInterestInDatabase(it, id) }
+            repositoryAccess.sendEstateToRealtimeDatabase(estate, dbReference)
     }
 
 // TODO () : déplacer écriture db dans EstateVIewModel
@@ -139,10 +150,10 @@ class ListEstatesViewModel @Inject constructor(
      * Determines if database operation is an insertion or an update.
      * @param typeUpdate : type of operation in database
      */
-    fun updateDatabase(typeUpdate: Boolean, estate: Estate) {
+    fun updateDatabase(typeUpdate: Boolean, estate: Estate, dbReference: DatabaseReference) {
         viewModelScope.launch {
-            if (!typeUpdate) insertEstateInDatabase(estate)
-            else updateEstateInDatabase(estate)
+            if (!typeUpdate) insertEstateInDatabase(estate, dbReference)
+            else updateEstateInDatabase(estate, dbReference)
             restoreData()
         }
     }
@@ -151,13 +162,14 @@ class ListEstatesViewModel @Inject constructor(
      * Updates table_estates from database.
      * @param estate : updated estate
      */
-    private suspend fun updateEstateInDatabase(estate: Estate) {
+    private suspend fun updateEstateInDatabase(estate: Estate, dbReference: DatabaseReference) {
             repositoryAccess.updateEstate(estate)                 // Update table_estates
             updateInteriorInDatabase(estate.interior, estate.id)  // Update table_interiors
             updatePhotosInDatabase(estate)                        // Update table_photos
             updateDatesInDatabase(estate.dates, estate.id)        // Update table_dates
             updateLocationInDatabase(estate.location, estate.id)  // Update table_locations
             updatePointsOfInterestInDatabase(estate)              // Update table_poi
+            repositoryAccess.sendEstateToRealtimeDatabase(estate, dbReference)
     }
 
     /**

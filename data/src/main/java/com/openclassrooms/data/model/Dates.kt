@@ -7,7 +7,7 @@ package com.openclassrooms.data.model
  * @param dateSale : date when an estate has been sold
  */
 class Dates(
-    var id: Long,
-    var dateEntry : String,
-    var dateSale : String
+    var id: Long = 0,
+    var dateEntry : String = "",
+    var dateSale : String = ""
 )
