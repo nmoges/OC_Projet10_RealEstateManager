@@ -486,7 +486,8 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
                             lastNameAgentInputEdit: TextInputEditText?) {
         if (firstNameAgentInputEdit != null && lastNameAgentInputEdit != null) {
             val agent = Agent(id = 0, firstName = firstNameAgent, lastName = lastNameAgent)
-            listEstatesViewModel.insertAgentInDatabase(agent) }
+            estatesViewModel.insertAgentInDatabase(agent)
+        }
     }
 
     /**

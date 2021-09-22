@@ -609,13 +609,16 @@ class FragmentNewEstate : Fragment() {
         saveEstateValuesInViewModel()
         estateViewModel.getNewEstate((activity as MainActivity).getFirebaseAuth()).observe(viewLifecycleOwner,
             { itEstate ->
-            listEstatesViewModel.updateDatabase(updateEstate, itEstate,
-                                          (activity as MainActivity).getFirebaseDatabaseReference())
-            confirmExit = true
-            builderProgressBarDialog?.dismiss()
-            (activity as MainActivity).apply {
-                notificationHandler.createNotification(updateEstate)
-                onBackPressed()
+                estateViewModel.updateDatabase(updateEstate, itEstate,
+                    (activity as MainActivity).getFirebaseDatabaseReference()) {
+                    // Callback after database updated
+                    listEstatesViewModel.restoreData()
+                    confirmExit = true
+                    builderProgressBarDialog?.dismiss()
+                    (activity as MainActivity).apply {
+                        notificationHandler.createNotification(updateEstate)
+                        onBackPressed()
+                }
             }
         })
     }
