@@ -187,10 +187,8 @@ class FragmentEstateDetails : Fragment() {
             estateViewModel.updateDateEstate(true)
             estateViewModel.getNewEstate((activity as MainActivity).getFirebaseAuth())
                 .observe(viewLifecycleOwner, { itUpdatedEstate ->
-                    estateViewModel.updateDatabase(true, itUpdatedEstate,
-                                          (activity as MainActivity).getFirebaseDatabaseReference()) {
-                        listEstatesViewModel.restoreData()
-                    }
+                    estateViewModel.updateSQLiteDatabase(true, itUpdatedEstate,
+                                      (activity as MainActivity).getFirebaseDatabaseReference()) { }
             })
         }
     }

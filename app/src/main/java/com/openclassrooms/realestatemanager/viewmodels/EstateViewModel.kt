@@ -10,6 +10,8 @@ import androidx.lifecycle.viewModelScope
 import com.google.android.libraries.places.api.model.Place
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
 import com.openclassrooms.data.entities.PointOfInterestData
 import com.openclassrooms.data.model.*
 import com.openclassrooms.data.repository.RealEstateRepositoryAccess
@@ -48,7 +50,10 @@ class EstateViewModel @Inject constructor(
     /** Temporary value storing the position in the list of agents */
     var nameAgentSelected: String = ""
 
-    init { resetEstate() }
+    init {
+        Firebase.database.setPersistenceEnabled(true)
+        resetEstate()
+    }
 
     /**
      * Creates a new [Estate].
@@ -69,6 +74,28 @@ class EstateViewModel @Inject constructor(
     fun resetEstate() {
         estate = createNewEstate()
         listPOI.clear()
+    }
+
+    /**
+     * Access "initializeChildEventListener()" method from [repositoryAccess].
+     * @param dbReference : Realtime Database reference
+     */
+    fun initializeChildEventListener(dbReference: DatabaseReference) {
+        repositoryAccess.initializeChildEventListener(dbReference) { itEstate, itType ->
+            updateSQLiteDatabaseFromRealtimeDatabase(itEstate, itType)
+        }
+    }
+
+    /**
+     * Updates SQLite database with Realtime database data
+     * @param estate : Estate to load in SQLite database
+     * @param type : Type of operation (update estate, insert estate)
+     */
+    private fun updateSQLiteDatabaseFromRealtimeDatabase(estate: Estate, type: Boolean) {
+        viewModelScope.launch {
+            if (!type) insertEstateInDatabase(estate, true)
+            else updateEstateInDatabase(estate)
+        }
     }
 
     /**
@@ -171,19 +198,19 @@ class EstateViewModel @Inject constructor(
     /**
      * Access insert estate method from repository interface.
      * @param estate : estate data to store in table_photos
+     * @param type : defines type of insertion (false : estate created by user (auto generated id)
+     *                                          true : estate from Realtime database (id already exists)
      */
-    private suspend fun insertEstateInDatabase(estate: Estate, dbReference: DatabaseReference) {
-        val id = repositoryAccess.insertEstate(estate)
-        estate.id = id
+    private suspend fun insertEstateInDatabase(estate: Estate, type: Boolean): Long {
+        val id = repositoryAccess.insertEstate(estate, type)
         insertInteriorInDatabase(estate.interior, id)
         insertDatesInDatabase(estate.dates, id)
         insertLocationInDatabase(estate.location, id)
         estate.listPhoto.forEach { insertPhotoInDatabase(it, id) }
         estate.listPointOfInterest.forEach { insertPointOfInterestInDatabase(it, id) }
-        repositoryAccess.sendEstateToRealtimeDatabase(estate, dbReference)
+        return id
     }
 
-// TODO () : déplacer écriture db dans EstateVIewModel
     /**
      * Access insert photo method from repository interface.
      ** @param photo : Photo data to store in table_photos
@@ -236,12 +263,22 @@ class EstateViewModel @Inject constructor(
      * Determines if database operation is an insertion or an update.
      * @param typeUpdate : type of operation in database
      */
-    fun updateDatabase(typeUpdate: Boolean,
+    fun updateSQLiteDatabase(typeUpdate: Boolean,
                        estate: Estate, dbReference:
                        DatabaseReference, callbackDbUpdate : () -> Unit) {
         viewModelScope.launch {
-            if (!typeUpdate) insertEstateInDatabase(estate, dbReference)
-            else updateEstateInDatabase(estate, dbReference)
+            if (!typeUpdate) {
+                val id = insertEstateInDatabase(estate, false)
+                estate.id = id
+                repositoryAccess.setLockSQLDBUpdate(true)
+                repositoryAccess.sendEstateToRealtimeDatabase(estate, dbReference)
+
+            }
+            else {
+                updateEstateInDatabase(estate)
+                repositoryAccess.setLockSQLDBUpdate(true)
+                repositoryAccess.sendEstateToRealtimeDatabase(estate, dbReference)
+            }
             callbackDbUpdate()
         }
     }
@@ -250,14 +287,13 @@ class EstateViewModel @Inject constructor(
      * Updates table_estates from database.
      * @param estate : updated estate
      */
-    private suspend fun updateEstateInDatabase(estate: Estate, dbReference: DatabaseReference) {
+    private suspend fun updateEstateInDatabase(estate: Estate) {
         repositoryAccess.updateEstate(estate)                 // Update table_estates
         updateInteriorInDatabase(estate.interior, estate.id)  // Update table_interiors
         updatePhotosInDatabase(estate)                        // Update table_photos
         updateDatesInDatabase(estate.dates, estate.id)        // Update table_dates
         updateLocationInDatabase(estate.location, estate.id)  // Update table_locations
         updatePointsOfInterestInDatabase(estate)              // Update table_poi
-        repositoryAccess.sendEstateToRealtimeDatabase(estate, dbReference)
     }
 
     /**

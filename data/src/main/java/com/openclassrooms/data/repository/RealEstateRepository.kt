@@ -5,15 +5,16 @@ import android.database.Cursor
 import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.sqlite.db.SimpleSQLiteQuery
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.*
+import com.google.firebase.database.ChildEventListener
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
 import com.google.firebase.storage.FirebaseStorage
 import com.openclassrooms.data.*
 import com.openclassrooms.data.dao.*
 import com.openclassrooms.data.entities.*
-import com.openclassrooms.data.entities.DatesData
 import com.openclassrooms.data.model.*
 import com.openclassrooms.data.service.AutocompleteService
 
@@ -23,7 +24,7 @@ import com.openclassrooms.data.service.AutocompleteService
 interface RealEstateRepositoryAccess {
 
     // -------------------------------- EstateDao --------------------------------------------------
-    suspend fun insertEstate(estate: Estate): Long
+    suspend fun insertEstate(estate: Estate, type: Boolean): Long
 
     suspend fun updateEstate(estate: Estate)
 
@@ -64,7 +65,7 @@ interface RealEstateRepositoryAccess {
     suspend fun getPointsOfInterest(id: Long): List<PointOfInterest>
 
     // -------------------------------- FullEstateDao ----------------------------------------------
-    suspend fun loadAllEstates(): List<Estate>
+    fun loadAllEstates(): LiveData<List<FullEstateData>>
 
     fun getSearchResults(price: List<Int?>, surface: List<Int?>,
                          status: Boolean?, dates: List<String?>,
@@ -79,12 +80,14 @@ interface RealEstateRepositoryAccess {
     // -------------------------------- Realtime Database Firebase ---------------------------------
     fun sendEstateToRealtimeDatabase(estate: Estate, dbReference: DatabaseReference)
 
-    fun initializeValueEventListener(dbReference: DatabaseReference, callbackList : (List<Estate>) -> (Unit))
+    fun initializeChildEventListener(dbReference: DatabaseReference, callbackList: (Estate, Boolean) -> Unit)
 
     // --------------------- TEST ---------------------------------
     fun getEstateWithId(id: Long): Cursor
 
     suspend fun convertListFullEstateDataToListEstate(list: List<FullEstateData>): MutableList<Estate>
+
+    fun setLockSQLDBUpdate(status: Boolean)
 }
 
 /**
@@ -107,8 +110,11 @@ class RealEstateRepository(
      * @param estate : Estate to insert
      * @return : id of the inserted row in database
      */
-    override suspend fun insertEstate(estate: Estate): Long =
-        estateDao.insertEstateData(estate.toEstateData())
+    override suspend fun insertEstate(estate: Estate, type: Boolean): Long {
+        val estateData = estate.toEstateData()
+        if (type) estateData.idEstate = estate.id // From Realtime database, Id already exists
+        return estateDao.insertEstateData(estateData)
+    }
 
 
     /**
@@ -277,24 +283,10 @@ class RealEstateRepository(
      * Accesses DAO load Estates method
      * @return : list of results
      */
-    override suspend fun loadAllEstates(): List<Estate> {
-        val list = fullEstateDao.loadAllEstates()
-        val listConverted: MutableList<Estate> = mutableListOf()
-        list.forEach { it ->
-            val interior = it.interiorData.toInterior()
-            val listPhoto: MutableList<Photo> = mutableListOf()
-            it.listPhotosData.forEach { listPhoto.add(it.toPhoto()) }
-            val listPointOfInterest: MutableList<PointOfInterest> = mutableListOf()
-            it.listPointOfInterestData.forEach { listPointOfInterest.add(it.toPointOfInterest()) }
-            val agent = getAgentById(it.estateData.idAgent)
-            val dates = getDatesById(it.estateData.idEstate)
-            val location = it.locationData.toLocation()
-            val estate = it.estateData.toEstate(interior, listPhoto, agent, dates,
-                                                location, listPointOfInterest)
-            listConverted.add(estate)
-        }
-        return listConverted
+    override fun loadAllEstates(): LiveData<List<FullEstateData>> {
+        return fullEstateDao.loadAllEstates()
     }
+
 
     // ------------------------------- Search queries for SQLite DB --------------------------------
     companion object {
@@ -411,25 +403,50 @@ class RealEstateRepository(
     }
 
     // ------------------------------- Realtime Database access  -----------------------------------
+
+    var lockSQLiteDBUpdate: Boolean = false
+
+    override fun setLockSQLDBUpdate(status: Boolean) {
+        lockSQLiteDBUpdate = status
+    }
+
     override fun sendEstateToRealtimeDatabase(estate: Estate, dbReference: DatabaseReference) {
+
         dbReference.child(estate.id.toString()).setValue(estate)
     }
 
-    override fun initializeValueEventListener(dbReference: DatabaseReference, callbackList : (List<Estate>) -> (Unit)) {
-        val listener = object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                val updatedList = mutableListOf<Estate>()
-                val children = snapshot.children
-                children.forEach {  itData ->
-                    val estate = itData.getValue(Estate::class.java)
-                    estate?.let { itEstate -> updatedList.add(itEstate) }
+    override fun initializeChildEventListener(dbReference: DatabaseReference, callbackList: (Estate, Boolean) -> Unit) {
+
+        val childListener = object : ChildEventListener {
+            override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
+                if (!lockSQLiteDBUpdate) {
+                    val child = snapshot.getValue(Estate::class.java)
+                    child?.let {   callbackList(it, false) }
                 }
-                callbackList(updatedList)
+                else lockSQLiteDBUpdate = false
             }
-            override fun onCancelled(error: DatabaseError) { error.toException().printStackTrace() }
+
+            override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
+                if (!lockSQLiteDBUpdate) {
+                    val child = snapshot.getValue(Estate::class.java)
+                    child?.let {   callbackList(it, true) }
+                }
+                else lockSQLiteDBUpdate = false
+            }
+
+            override fun onChildRemoved(snapshot: DataSnapshot) {
+            }
+
+            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+            }
         }
-        dbReference.addValueEventListener(listener)
+        dbReference.addChildEventListener(childListener)
     }
+
+
 
     // --------------------- TEST ---------------------------------
     override fun getEstateWithId(id: Long): Cursor = estateDao.getEstateWithId(id)

@@ -5,7 +5,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
+import com.openclassrooms.data.entities.FullEstateData
 import com.openclassrooms.data.model.Agent
 import com.openclassrooms.data.model.Estate
 import com.openclassrooms.data.repository.RealEstateRepositoryAccess
@@ -35,16 +37,9 @@ class ListEstatesViewModel @Inject constructor(
     var selectedEstate: Estate? = null
 
     init {
+        Firebase.database.setPersistenceEnabled(true)
         insertDummyListAgentInDb()
         restoreData()
-    }
-
-    fun initializeValueEventListener(dbReference: DatabaseReference) {
-        repositoryAccess.initializeValueEventListener(dbReference) { getRealtimeDatabaseUpdate(it) }
-    }
-
-    private fun getRealtimeDatabaseUpdate(updatedList: List<Estate>) {
-        _listEstates.postValue(updatedList)
     }
 
     // -------------------- Estate update --------------------
@@ -70,9 +65,17 @@ class ListEstatesViewModel @Inject constructor(
     /**
      * Restores data from database.
      */
-    fun restoreData() =
-        viewModelScope.launch { _listEstates.postValue(repositoryAccess.loadAllEstates()) }
+    fun restoreData(): LiveData<List<FullEstateData>> = repositoryAccess.loadAllEstates()
 
+    /**
+     * Converts data from SQLite database into Estates.
+     * @param list : list to convert
+     */
+    fun convertFullEstateInEstate(list: List<FullEstateData>) {
+        viewModelScope.launch {
+            _listEstates.postValue(repositoryAccess.convertListFullEstateDataToListEstate(list))
+        }
+    }
     /**
      * Restores the list of existing agents in database.
      */

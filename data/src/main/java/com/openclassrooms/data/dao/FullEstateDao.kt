@@ -13,7 +13,7 @@ interface FullEstateDao {
 
     @Transaction
     @Query("SELECT * FROM table_estates")
-    suspend fun loadAllEstates() : List<FullEstateData>
+    fun loadAllEstates() : LiveData<List<FullEstateData>>
 
     @Transaction
     @RawQuery

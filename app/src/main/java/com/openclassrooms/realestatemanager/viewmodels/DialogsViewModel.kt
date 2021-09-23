@@ -10,6 +10,8 @@ class DialogsViewModel: ViewModel() {
     // FragmentEstateDetails.kt dialog
     var confirmDialogStatus: Boolean = false
 
+    var loadEstatesDialogStatus: Boolean = false
+
     // FragmentNewEstate.kt dialogs
     var addPOIDialogStatus: Boolean = false
 

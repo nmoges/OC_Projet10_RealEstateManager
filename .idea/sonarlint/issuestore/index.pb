@@ -96,8 +96,6 @@ q
 Aapp/src/main/java/com/openclassrooms/realestatemanager/Utils.java,f\1\f1cdde1ae10dbcb7e4502dc957ce7854a5461cbb
 â
 Yapp/src/main/java/com/openclassrooms/realestatemanager/service/DummyListAgentGenerator.kt,5\f\5fe671e3fb31accf5982ae77c2cc55752fd6c2dc
-o
-?data/src/main/java/com/openclassrooms/data/dao/FullEstateDao.kt,f\4\f46318b5976b75f3c16e20c81de77c8bcb7acd6e
 Ä
 Papp/src/main/java/com/openclassrooms/realestatemanager/ui/MediaDisplayHandler.kt,2\1\21461e103fec08f9b04298694b22ef577055dd66
 Å
@@ -106,8 +104,6 @@ q
 Aapp/src/main/java/com/openclassrooms/realestatemanager/AppInfo.kt,f\8\f8e7cae62fac8f3581a3f05de0e89e15f032b39e
 h
 8data/src/main/java/com/openclassrooms/data/Converters.kt,2\f\2fc8704203e81ede550fb13a356ab619955a9d84
-â
-Yapp/src/main/java/com/openclassrooms/realestatemanager/ui/fragments/FragmentListEstate.kt,0\b\0b357c8f4a12d1fd6b84157cb7f44cffd452c782
 á
 Wapp/src/main/java/com/openclassrooms/realestatemanager/ui/fragments/FragmentSettings.kt,b\1\b193deea59c9970fe6b0d46e03ea191e71f7b375
 à
@@ -130,8 +126,6 @@ P
 build.gradle,f\0\f07866736216be0ee2aba49e392191aeae700a35
 ~
 Napp/src/main/java/com/openclassrooms/realestatemanager/utils/DateComparator.kt,9\4\94925802340b2483da9462e62bb359f234c0650e
-Ö
-Uapp/src/main/java/com/openclassrooms/realestatemanager/viewmodels/DialogsViewModel.kt,6\f\6fbe40807d0222bccf2c458bd98ed3b58241d59d
 i
 9data/src/main/java/com/openclassrooms/data/model/Agent.kt,e\a\eac620c4b718b19f8ede12b132b999c10e8f1cd4
 @
@@ -150,5 +144,3 @@ i
 9data/src/main/java/com/openclassrooms/data/model/Photo.kt,a\9\a907f34156a39e88c7dc7b44852a028026430553
 s
 Cdata/src/main/java/com/openclassrooms/data/model/PointOfInterest.kt,6\6\661525b7802e1bcd1323bbc6e108abea05670453
-}
-Mdata/src/main/java/com/openclassrooms/data/repository/RealEstateRepository.kt,4\1\4196dc0dc96bd15b61ea58786c3ccdddae9a2ac4

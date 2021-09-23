@@ -12,7 +12,6 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.text.Editable
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewPropertyAnimator
@@ -35,14 +34,12 @@ import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ktx.database
-import com.google.firebase.ktx.Firebase
+import com.openclassrooms.data.model.Agent
 import com.openclassrooms.realestatemanager.AppInfo
 import com.openclassrooms.realestatemanager.BuildConfig
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.authentication.AuthenticationFirebase
 import com.openclassrooms.realestatemanager.databinding.ActivityMainBinding
-import com.openclassrooms.data.model.Agent
 import com.openclassrooms.realestatemanager.notification.NotificationHandler
 import com.openclassrooms.realestatemanager.receiver.NetworkBroadcastReceiver
 import com.openclassrooms.realestatemanager.ui.fragments.*
@@ -119,11 +116,11 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        initializeFirebase()
         listEstatesViewModel = ViewModelProvider(this)[ListEstatesViewModel::class.java]
         listFragmentsViewModel = ViewModelProvider(this)[ListTagsFragmentViewModel::class.java]
         estatesViewModel = ViewModelProvider(this)[EstateViewModel::class.java]
-        listEstatesViewModel.initializeValueEventListener(dbReference)
+        initializeFirebase()
+        estatesViewModel.initializeChildEventListener(dbReference)
         checkScreenProperties()
         initializeDialogAddAgent()
         initializeDialogLogout()
@@ -157,7 +154,6 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
      * Initialize Firebase tools.
      */
     private fun initializeFirebase() {
-        Firebase.database.setPersistenceEnabled(true)
         auth = FirebaseAuth.getInstance()
         dbFirebase = FirebaseDatabase.getInstance()
         dbReference = dbFirebase.getReference("estates")
@@ -741,8 +737,16 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
         if (requestCode == 200) handleAutocompleteResult(resultCode, data)
     }
 
+    /**
+     * Access [FirebaseAuth] instance
+     * @return : [auth]
+     */
     fun getFirebaseAuth(): FirebaseAuth = auth
 
+    /**
+     * Access Firebase [DatabaseReference] instance
+     * @return : [dbReference]
+     */
     fun getFirebaseDatabaseReference(): DatabaseReference = dbReference
 
     override fun onSaveInstanceState(outState: Bundle) {

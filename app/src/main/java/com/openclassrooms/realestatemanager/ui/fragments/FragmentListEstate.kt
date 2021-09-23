@@ -1,6 +1,7 @@
 package com.openclassrooms.realestatemanager.ui.fragments
 
 import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.os.Bundle
 import android.util.Log
 import android.view.*
@@ -12,8 +13,10 @@ import com.openclassrooms.data.model.Estate
 import com.openclassrooms.realestatemanager.AppInfo
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.databinding.FragmentListEstateBinding
+import com.openclassrooms.realestatemanager.ui.LayoutInflaterProvider
 import com.openclassrooms.realestatemanager.ui.activities.MainActivity
 import com.openclassrooms.realestatemanager.ui.adapters.ListEstatesAdapter
+import com.openclassrooms.realestatemanager.viewmodels.DialogsViewModel
 import com.openclassrooms.realestatemanager.viewmodels.EstateViewModel
 import com.openclassrooms.realestatemanager.viewmodels.ListEstatesViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -35,11 +38,18 @@ class FragmentListEstate : Fragment() {
     /** Contains a reference to a [EstateViewModel] */
     private lateinit var estateViewModel: EstateViewModel
 
+    /** Contains a reference to a [DialogsViewModel] */
+    private lateinit var dialogsViewModel: DialogsViewModel
+
+    /** Defines an [AlertDialog] displaying a circular progress bar */
+    private var builderLoadEstatesDialog: AlertDialog? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
         listEstatesViewModel = ViewModelProvider(requireActivity())[ListEstatesViewModel::class.java]
         estateViewModel = ViewModelProvider(requireActivity())[EstateViewModel::class.java]
+        dialogsViewModel = ViewModelProvider(requireActivity())[DialogsViewModel::class.java]
     }
 
     override fun onCreateView(inflater: LayoutInflater,
@@ -54,8 +64,26 @@ class FragmentListEstate : Fragment() {
         (activity as MainActivity)
             .setToolbarProperties(R.string.str_toolbar_fragment_list_estate_title, false)
         initializeRecyclerView()
+        initializeProgressBarDialog()
         addObserverToViewModel()
         handleFloatingActionButton()
+        checkDialogStatusInViewModel()
+    }
+
+    /**
+     * Initializes an [AlertDialog.Builder] for [builderLoadEstatesDialog] property.
+     */
+    private fun initializeProgressBarDialog() {
+        val viewProgressBarDialog: View? = LayoutInflaterProvider
+            .getViewFromLayoutInflater(R.layout.dialog_progress_bar_launch, context)
+        builderLoadEstatesDialog = AlertDialog.Builder(activity)
+            .setView(viewProgressBarDialog)
+            .create()
+        builderLoadEstatesDialog?.show()
+    }
+
+    private fun checkDialogStatusInViewModel() {
+        if (dialogsViewModel.loadEstatesDialogStatus) builderLoadEstatesDialog?.show()
     }
 
     /**
@@ -129,8 +157,14 @@ class FragmentListEstate : Fragment() {
      */
     @SuppressLint("NotifyDataSetChanged")
     private fun addObserverToViewModel() {
+        // Observes SQLite database updates
+        listEstatesViewModel.restoreData().observe(viewLifecycleOwner, {
+            listEstatesViewModel.convertFullEstateInEstate(it)
+        })
+        // Observes listEstates updates
         listEstatesViewModel.listEstates.observe(viewLifecycleOwner, {
             (binding.recyclerViewListEstates.adapter as ListEstatesAdapter).apply {
+                builderLoadEstatesDialog?.let { if (it.isShowing) it.dismiss() }
                 // Update list
                 listEstates.apply {
                     clear()
@@ -205,5 +239,15 @@ class FragmentListEstate : Fragment() {
      */
     fun handleFabVisibility(visibility: Int) {
         binding.fab.apply { if (visibility == View.VISIBLE) show() else hide() }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        builderLoadEstatesDialog?.let { dialogsViewModel.loadEstatesDialogStatus = it.isShowing }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        builderLoadEstatesDialog?.let { if (it.isShowing) it.dismiss() }
     }
 }
