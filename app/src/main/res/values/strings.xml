@@ -107,6 +107,7 @@
     <string name="str_dialog_select_agent_title">Select agent</string>
     <string name="str_dialog_ad_poi_title">Add points of interest</string>
     <string name="str_toast_missing_information">Can\'t create Estate, missing information</string>
+    <string name="str_toast_no_network">No network detected</string>
     <string name="str_toast_new_estate_created">New estate created</string>
     <string name="str_toast_estate_modified">Modifications saved</string>
     <string name="str_dialog_progress_bar_creation_text">Creating estate</string>

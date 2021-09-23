@@ -573,35 +573,42 @@ class FragmentNewEstate : Fragment() {
                 if (name.isNotEmpty() && location.isNotEmpty() && nameAgent.isNotEmpty()
                     && description.isNotEmpty() && price.isNotEmpty()
                     && estateViewModel.estate.listPhoto.isNotEmpty()
-                    && !errorSliders) {
-                    displayToastEstate(false)
-                  //  (activity as MainActivity).notificationHandler.createNotification(updateEstate)
+                    && !errorSliders
+                    && Utils.isInternetAvailable(context)) {
                     if (currency == "EUR") price = Utils.convertEuroToDollar(price.toInt()).toString()
                     updateSelectedEstateFromViewModel()
                     builderProgressBarDialog?.show()
                 }
                 else {
-                    displayToastEstate(true)
-                    displayErrorBoxMessage() }
+                    displayToastError()
+                    if (Utils.isInternetAvailable(context)) displayErrorBoxMessage()
+                }
             }
         }
     }
 
     /**
-     * Displays [Toast] messages.
+     * Displays [Toast] error message.
      */
-    private fun displayToastEstate(error: Boolean) {
-        if (error) // Error creating/modifying Estate
+    private fun displayToastError() {
+        if (Utils.isInternetAvailable(context)) // Error creating/modifying Estate
             Toast.makeText(context, resources.getString(R.string.str_toast_missing_information),
                 Toast.LENGTH_LONG).show()
         else {
-            // Modifications saved
-            if (updateEstate) Toast.makeText(context, resources.getString(R.string.str_toast_estate_modified), Toast.LENGTH_LONG).show()
-            // New estate created
-            else Toast.makeText(context, resources.getString(R.string.str_toast_new_estate_created), Toast.LENGTH_LONG).show()
+            Toast.makeText(context, resources.getString(R.string.str_toast_no_network),
+                Toast.LENGTH_LONG).show()
         }
     }
 
+    /**
+     * Displays [Toast] success message.
+     */
+    private fun displayToastSuccess() {
+        // Modifications saved
+        if (updateEstate) Toast.makeText(context, resources.getString(R.string.str_toast_estate_modified), Toast.LENGTH_LONG).show()
+        // New estate created
+        else Toast.makeText(context, resources.getString(R.string.str_toast_new_estate_created), Toast.LENGTH_LONG).show()
+    }
     /**
      * Update selected estate from view model which is used to store database modifications.
      */
@@ -614,6 +621,7 @@ class FragmentNewEstate : Fragment() {
                     // Callback after database updated
                     confirmExit = true
                     builderProgressBarDialog?.dismiss()
+                    displayToastSuccess()
                     (activity as MainActivity).apply {
                         notificationHandler.createNotification(updateEstate)
                         onBackPressed()
