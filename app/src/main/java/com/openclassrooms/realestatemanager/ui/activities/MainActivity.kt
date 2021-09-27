@@ -135,7 +135,17 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
         MediaAccessHandler.initializeNbPermissionRequests(this)
         GPSAccessHandler.initializeNbPermissionRequests(this)
         initializeMapClient()
-        estatesViewModel.initializeChildEventListener(dbReference)
+        initializeDatabaseChildEventListener()
+    }
+
+    /**
+     * Access "initializeChildEventListener()" method from [EstateViewModel].
+     */
+    private fun initializeDatabaseChildEventListener() {
+        (getFragmentList() as FragmentListEstate).displayBuilderLoadEstatesDialog(true)
+        estatesViewModel.initializeChildEventListener(dbReference) {
+            (getFragmentList() as FragmentListEstate).displayBuilderLoadEstatesDialog(false)
+        }
     }
 
     override fun onResume() {

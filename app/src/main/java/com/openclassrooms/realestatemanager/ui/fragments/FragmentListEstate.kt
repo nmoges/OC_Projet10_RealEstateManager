@@ -79,9 +79,21 @@ class FragmentListEstate : Fragment() {
         builderLoadEstatesDialog = AlertDialog.Builder(activity)
             .setView(viewProgressBarDialog)
             .create()
-        builderLoadEstatesDialog?.show()
     }
 
+    /**
+     * Handles dialog display.
+     * @param status : display status
+     */
+    fun displayBuilderLoadEstatesDialog(status: Boolean) {
+        builderLoadEstatesDialog?.let {
+            if (status) it.show() else it.dismiss()
+        }
+    }
+
+    /**
+     * Checks dialog display status stored in View Model
+     */
     private fun checkDialogStatusInViewModel() {
         if (dialogsViewModel.loadEstatesDialogStatus) builderLoadEstatesDialog?.show()
     }

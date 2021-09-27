@@ -81,7 +81,7 @@ class EstateViewModel @Inject constructor(
      * Access "initializeChildEventListener()" method from [repositoryAccess].
      * @param dbReference : Realtime Database reference
      */
-    fun initializeChildEventListener(dbReference: DatabaseReference) {
+    fun initializeChildEventListener(dbReference: DatabaseReference, callback: () -> (Unit)) {
         repositoryAccess.initializeChildEventListener(dbReference) { itEstate ->
             viewModelScope.launch {
                 val oldEstateData = repositoryAccess.getEstateWithFirebaseId(itEstate.firebaseId)
@@ -111,6 +111,8 @@ class EstateViewModel @Inject constructor(
                     updatePhotosInDatabase(itEstate)
                     updatePointsOfInterestInDatabase(itEstate)
                 }
+                // End loading estates
+                callback()
             }
         }
     }

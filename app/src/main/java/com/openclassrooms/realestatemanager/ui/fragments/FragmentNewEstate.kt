@@ -92,7 +92,7 @@ class FragmentNewEstate : Fragment() {
             if (sequence != null) {
                 textNameMediaDialog = sequence.toString()
                 builderNameMediaDialog?.getButton(AlertDialog.BUTTON_POSITIVE)?.isEnabled =
-                                                                             sequence.isNotEmpty() }
+                    sequence.isNotEmpty() }
         }
     }
 
@@ -236,11 +236,11 @@ class FragmentNewEstate : Fragment() {
             .getViewFromLayoutInflater(R.layout.dialog_progress_bar, context)
         val message = viewProgressBarDialog?.findViewById<MaterialTextView>(R.id.message)
         message?.text = if (updateEstate)
-                                   resources.getString(R.string.str_dialog_progress_bar_update_text)
-                       else resources.getString(R.string.str_dialog_progress_bar_creation_text)
+            resources.getString(R.string.str_dialog_progress_bar_update_text)
+        else resources.getString(R.string.str_dialog_progress_bar_creation_text)
         builderProgressBarDialog = AlertDialog.Builder(activity)
-                                              .setView(viewProgressBarDialog)
-                                              .create()
+            .setView(viewProgressBarDialog)
+            .create()
     }
     /**
      * Initializes an [AlertDialog.Builder] for [builderCancelEstateDialog] property.
@@ -266,7 +266,7 @@ class FragmentNewEstate : Fragment() {
      */
     private fun initializeDialogAddMedia() {
         val viewAddMediaDialog: View? = LayoutInflaterProvider
-                                .getViewFromLayoutInflater(R.layout.dialog_media_selection, context)
+            .getViewFromLayoutInflater(R.layout.dialog_media_selection, context)
         builderAddMediaDialog = AlertDialog.Builder(activity)
             .setTitle(resources.getString(R.string.str_dialog_add_media_title))
             .setView(viewAddMediaDialog).create()
@@ -278,7 +278,7 @@ class FragmentNewEstate : Fragment() {
      */
     private fun initializeDialogNameMedia() {
         val viewNameMediaDialog: View? = LayoutInflaterProvider
-                             .getViewFromLayoutInflater(R.layout.dialog_media_confirmation, context)
+            .getViewFromLayoutInflater(R.layout.dialog_media_confirmation, context)
         val textInputEditText: TextInputEditText? =
             viewNameMediaDialog?.findViewById(R.id.new_media_text_input_edit)
         textInputEditText?.addTextChangedListener(textWatcher)
@@ -314,17 +314,17 @@ class FragmentNewEstate : Fragment() {
     private fun initializeSliderMaterialText() {
         binding.apply {
             sliderSurfaceValue.text = StringHandler.getSliderString(1000,
-                           sliderSurface.value.toInt(), R.string.str_sqm_unit_greater_than_or_equal,
-                           R.string.str_sqm_unit, true, context)
+                sliderSurface.value.toInt(), R.string.str_sqm_unit_greater_than_or_equal,
+                R.string.str_sqm_unit, true, context)
             sliderRoomsValue.text = StringHandler.getSliderString(20,
-                           sliderRooms.value.toInt(), R.string.str_greater_than_or_equal,
-                   null, false, context)
+                sliderRooms.value.toInt(), R.string.str_greater_than_or_equal,
+                null, false, context)
             sliderBathroomsValue.text = StringHandler.getSliderString(5,
-                           sliderBathrooms.value.toInt(),
-                           R.string.str_greater_than_or_equal, null, false, context)
+                sliderBathrooms.value.toInt(),
+                R.string.str_greater_than_or_equal, null, false, context)
             sliderBedroomsValue.text = StringHandler.getSliderString(10,
-                           sliderBedrooms.value.toInt(),
-                           R.string.str_greater_than_or_equal, null, false, context) }
+                sliderBedrooms.value.toInt(),
+                R.string.str_greater_than_or_equal, null, false, context) }
     }
 
     /**
@@ -360,13 +360,13 @@ class FragmentNewEstate : Fragment() {
             if (MediaAccessHandler.checkPermissions(activity as MainActivity))
                 MediaAccessHandler.openCamera(activity as MainActivity)
             else MediaAccessHandler.requestPermission(activity as MainActivity)
-                builderAddMediaDialog?.dismiss() }
+            builderAddMediaDialog?.dismiss() }
         // Item "Import from gallery"
         view?.findViewById<ConstraintLayout>(R.id.import_from_gallery_button)?.setOnClickListener {
             if (MediaAccessHandler.checkPermissions(activity as MainActivity))
                 MediaAccessHandler.openPhotosGallery(activity as MainActivity)
             else MediaAccessHandler.requestPermission(activity as MainActivity)
-                builderAddMediaDialog?.dismiss() }
+            builderAddMediaDialog?.dismiss() }
     }
 
     /**
@@ -385,7 +385,7 @@ class FragmentNewEstate : Fragment() {
                 priceSectionEdit.text = StringHandler.convertStringToEditable(priceConverted.toString())
             }
             else priceSectionEdit.text =
-                               StringHandler.convertStringToEditable(estateViewModel.estate.price.toString())
+                StringHandler.convertStringToEditable(estateViewModel.estate.price.toString())
             // Sliders
             sliderSurface.value = estateViewModel.estate.interior.surface.toFloat()
             sliderRooms.value = estateViewModel.estate.interior.numberRooms.toFloat()
@@ -400,7 +400,7 @@ class FragmentNewEstate : Fragment() {
     private fun updateMaterialButtonText() {
         binding.confirmationButton.apply {
             text = if (updateEstate) resources.getString(R.string.str_button_confirmation_modification)
-                   else resources.getString(R.string.str_button_confirmation_creation)
+            else resources.getString(R.string.str_button_confirmation_creation)
         }
     }
 
@@ -460,7 +460,7 @@ class FragmentNewEstate : Fragment() {
      */
     fun updateLocationDisplayed() {
         binding.locationSectionEdit.text =
-                      StringHandler.convertStringToEditable(estateViewModel.estate.location.address)
+            StringHandler.convertStringToEditable(estateViewModel.estate.location.address)
     }
 
     /**
@@ -773,6 +773,7 @@ class FragmentNewEstate : Fragment() {
      * Checks in [DialogsViewModel] if dialogs status before configuration change.
      */
     private fun checkDialogStatusInViewModel() {
+        Log.i("CHECK_DIALOG", "${builderProgressBarDialog?.isShowing}")
         if (dialogsViewModel.listAgentsDialogStatus) builderAddMediaDialog?.show()
         if (dialogsViewModel.addPOIDialogStatus) builderAddPOIDialog?.show()
         if (dialogsViewModel.cancelEstateDialogStatus) builderCancelEstateDialog?.show()
@@ -786,6 +787,7 @@ class FragmentNewEstate : Fragment() {
      * Saves dialog status values in view model.
      */
     private fun saveDialogsStatusInViewModel() {
+        Log.i("CHECK_DIALOG", "${builderProgressBarDialog?.isShowing}")
         builderListAgentsDialog?.let { dialogsViewModel.listAgentsDialogStatus = it.isShowing }
         builderAddPOIDialog?.let { dialogsViewModel.addPOIDialogStatus = it.isShowing }
         builderCancelEstateDialog?.let { dialogsViewModel.cancelEstateDialogStatus = it.isShowing }
