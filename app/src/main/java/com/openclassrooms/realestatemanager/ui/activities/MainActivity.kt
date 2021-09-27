@@ -120,7 +120,6 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
         listFragmentsViewModel = ViewModelProvider(this)[ListTagsFragmentViewModel::class.java]
         estatesViewModel = ViewModelProvider(this)[EstateViewModel::class.java]
         initializeFirebase()
-        estatesViewModel.initializeChildEventListener(dbReference)
         checkScreenProperties()
         initializeDialogAddAgent()
         initializeDialogLogout()
@@ -136,6 +135,7 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
         MediaAccessHandler.initializeNbPermissionRequests(this)
         GPSAccessHandler.initializeNbPermissionRequests(this)
         initializeMapClient()
+        estatesViewModel.initializeChildEventListener(dbReference)
     }
 
     override fun onResume() {
@@ -183,9 +183,9 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
         typeLayout = findViewById<View>(R.id.fragment_container_view) == null
         typeOrientation = resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
         containerId = if (typeOrientation && typeLayout) R.id.fragment_container_view_right
-                      else R.id.fragment_container_view
+        else R.id.fragment_container_view
         containerIdLists = if (typeOrientation && typeLayout) R.id.fragment_container_view_left
-                       else R.id.fragment_container_view
+        else R.id.fragment_container_view
     }
 
     /**
@@ -249,6 +249,13 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
                 fadeInAnim.start()
             }
         }
+    }
+
+    /**
+     * Callback for SQLite Database photos URI updates.
+     */
+    override fun updateURIsPhotosInDB() {
+        listEstatesViewModel.updatePhotosURIInSQLiteDB(auth)
     }
 
     /**
@@ -708,7 +715,7 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
      */
     private fun clearSelectionInFragmentSearch() {
         val fragmentSearch: Fragment? =
-                               supportFragmentManager.findFragmentByTag(AppInfo.TAG_FRAGMENT_SEARCH)
+            supportFragmentManager.findFragmentByTag(AppInfo.TAG_FRAGMENT_SEARCH)
         if (fragmentSearch != null) {
             (fragmentSearch as FragmentSearch).apply {
                 clearCurrentSelection()

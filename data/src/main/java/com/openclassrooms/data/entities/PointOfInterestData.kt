@@ -20,7 +20,10 @@ data class PointOfInterestData(
     var name: String,
 
     @ColumnInfo(name= "id_associated_estate")
-    var associatedId: Long
+    var associatedId: Long,
+
+    @ColumnInfo(name = "id_firebase")
+    var idFirebase: String
 ) {
     companion object {
         const val TABLE_NAME = "table_poi"

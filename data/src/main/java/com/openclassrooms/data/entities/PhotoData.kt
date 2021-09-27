@@ -16,7 +16,7 @@ import com.openclassrooms.data.database.RealEstateManagerDatabase
 data class PhotoData(
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "id_photo")
-    var idPhoto: Int = 0,
+    var idPhoto: Long = 0,
 
     @ColumnInfo(name = "converted_uri")
     var uriConverted: String,
@@ -24,9 +24,8 @@ data class PhotoData(
     var name: String,
 
     @ColumnInfo(name = "id_associated_estate")
-    var associatedId: Long
-) {
-    companion object {
-        const val TABLE_NAME = "table_photos"
-    }
-}
+    var associatedId: Long,
+
+    @ColumnInfo(name = "id_firebase")
+    var idFirebase: String
+)

@@ -9,6 +9,8 @@ import com.openclassrooms.data.database.RealEstateManagerDatabase
  * Defines an entity for [RealEstateManagerDatabase] "table_dates" table.
  * @param idDates : id of a date
  * @param associatedId : associated estate id
+ * @param dateEntry : entry date of an estate
+ * @param dateSale : sale date of an estate
  */
 @Entity(tableName = "table_dates")
 data class DatesData(

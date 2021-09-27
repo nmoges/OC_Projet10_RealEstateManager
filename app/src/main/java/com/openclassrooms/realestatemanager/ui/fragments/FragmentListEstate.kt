@@ -156,7 +156,7 @@ class FragmentListEstate : Fragment() {
      * Handles [listEstatesViewModel] observer.
      */
     @SuppressLint("NotifyDataSetChanged")
-    private fun addObserverToViewModel() {
+    fun addObserverToViewModel() {
         // Observes SQLite database updates
         listEstatesViewModel.restoreData().observe(viewLifecycleOwner, {
             listEstatesViewModel.convertFullEstateInEstate(it)

@@ -3,13 +3,17 @@ package com.openclassrooms.data.provider
 import android.content.ContentProvider
 import android.content.ContentUris
 import android.content.ContentValues
+import android.content.Context
 import android.database.Cursor
 import android.net.Uri
-import android.util.Log
-import com.openclassrooms.data.repository.RealEstateRepositoryAccess
-import javax.inject.Inject
+import com.openclassrooms.data.dao.EstateDao
+import dagger.hilt.EntryPoint
+import dagger.hilt.InstallIn
+import dagger.hilt.android.EntryPointAccessors
+import dagger.hilt.components.SingletonComponent
+import java.lang.IllegalStateException
 
-class RealEstateProvider: ContentProvider() {
+class RealEstateProvider : ContentProvider() {
 
     companion object {
         val AUTHORITY = "com.openclassrooms.data.provider"
@@ -17,20 +21,27 @@ class RealEstateProvider: ContentProvider() {
         val URI_ITEM = Uri.parse("content://$AUTHORITY/$TABLE_NAME")
     }
 
-//    val ESTATE = 1
-/*
-    val uriMatcher = UriMatcher(UriMatcher.NO_MATCH).apply {
-        addURI(AUTHORITY, "/$TABLE_NAME", ESTATE)
-    }
-*/
-    @Inject lateinit var repositoryAccess: RealEstateRepositoryAccess
+     @InstallIn(SingletonComponent::class)
+     @EntryPoint
+     interface EstateDaoEntryPoint {
+         fun estateDao() : EstateDao
+     }
 
+     private fun getEstateDao(context: Context): EstateDao {
+         val hiltEntryPoint = EntryPointAccessors.fromApplication(
+             context,
+             EstateDaoEntryPoint::class.java
+         )
+         return hiltEntryPoint.estateDao()
+     }
     override fun onCreate(): Boolean { return true }
 
     override fun query(uri: Uri, projection: Array<out String>?, selection: String?,
-                       selectionArgs: Array<out String>?, sortOrder: String?): Cursor {
-        val id = ContentUris.parseId(uri)
-        return repositoryAccess.getEstateWithId(id)
+                       selectionArgs: Array<out String>?, sortOrder: String?): Cursor? {
+         val id = ContentUris.parseId(uri)
+         val context = context?.applicationContext ?: throw  IllegalStateException()
+          val estateDao: EstateDao = getEstateDao(context)
+         return estateDao.getEstateWithId(id)
     }
 
     override fun getType(uri: Uri): String {

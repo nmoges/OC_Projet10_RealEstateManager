@@ -165,7 +165,7 @@ class FragmentEstateDetails : Fragment() {
      */
     private fun initializeSaleButtonDisplay() {
         binding.saleButton.visibility = if (selectedEstateToDisplay?.status == true) View.GONE
-                                        else View.VISIBLE
+        else View.VISIBLE
     }
 
     /**
@@ -185,11 +185,11 @@ class FragmentEstateDetails : Fragment() {
         selectedEstateToDisplay?.let { itEstate ->
             estateViewModel.initializeWithSelectedEstateValues(itEstate)
             estateViewModel.updateDateEstate(true)
-            estateViewModel.getNewEstate((activity as MainActivity).getFirebaseAuth())
+            estateViewModel.getNewEstate((activity as MainActivity).getFirebaseAuth(), context)
                 .observe(viewLifecycleOwner, { itUpdatedEstate ->
                     estateViewModel.updateSQLiteDatabase(true, itUpdatedEstate,
-                                      (activity as MainActivity).getFirebaseDatabaseReference()) { }
-            })
+                        (activity as MainActivity).getFirebaseDatabaseReference()) { }
+                })
         }
     }
 

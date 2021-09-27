@@ -1,10 +1,12 @@
 package com.openclassrooms.realestatemanager.viewmodels
 
 import android.app.Activity
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.openclassrooms.data.entities.FullEstateData
@@ -104,5 +106,15 @@ class ListEstatesViewModel @Inject constructor(
             }
         }
     }
-}
 
+    fun updatePhotosURIInSQLiteDB(auth: FirebaseAuth) {
+        viewModelScope.launch {
+            repositoryAccess.getPhotosURIFromCloudStorage(auth) { itPhoto, itLong ->
+                viewModelScope.launch {
+                    repositoryAccess.updatePhoto(itPhoto, itLong)
+                }
+            }
+        }
+    }
+
+}

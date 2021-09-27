@@ -19,6 +19,9 @@ interface EstateDao {
 
     // ---------------------------------- TEST -------------------------
     // TODO() : Add suspend
-    @Query("SELECT * FROM table_estates WHERE id_estate = :id") // TODO() : Add jointure
+    @Query("SELECT * FROM table_estates WHERE id_estate = :id")
     fun getEstateWithId(id: Long): Cursor
+
+    @Query("SELECT * FROM table_estates WHERE id_firebase = :id")
+    suspend fun getEstateWithFirebaseId(id: String): EstateData?
 }

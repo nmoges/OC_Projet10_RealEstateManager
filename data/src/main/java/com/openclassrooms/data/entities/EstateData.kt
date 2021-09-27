@@ -14,21 +14,30 @@ import com.openclassrooms.data.database.RealEstateManagerDatabase
  * @param description : description of an estate
  * @param idAgent : id of the associated real estate agent
  * @param status : estate status (available or sold)
+ * @param idFirebase : firebase id in Realtime database
  */
 @Entity(tableName = "table_estates",
-        foreignKeys = [ForeignKey(entity = AgentData::class,
-                                  parentColumns = arrayOf("id"),
-                                  childColumns = arrayOf("id_agent"))])
+    foreignKeys = [ForeignKey(entity = AgentData::class,
+        parentColumns = arrayOf("id"),
+        childColumns = arrayOf("id_agent"))])
 data class EstateData(
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "id_estate")
     var idEstate: Long = 0,
+
     var type: String,
+
     var price: Int,
+
     var description: String,
+
     @ColumnInfo(name = "id_agent")
     var idAgent: Long,
+
     var status: Boolean,
+
+    @ColumnInfo(name = "id_firebase")
+    var idFirebase: String
 ) {
     companion object {
         const val TABLE_NAME = "table_estates"

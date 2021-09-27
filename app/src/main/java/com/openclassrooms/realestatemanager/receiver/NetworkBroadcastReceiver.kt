@@ -12,6 +12,9 @@ import com.openclassrooms.realestatemanager.ui.activities.MainActivityCallback
 class NetworkBroadcastReceiver(private val callback: MainActivityCallback): BroadcastReceiver() {
 
     override fun onReceive(context: Context?, intent: Intent?) {
-        callback.updateConnectivityBarNetworkDisplay(Utils.isInternetAvailable(context));
+        callback.apply {
+            updateConnectivityBarNetworkDisplay(Utils.isInternetAvailable(context))
+            if (Utils.isInternetAvailable(context)) updateURIsPhotosInDB()
+        }
     }
 }

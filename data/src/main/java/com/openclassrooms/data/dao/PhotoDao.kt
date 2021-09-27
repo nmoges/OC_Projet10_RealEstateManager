@@ -1,9 +1,6 @@
 package com.openclassrooms.data.dao
 
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
+import androidx.room.*
 import com.openclassrooms.data.entities.PhotoData
 import com.openclassrooms.data.database.RealEstateManagerDatabase
 
@@ -18,4 +15,13 @@ interface PhotoDao {
 
     @Query("SELECT * FROM table_photos WHERE id_associated_estate = :id")
     suspend fun getPhotos(id: Long): List<PhotoData>
+
+    @Query("SELECT * FROM table_photos")
+    suspend fun getAllPhotos() : List<PhotoData>
+
+    @Update
+    suspend fun updatePhoto(photoData: PhotoData)
+
+    @Query("SELECT * FROM table_photos WHERE id_firebase = :id")
+    suspend fun getPhotoByFirebaseId(id: String): PhotoData
 }

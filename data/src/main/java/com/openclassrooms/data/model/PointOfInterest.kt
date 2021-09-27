@@ -1,5 +1,7 @@
 package com.openclassrooms.data.model
 
+import java.util.*
+
 /**
  * Defines a point of interest.
  * @param id : point of interest id
@@ -7,5 +9,5 @@ package com.openclassrooms.data.model
  */
 class PointOfInterest(
     var id: Long = 0,
-    var name: String = ""
-)
+    var name: String = "",
+    val firebaseId: String = UUID.randomUUID().toString())

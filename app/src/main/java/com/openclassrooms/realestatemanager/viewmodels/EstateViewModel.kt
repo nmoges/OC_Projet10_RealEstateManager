@@ -15,6 +15,7 @@ import com.google.firebase.ktx.Firebase
 import com.openclassrooms.data.entities.PointOfInterestData
 import com.openclassrooms.data.model.*
 import com.openclassrooms.data.repository.RealEstateRepositoryAccess
+import com.openclassrooms.data.toEstateData
 import com.openclassrooms.realestatemanager.Utils
 import com.openclassrooms.realestatemanager.utils.poi.POIComparator
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -59,13 +60,13 @@ class EstateViewModel @Inject constructor(
      * Creates a new [Estate].
      */
     private fun createNewEstate(): Estate = Estate(
-                id = 1, type = "", price = 0, description = "", status = false, selected = false,
-                location = Location(id = 1, address = "", district = "",
-                                    latitude = 0.0, longitude = 0.0),
-                interior = Interior(id= 1, numberRooms = 5, numberBathrooms = 1,
-                                    numberBedrooms = 1, surface = 50),
-                agent = Agent(id = 1, firstName = "", lastName = ""),
-                dates = Dates(id = 1, dateEntry = "", dateSale = "")
+        id = 1, type = "", price = 0, description = "", status = false, selected = false,
+        location = Location(id = 1, address = "", district = "",
+            latitude = 0.0, longitude = 0.0),
+        interior = Interior(id= 1, numberRooms = 5, numberBathrooms = 1,
+            numberBedrooms = 1, surface = 50),
+        agent = Agent(id = 1, firstName = "", lastName = ""),
+        dates = Dates(id = 1, dateEntry = "", dateSale = "")
     )
 
     /**
@@ -81,20 +82,36 @@ class EstateViewModel @Inject constructor(
      * @param dbReference : Realtime Database reference
      */
     fun initializeChildEventListener(dbReference: DatabaseReference) {
-        repositoryAccess.initializeChildEventListener(dbReference) { itEstate, itType ->
-            updateSQLiteDatabaseFromRealtimeDatabase(itEstate, itType)
-        }
-    }
-
-    /**
-     * Updates SQLite database with Realtime database data
-     * @param estate : Estate to load in SQLite database
-     * @param type : Type of operation (update estate, insert estate)
-     */
-    private fun updateSQLiteDatabaseFromRealtimeDatabase(estate: Estate, type: Boolean) {
-        viewModelScope.launch {
-            if (!type) insertEstateInDatabase(estate, true)
-            else updateEstateInDatabase(estate)
+        repositoryAccess.initializeChildEventListener(dbReference) { itEstate ->
+            viewModelScope.launch {
+                val oldEstateData = repositoryAccess.getEstateWithFirebaseId(itEstate.firebaseId)
+                val agent = repositoryAccess.getAgentByFields(itEstate.agent.firstName, itEstate.agent.lastName)
+                itEstate.agent.id = agent.idAgent
+                if (oldEstateData == null) { // Insert
+                    val id = repositoryAccess.insertEstate(itEstate)
+                    insertInteriorInDatabase(itEstate.interior, id)
+                    insertDatesInDatabase(itEstate.dates, id)
+                    insertLocationInDatabase(itEstate.location, id)
+                    itEstate.listPhoto.forEach {
+                        insertPhotoInDatabase(it, id)
+                    }
+                    itEstate.listPointOfInterest.forEach {
+                        insertPointOfInterestInDatabase(it, id)
+                    }
+                }
+                else { // Update
+                    itEstate.id = oldEstateData.idEstate
+                    itEstate.location.id = oldEstateData.idEstate
+                    itEstate.interior.id = oldEstateData.idEstate
+                    itEstate.dates.id = oldEstateData.idEstate
+                    repositoryAccess.updateEstate(itEstate)
+                    updateInteriorInDatabase(itEstate.interior, itEstate.id)
+                    updateLocationInDatabase(itEstate.location, itEstate.id)
+                    updateDatesInDatabase(itEstate.dates, itEstate.id)
+                    updatePhotosInDatabase(itEstate)
+                    updatePointsOfInterestInDatabase(itEstate)
+                }
+            }
         }
     }
 
@@ -122,7 +139,7 @@ class EstateViewModel @Inject constructor(
      */
     fun createNewPhoto(namePhoto: String): Photo? {
         val uri = photoUriEstate
-        return if (uri.isNotEmpty()) { Photo(uri, namePhoto) } else null
+        return if (uri.isNotEmpty()) { Photo(0, uri, namePhoto) } else null
     }
 
     /**
@@ -159,7 +176,7 @@ class EstateViewModel @Inject constructor(
      * Returns a LiveData containing the new estate/updated estate to send to database.
      * @return : LiveData<Estate>
      */
-    fun getNewEstate(auth: FirebaseAuth): LiveData<Estate> {
+    fun getNewEstate(auth: FirebaseAuth, context: Context?): LiveData<Estate> {
         val newEstate = MutableLiveData<Estate>()
         viewModelScope.launch {
             // Update agent
@@ -179,13 +196,21 @@ class EstateViewModel @Inject constructor(
             listPOI.clear()
             // Send photos to cloud Storage
             if (numberPhotosAdded > 0) {
-                for (i in estate.listPhoto.size-numberPhotosAdded until estate.listPhoto.size) {
-                    repositoryAccess.sendPhotosToCloudStorage(estate.listPhoto[i], auth) { itURL ->
-                        estate.listPhoto[i].uriConverted = itURL
-                        if (i == estate.listPhoto.size-1 && estate.listPhoto[i].uriConverted == itURL) {
-                            numberPhotosAdded = 0
-                            newEstate.postValue(estate)
+                context?.let {
+                    if (Utils.isInternetAvailable(context)) {
+                        for (i in estate.listPhoto.size-numberPhotosAdded until estate.listPhoto.size) {
+                            repositoryAccess.sendPhotosToCloudStorage(estate.listPhoto[i], auth) { itURL ->
+                                estate.listPhoto[i].uriConverted = itURL
+                                if (i == estate.listPhoto.size-1 && estate.listPhoto[i].uriConverted == itURL) {
+                                    numberPhotosAdded = 0
+                                    newEstate.postValue(estate)
+                                }
+                            }
                         }
+                    }
+                    else {
+                        numberPhotosAdded = 0
+                        newEstate.postValue(estate)
                     }
                 }
             }
@@ -202,7 +227,8 @@ class EstateViewModel @Inject constructor(
      *                                          true : estate from Realtime database (id already exists)
      */
     private suspend fun insertEstateInDatabase(estate: Estate, type: Boolean): Long {
-        val id = repositoryAccess.insertEstate(estate, type)
+       // val id = repositoryAccess.insertEstate(estate, type)
+        val id = repositoryAccess.insertEstate(estate)
         insertInteriorInDatabase(estate.interior, id)
         insertDatesInDatabase(estate.dates, id)
         insertLocationInDatabase(estate.location, id)
@@ -264,8 +290,8 @@ class EstateViewModel @Inject constructor(
      * @param typeUpdate : type of operation in database
      */
     fun updateSQLiteDatabase(typeUpdate: Boolean,
-                       estate: Estate, dbReference:
-                       DatabaseReference, callbackDbUpdate : () -> Unit) {
+                             estate: Estate, dbReference:
+                             DatabaseReference, callbackDbUpdate : () -> Unit) {
         viewModelScope.launch {
             if (!typeUpdate) {
                 val id = insertEstateInDatabase(estate, false)

@@ -104,7 +104,6 @@
     <string name="str_dialog_select_agent_title">Selectionner un agent</string>
     <string name="str_dialog_ad_poi_title">Ajouter des points d\'intérêt</string>
     <string name="str_toast_missing_information">Création impossible, informations manquantes</string>
-    <string name="str_toast_no_network">Aucun réseau détecté</string>
     <string name="str_toast_new_estate_created">Nouveau bien crée</string>
     <string name="str_toast_estate_modified">Modifications sauvegardées</string>
     <string name="str_dialog_progress_bar_creation_text">Création du bien</string>

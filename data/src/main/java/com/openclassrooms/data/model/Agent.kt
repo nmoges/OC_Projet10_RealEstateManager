@@ -9,5 +9,4 @@ package com.openclassrooms.data.model
 class Agent(
     var id: Long = 0,
     var firstName: String =  "",
-    var lastName: String = ""
-)
+    var lastName: String = "")

@@ -9,5 +9,4 @@ package com.openclassrooms.data.model
 class Dates(
     var id: Long = 0,
     var dateEntry : String = "",
-    var dateSale : String = ""
-)
+    var dateSale : String = "")

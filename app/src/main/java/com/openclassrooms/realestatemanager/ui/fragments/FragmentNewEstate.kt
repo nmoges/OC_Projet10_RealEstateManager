@@ -56,7 +56,7 @@ class FragmentNewEstate : Fragment() {
     private lateinit var estateViewModel: EstateViewModel
 
     /** Defines new estate creation (false) or to modification of an existing one (true). */
-     var updateEstate: Boolean = false
+    var updateEstate: Boolean = false
 
     /** Defines [AlertDialog] for "Add point of interest" functionality */
     private var builderAddPOIDialog: AlertDialog? = null
@@ -246,7 +246,7 @@ class FragmentNewEstate : Fragment() {
      * Initializes an [AlertDialog.Builder] for [builderCancelEstateDialog] property.
      */
     private fun initializeDialogCancelEstate() {
-          val title = if (updateEstate) resources.getString(R.string.str_dialog_cancel_modification_title)
+        val title = if (updateEstate) resources.getString(R.string.str_dialog_cancel_modification_title)
         else resources.getString(R.string.str_dialog_cancel_creation_title)
         val message = if (updateEstate) resources.getString(R.string.str_dialog_cancel_modifications_message)
         else resources.getString(R.string.str_dialog_cancel_creation_message)
@@ -573,15 +573,14 @@ class FragmentNewEstate : Fragment() {
                 if (name.isNotEmpty() && location.isNotEmpty() && nameAgent.isNotEmpty()
                     && description.isNotEmpty() && price.isNotEmpty()
                     && estateViewModel.estate.listPhoto.isNotEmpty()
-                    && !errorSliders
-                    && Utils.isInternetAvailable(context)) {
+                    && !errorSliders) {
                     if (currency == "EUR") price = Utils.convertEuroToDollar(price.toInt()).toString()
                     updateSelectedEstateFromViewModel()
                     builderProgressBarDialog?.show()
                 }
                 else {
                     displayToastError()
-                    if (Utils.isInternetAvailable(context)) displayErrorBoxMessage()
+                    displayErrorBoxMessage()
                 }
             }
         }
@@ -591,14 +590,10 @@ class FragmentNewEstate : Fragment() {
      * Displays [Toast] error message.
      */
     private fun displayToastError() {
-        if (Utils.isInternetAvailable(context)) // Error creating/modifying Estate
-            Toast.makeText(context, resources.getString(R.string.str_toast_missing_information),
-                Toast.LENGTH_LONG).show()
-        else {
-            Toast.makeText(context, resources.getString(R.string.str_toast_no_network),
-                Toast.LENGTH_LONG).show()
-        }
+        Toast.makeText(context, resources.getString(R.string.str_toast_missing_information),
+            Toast.LENGTH_LONG).show()
     }
+
 
     /**
      * Displays [Toast] success message.
@@ -609,12 +604,13 @@ class FragmentNewEstate : Fragment() {
         // New estate created
         else Toast.makeText(context, resources.getString(R.string.str_toast_new_estate_created), Toast.LENGTH_LONG).show()
     }
+
     /**
      * Update selected estate from view model which is used to store database modifications.
      */
     private fun updateSelectedEstateFromViewModel() {
         saveEstateValuesInViewModel()
-        estateViewModel.getNewEstate((activity as MainActivity).getFirebaseAuth()).observe(viewLifecycleOwner,
+        estateViewModel.getNewEstate((activity as MainActivity).getFirebaseAuth(), context).observe(viewLifecycleOwner,
             { itEstate ->
                 estateViewModel.updateSQLiteDatabase(updateEstate, itEstate,
                     (activity as MainActivity).getFirebaseDatabaseReference()) {
@@ -625,9 +621,9 @@ class FragmentNewEstate : Fragment() {
                     (activity as MainActivity).apply {
                         notificationHandler.createNotification(updateEstate)
                         onBackPressed()
+                    }
                 }
-            }
-        })
+            })
     }
 
     /**
@@ -670,8 +666,8 @@ class FragmentNewEstate : Fragment() {
      */
     private fun updateErrorStatus(status: Boolean, layout: TextInputLayout) {
         if (status) layout.apply {
-                                    isErrorEnabled = true
-                                    error = "Empty" }
+            isErrorEnabled = true
+            error = "Empty" }
         else layout.isErrorEnabled = false
     }
 
@@ -707,9 +703,9 @@ class FragmentNewEstate : Fragment() {
      * Updates visibility status of POI button text.
      */
     private fun updatePOIButtonTextDisplay() {
-            binding.textPlacesNearby.visibility =
-                            if (binding.tagContainerLayout.tags.size > 0) View.INVISIBLE
-                            else View.VISIBLE
+        binding.textPlacesNearby.visibility =
+            if (binding.tagContainerLayout.tags.size > 0) View.INVISIBLE
+            else View.VISIBLE
     }
 
     /**
@@ -732,13 +728,16 @@ class FragmentNewEstate : Fragment() {
         }
     }
 
+    /**
+     * Updates price unit display.
+     */
     private fun updatePriceUnitDisplayed() {
         context?.getSharedPreferences(AppInfo.FILE_SHARED_PREF, Context.MODE_PRIVATE)?.apply {
             this.getString(AppInfo.PREF_CURRENCY, "USD")?.let {
                 currency = it
                 when (currency) {
                     "USD" -> { binding.newEstatePriceSectionUnit.text =
-                          resources.getString(R.string.str_new_estate_surface_section_price_dollar) }
+                        resources.getString(R.string.str_new_estate_surface_section_price_dollar) }
                     "EUR" -> { binding.newEstatePriceSectionUnit.text =
                         resources.getString(R.string.str_new_estate_surface_section_price_euro) }
                 }
@@ -805,7 +804,7 @@ class FragmentNewEstate : Fragment() {
             estateViewModel.apply {
                 this.estate.type = it.nameSectionEdit.text.toString()
                 if (it.priceSectionEdit.text?.isNotEmpty() == true)
-                            this.estate.price = it.priceSectionEdit.text.toString().toInt()
+                this.estate.price = it.priceSectionEdit.text.toString().toInt()
                 this.estate.location.address = it.locationSectionEdit.text.toString()
                 this.estate.description = it.descSectionEdit.text.toString()
                 this.estate.interior.surface = binding.sliderSurface.value.toInt()

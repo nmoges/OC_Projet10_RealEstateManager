@@ -1,5 +1,7 @@
 package com.openclassrooms.data.model
 
+import java.util.*
+
 /**
  * Defines a real estate.
  * @param id : Id of the estate
@@ -26,5 +28,5 @@ data class Estate(
     var status: Boolean = false,
     var selected: Boolean = false,
     var listPhoto: MutableList<Photo> = mutableListOf(),
-    var listPointOfInterest: MutableList<PointOfInterest> = mutableListOf()
-)
+    var listPointOfInterest: MutableList<PointOfInterest> = mutableListOf(),
+    var firebaseId: String = UUID.randomUUID().toString())

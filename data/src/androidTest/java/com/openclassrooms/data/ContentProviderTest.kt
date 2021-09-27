@@ -15,6 +15,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.Assert.assertThat
 
+
 @RunWith(AndroidJUnit4::class)
 class ContentProviderTest {
 
@@ -32,12 +33,15 @@ class ContentProviderTest {
 
     @Test
     fun getItemFromContentProvider() {
+        if (contentResolver == null)  Log.i("CHECK_RESOLVER", "NULL")
+
         val cursor: Cursor? = contentResolver.query(
             ContentUris.withAppendedId(RealEstateProvider.URI_ITEM, USER_ID),
             null,
             null,
             null,
             null)
+
 
         if (cursor == null)   Log.i("CHECK_CURSOR", "NULL")
         cursor?.let {
