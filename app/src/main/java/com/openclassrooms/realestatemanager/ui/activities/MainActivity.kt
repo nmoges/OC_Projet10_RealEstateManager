@@ -142,9 +142,16 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
      * Access "initializeChildEventListener()" method from [EstateViewModel].
      */
     private fun initializeDatabaseChildEventListener() {
-        (getFragmentList() as FragmentListEstate).displayBuilderLoadEstatesDialog(true)
+        handleFragmentListEstateDialog(true)
         estatesViewModel.initializeChildEventListener(dbReference) {
-            (getFragmentList() as FragmentListEstate).displayBuilderLoadEstatesDialog(false)
+            handleFragmentListEstateDialog(false)
+        }
+    }
+
+    private fun handleFragmentListEstateDialog(status: Boolean) {
+        val fragment = getFragmentList()
+        fragment?.let {
+            (it as FragmentListEstate).displayBuilderLoadEstatesDialog(status)
         }
     }
 
@@ -265,7 +272,7 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
      * Callback for SQLite Database photos URI updates.
      */
     override fun updateURIsPhotosInDB() {
-        listEstatesViewModel.updatePhotosURIInSQLiteDB(auth)
+   //     listEstatesViewModel.updatePhotosURIInSQLiteDB(auth, dbReference)
     }
 
     /**

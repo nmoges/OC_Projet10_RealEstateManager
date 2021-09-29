@@ -3,6 +3,7 @@ package com.openclassrooms.data.repository
 import android.app.Activity
 import android.database.Cursor
 import android.net.Uri
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.sqlite.db.SimpleSQLiteQuery
 import com.google.firebase.auth.FirebaseAuth
@@ -17,6 +18,7 @@ import com.openclassrooms.data.entities.*
 import com.openclassrooms.data.firebase.EstateDataFb
 import com.openclassrooms.data.model.*
 import com.openclassrooms.data.service.AutocompleteService
+import java.io.FileNotFoundException
 
 /**
  * Repository class interface.
@@ -24,12 +26,13 @@ import com.openclassrooms.data.service.AutocompleteService
 interface RealEstateRepositoryAccess {
 
     // -------------------------------- EstateDao --------------------------------------------------
-    //suspend fun insertEstate(estate: Estate, type: Boolean): Long
     suspend fun insertEstate(estate: Estate): Long
 
     suspend fun updateEstate(estate: Estate)
 
     suspend fun getEstateWithFirebaseId(id: String): EstateData?
+
+    fun getCursorEstateWithId(id: Long): Cursor
 
     // -------------------------------- PhotoDao ---------------------------------------------------
     suspend fun insertPhoto(photo: Photo, associatedId: Long)
@@ -55,12 +58,13 @@ interface RealEstateRepositoryAccess {
     suspend fun getAllAgents(): List<Agent>
 
     suspend fun getAgentByFields(firstName: String, lastName: String): AgentData
+
     // -------------------------------- DatesDao ---------------------------------------------------
     suspend fun insertDates(dates: Dates, associatedId: Long): Long
 
     suspend fun updateDates(dates: Dates, associatedId: Long)
 
-    suspend fun getDatesById(id: Long): Dates
+    suspend fun getDatesById(id: Long): Dates?
 
     // -------------------------------- LocationDao ------------------------------------------------
     suspend fun insertLocation(location: Location, associatedId: Long): Long
@@ -94,9 +98,6 @@ interface RealEstateRepositoryAccess {
 
     fun initializeChildEventListener(dbReference: DatabaseReference, callback: (Estate) -> Unit)
 
-    // --------------------- TEST ---------------------------------
-    fun getEstateWithId(id: Long): Cursor
-
     suspend fun convertListFullEstateDataToListEstate(list: List<FullEstateData>): MutableList<Estate>
 
     fun setLockSQLDBUpdate(status: Boolean)
@@ -124,7 +125,6 @@ class RealEstateRepository(
      */
     override suspend fun insertEstate(estate: Estate): Long {
         val estateData = estate.toEstateData()
-        //if (type) estateData.idEstate = estate.id // From Realtime database, Id already exists
         return estateDao.insertEstateData(estateData)
     }
 
@@ -144,16 +144,15 @@ class RealEstateRepository(
      * @param id : firebase id
      * @param : [EstateData]
      */
-    override suspend fun getEstateWithFirebaseId(id: String): EstateData? {
-        return estateDao.getEstateWithFirebaseId(id)
-    }
+    override suspend fun getEstateWithFirebaseId(id: String): EstateData? =
+        estateDao.getEstateWithFirebaseId(id)
 
     /**
      * Accesses DAO Estate get method.
      * @param id : id
      * @param : [Cursor]
      */
-    override fun getEstateWithId(id: Long): Cursor = estateDao.getEstateWithId(id)
+    override fun getCursorEstateWithId(id: Long): Cursor = estateDao.getCursorEstateWithId(id)
 
     // -------------------------------- PhotoDao --------------------------------
     /**
@@ -299,7 +298,7 @@ class RealEstateRepository(
      * @param id : id of the request row in database
      * @return : result
      */
-    override suspend fun getDatesById(id: Long): Dates = datesDao.getDatesById(id).toDates()
+    override suspend fun getDatesById(id: Long): Dates? = datesDao.getDatesById(id)?.toDates()
 
     // -------------------------------- LocationDao --------------------------------
     /**
@@ -338,8 +337,12 @@ class RealEstateRepository(
      * @param pointOfInterest : PointOfInterest to delete
      * @param associatedId : Associated Estate id
      */
-    override suspend fun deletePointOfInterest(pointOfInterest: PointOfInterest, associatedId: Long) =
-        pointOfInterestDao.deletePointOfInterestData(pointOfInterest.toPointOfInterestData(associatedId))
+    override suspend fun deletePointOfInterest(pointOfInterest: PointOfInterest, associatedId: Long) {
+        val pointOfInterestData = pointOfInterest.toPointOfInterestData(associatedId)
+        pointOfInterestData.idPoi = pointOfInterest.id
+        pointOfInterestDao.deletePointOfInterestData(pointOfInterestData)
+    }
+
 
     /**
      * Accesses DAO PointOfInterest getter method
@@ -484,14 +487,20 @@ class RealEstateRepository(
      * @param callbackURL : callback method using URL returned by server
      */
     override fun sendPhotosToCloudStorage(photo: Photo, auth: FirebaseAuth, callbackURL: (String) -> Unit) {
-        val storageReference = FirebaseStorage.getInstance().reference
-        val userID = auth.currentUser?.uid
-        val ref = storageReference.child("images/users/$userID/${photo.name}.jpg")
-        ref.putFile(Uri.parse(photo.uriConverted)).addOnSuccessListener { itTask ->
-            itTask.metadata?.reference?.downloadUrl?.addOnSuccessListener {
-                callbackURL(it.toString())
-            }
-        }.addOnFailureListener{ it.printStackTrace() }
+        try {
+            val storageReference = FirebaseStorage.getInstance().reference
+            val userID = auth.currentUser?.uid
+            val ref = storageReference.child("images/users/$userID/${photo.name}.jpg")
+
+            ref.putFile(Uri.parse(photo.uriConverted)).addOnSuccessListener { itTask ->
+                itTask.metadata?.reference?.downloadUrl?.addOnSuccessListener {
+                    callbackURL(it.toString())
+                }
+            }.addOnFailureListener{ it.printStackTrace() }
+
+        } catch (exception: FileNotFoundException) {
+            exception.printStackTrace()
+        }
     }
 
     // ------------------------------- Realtime Database access  -----------------------------------
@@ -522,7 +531,7 @@ class RealEstateRepository(
     /**
      * Initializes Realtime database child event listener to catch updates.
      * @param dbReference : Database reference
-     * @param callbackList : callback to return new database update
+     * @param callback : callback to return new database update
      */
     override fun initializeChildEventListener(dbReference: DatabaseReference, callback: (Estate) -> Unit) {
 
@@ -571,7 +580,7 @@ class RealEstateRepository(
                 val agent = getAgentById(itEstate.idAgent)
                 val dates = getDatesById(itEstate.idEstate)
                 val location = it.locationData?.toLocation()
-                if (interior != null && location != null) {
+                if (interior != null && location != null && dates != null) {
                     val estate = it.estateData.toEstate(interior, listPhoto, agent, dates,
                         location, listPointOfInterest)
                     listConverted.add(estate)

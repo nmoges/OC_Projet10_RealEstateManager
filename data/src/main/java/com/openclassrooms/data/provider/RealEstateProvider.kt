@@ -41,7 +41,7 @@ class RealEstateProvider : ContentProvider() {
          val id = ContentUris.parseId(uri)
          val context = context?.applicationContext ?: throw  IllegalStateException()
           val estateDao: EstateDao = getEstateDao(context)
-         return estateDao.getEstateWithId(id)
+         return estateDao.getCursorEstateWithId(id)
     }
 
     override fun getType(uri: Uri): String {

@@ -406,6 +406,8 @@ class EstateViewModel @Inject constructor(
      * @param associatedId : associated estate id
      */
     private suspend fun deletePointOfInterestFromDatabase(pointOfInterest: PointOfInterest,
-                                                          associatedId: Long) =
+                                                          associatedId: Long) {
         repositoryAccess.deletePointOfInterest(pointOfInterest, associatedId)
+    }
+
 }

@@ -17,5 +17,5 @@ interface DatesDao {
     suspend fun updateDateData(datesData: DatesData)
 
     @Query("SELECT * FROM table_dates WHERE id_dates = :id")
-    suspend fun getDatesById(id: Long): DatesData
+    suspend fun getDatesById(id: Long): DatesData?
 }

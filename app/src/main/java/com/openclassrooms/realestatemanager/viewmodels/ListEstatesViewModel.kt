@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.openclassrooms.data.entities.FullEstateData
@@ -107,11 +108,15 @@ class ListEstatesViewModel @Inject constructor(
         }
     }
 
-    fun updatePhotosURIInSQLiteDB(auth: FirebaseAuth) {
+    fun updatePhotosURIInSQLiteDB(auth: FirebaseAuth, dbReference: DatabaseReference) {
         viewModelScope.launch {
             repositoryAccess.getPhotosURIFromCloudStorage(auth) { itPhoto, itLong ->
                 viewModelScope.launch {
                     repositoryAccess.updatePhoto(itPhoto, itLong)
+                   // val updatedEstate = listEstates.value?.get(itLong.toInt())
+                   // updatedEstate?.let {
+                   //     repositoryAccess.sendEstateToRealtimeDatabase(it, dbReference)
+                   // }
                 }
             }
         }
