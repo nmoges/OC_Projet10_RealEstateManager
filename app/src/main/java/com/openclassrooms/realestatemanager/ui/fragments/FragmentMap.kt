@@ -113,10 +113,10 @@ class FragmentMap : Fragment(), OnMapReadyCallback {
     }
 
     override fun onPause() {
-        super.onPause()
         (activity as MainActivity).unregisterReceiver(gpsBroadcastReceiver)
         handleLocationListener(false)
         saveCurrentLocation()
+        super.onPause()
     }
 
     /**

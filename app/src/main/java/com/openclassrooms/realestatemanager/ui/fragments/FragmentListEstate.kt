@@ -254,12 +254,12 @@ class FragmentListEstate : Fragment() {
     }
 
     override fun onPause() {
-        super.onPause()
         builderLoadEstatesDialog?.let { dialogsViewModel.loadEstatesDialogStatus = it.isShowing }
+        super.onPause()
     }
 
     override fun onDestroy() {
-        super.onDestroy()
         builderLoadEstatesDialog?.let { if (it.isShowing) it.dismiss() }
+        super.onDestroy()
     }
 }

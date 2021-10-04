@@ -217,14 +217,14 @@ class FragmentSettings : Fragment() {
     }
 
     override fun onPause() {
-        super.onPause()
         builderDeleteAccountDialog.let { dialogsViewModel.deleteAccountDialogStatus = it.isShowing }
         builderCurrencySelectionDialog.let { dialogsViewModel.currencySelectionDialogStatus = it.isShowing }
+        super.onPause()
     }
 
     override fun onDestroy() {
-        super.onDestroy()
         builderDeleteAccountDialog.let { if (it.isShowing) it.dismiss() }
         builderCurrencySelectionDialog.let { if (it.isShowing) it.dismiss() }
+        super.onDestroy()
     }
 }

@@ -1,15 +1,10 @@
 package com.openclassrooms.realestatemanager.viewmodels
 
 import android.app.Activity
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.ktx.database
-import com.google.firebase.ktx.Firebase
 import com.openclassrooms.data.entities.FullEstateData
 import com.openclassrooms.data.model.Agent
 import com.openclassrooms.data.model.Estate
@@ -40,7 +35,6 @@ class ListEstatesViewModel @Inject constructor(
     var selectedEstate: Estate? = null
 
     init {
-        Firebase.database.setPersistenceEnabled(true)
         insertDummyListAgentInDb()
         restoreData()
     }
@@ -94,6 +88,7 @@ class ListEstatesViewModel @Inject constructor(
     fun performAutocompleteRequest(activity: Activity) =
         repositoryAccess.performAutocompleteRequest(activity)
 
+    // -------------------- Dummy --------------------
     /**
      * Test method to insert fake date in table_agents from database.
      */
@@ -108,18 +103,25 @@ class ListEstatesViewModel @Inject constructor(
         }
     }
 
-    fun updatePhotosURIInSQLiteDB(auth: FirebaseAuth, dbReference: DatabaseReference) {
+    // -------------------- NoSQL DB --------------------
+    /**
+     * Updates photos estates in NoSQL DB with URL.
+     */
+    fun updatePhotosURIInSQLiteDB() {
         viewModelScope.launch {
-            repositoryAccess.getPhotosURIFromCloudStorage(auth) { itPhoto, itLong ->
-                viewModelScope.launch {
-                    repositoryAccess.updatePhoto(itPhoto, itLong)
-                   // val updatedEstate = listEstates.value?.get(itLong.toInt())
-                   // updatedEstate?.let {
-                   //     repositoryAccess.sendEstateToRealtimeDatabase(it, dbReference)
-                   // }
+            // Send Photo to Cloud Storage
+            val pair = repositoryAccess.getPhotosURIFromCloudStorage()
+            for (i in pair.indices) {
+                repositoryAccess.updatePhoto(pair[i].first, pair[i].second)
+                // Send updated Estate to Realtime DB
+                val indice = pair[i].second.toInt() - 1
+                val updatedEstate = listEstates.value?.get(indice)
+                updatedEstate?.let { estate ->
+                    repositoryAccess.updateEstatePhotoInRealtimeDatabase(estate.firebaseId,
+                        pair[i].first.uriConverted,
+                        i.toString())
                 }
             }
         }
     }
-
 }

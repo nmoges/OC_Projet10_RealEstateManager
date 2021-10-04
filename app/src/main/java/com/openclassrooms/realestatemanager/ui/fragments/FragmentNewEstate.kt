@@ -610,10 +610,8 @@ class FragmentNewEstate : Fragment() {
      */
     private fun updateSelectedEstateFromViewModel() {
         saveEstateValuesInViewModel()
-        estateViewModel.getNewEstate((activity as MainActivity).getFirebaseAuth(), context).observe(viewLifecycleOwner,
-            { itEstate ->
-                estateViewModel.updateSQLiteDatabase(updateEstate, itEstate,
-                    (activity as MainActivity).getFirebaseDatabaseReference()) {
+        estateViewModel.getNewEstate(context).observe(viewLifecycleOwner, { itEstate ->
+                estateViewModel.updateSQLiteDatabase(updateEstate, itEstate) {
                     // Callback after database updated
                     confirmExit = true
                     builderProgressBarDialog?.dismiss()
@@ -759,21 +757,20 @@ class FragmentNewEstate : Fragment() {
     }
 
     override fun onPause() {
-        super.onPause()
         saveDialogsStatusInViewModel()
         saveEstateValuesInViewModel()
+        super.onPause()
     }
 
     override fun onDestroy() {
-        super.onDestroy()
         dismissDialogDisplayed()
+        super.onDestroy()
     }
 
     /**
      * Checks in [DialogsViewModel] if dialogs status before configuration change.
      */
     private fun checkDialogStatusInViewModel() {
-        Log.i("CHECK_DIALOG", "${builderProgressBarDialog?.isShowing}")
         if (dialogsViewModel.listAgentsDialogStatus) builderAddMediaDialog?.show()
         if (dialogsViewModel.addPOIDialogStatus) builderAddPOIDialog?.show()
         if (dialogsViewModel.cancelEstateDialogStatus) builderCancelEstateDialog?.show()
@@ -787,7 +784,6 @@ class FragmentNewEstate : Fragment() {
      * Saves dialog status values in view model.
      */
     private fun saveDialogsStatusInViewModel() {
-        Log.i("CHECK_DIALOG", "${builderProgressBarDialog?.isShowing}")
         builderListAgentsDialog?.let { dialogsViewModel.listAgentsDialogStatus = it.isShowing }
         builderAddPOIDialog?.let { dialogsViewModel.addPOIDialogStatus = it.isShowing }
         builderCancelEstateDialog?.let { dialogsViewModel.cancelEstateDialogStatus = it.isShowing }

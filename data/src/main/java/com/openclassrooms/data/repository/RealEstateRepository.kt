@@ -5,12 +5,12 @@ import android.database.Cursor
 import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.sqlite.db.SimpleSQLiteQuery
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.ChildEventListener
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.*
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import com.openclassrooms.data.*
 import com.openclassrooms.data.dao.*
@@ -18,7 +18,10 @@ import com.openclassrooms.data.entities.*
 import com.openclassrooms.data.firebase.EstateDataFb
 import com.openclassrooms.data.model.*
 import com.openclassrooms.data.service.AutocompleteService
+import java.io.File
 import java.io.FileNotFoundException
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 /**
  * Repository class interface.
@@ -39,7 +42,7 @@ interface RealEstateRepositoryAccess {
 
     suspend fun getPhotos(id: Long): List<Photo>
 
-    suspend fun getPhotosURIFromCloudStorage(auth: FirebaseAuth, callback: (Photo, Long) -> (Unit))
+    suspend fun getPhotosURIFromCloudStorage(): List<Pair<Photo, Long>>
 
     suspend fun updatePhoto(photo: Photo, associatedId: Long)
 
@@ -91,16 +94,19 @@ interface RealEstateRepositoryAccess {
     fun performAutocompleteRequest(activity: Activity)
 
     // -------------------------------- Cloud Storage Firebase -------------------------------------
-    fun sendPhotosToCloudStorage(photo: Photo, auth: FirebaseAuth, callbackURL: (String) -> Unit)
+    suspend fun sendPhotosToCloudStorage(photo: Photo): String
 
     // -------------------------------- Realtime Database Firebase ---------------------------------
-    fun sendEstateToRealtimeDatabase(estate: Estate, dbReference: DatabaseReference)
+    fun sendEstateToRealtimeDatabase(estate: Estate)
 
-    fun initializeChildEventListener(dbReference: DatabaseReference, callback: (Estate) -> Unit)
+    fun updateEstatePhotoInRealtimeDatabase(firebaseId: String, url: String, node: String)
+
+    fun initializeChildEventListener(callback: (Estate) -> Unit)
 
     suspend fun convertListFullEstateDataToListEstate(list: List<FullEstateData>): MutableList<Estate>
 
     fun setLockSQLDBUpdate(status: Boolean)
+
 }
 
 /**
@@ -116,6 +122,22 @@ class RealEstateRepository(
     private val pointOfInterestDao: PointOfInterestDao,
     private val fullEstateDao: FullEstateDao):
     RealEstateRepositoryAccess {
+
+    private lateinit var auth: FirebaseAuth
+    private lateinit var dbFirebase: FirebaseDatabase
+    private lateinit var dbReference: DatabaseReference
+
+    init { initializeFirebase() }
+
+    /**
+     * Initialize Firebase tools.
+     */
+    private fun initializeFirebase() {
+        Firebase.database.setPersistenceEnabled(true)
+        auth = FirebaseAuth.getInstance()
+        dbFirebase = FirebaseDatabase.getInstance()
+        dbReference = dbFirebase.getReference("estates")
+    }
 
     // -------------------------------- EstateDao --------------------------------
     /**
@@ -188,20 +210,21 @@ class RealEstateRepository(
      * @param auth : [FirebaseAuth] parameter
      * @param callback : callback function using updated photo
      */
-    override suspend fun getPhotosURIFromCloudStorage(auth: FirebaseAuth, callback:
-        (Photo, Long) -> (Unit)) {
+    override suspend fun getPhotosURIFromCloudStorage(): List<Pair<Photo, Long>> {
         // Get list of photos from Database
         val listPhotoData = mutableListOf<PhotoData>()
         photoDao.getAllPhotos().forEach { listPhotoData.add(it) }
         // Updates URI photos
+        val list = mutableListOf<Pair<Photo, Long>>()
         listPhotoData.forEach { itPhotoData ->
-            val associatedId = itPhotoData.associatedId
-            val photo = itPhotoData.toPhoto()
-            sendPhotosToCloudStorage(photo, auth) { itURL ->
-                photo.uriConverted = itURL
-                callback(photo, associatedId)
+            if (itPhotoData.uriConverted.contains("content://")) {
+                val associatedId = itPhotoData.associatedId
+                val photo = itPhotoData.toPhoto()
+                photo.uriConverted = sendPhotosToCloudStorage(photo)
+                list.add(Pair(photo, associatedId))
             }
         }
+        return list
     }
 
     /**
@@ -484,22 +507,23 @@ class RealEstateRepository(
      * Sends existing photos to Cloud Storage
      * @param photo : photo to store in Cloud Storage
      * @param auth : [FirebaseAuth] parameter
-     * @param callbackURL : callback method using URL returned by server
      */
-    override fun sendPhotosToCloudStorage(photo: Photo, auth: FirebaseAuth, callbackURL: (String) -> Unit) {
-        try {
-            val storageReference = FirebaseStorage.getInstance().reference
-            val userID = auth.currentUser?.uid
-            val ref = storageReference.child("images/users/$userID/${photo.name}.jpg")
 
-            ref.putFile(Uri.parse(photo.uriConverted)).addOnSuccessListener { itTask ->
-                itTask.metadata?.reference?.downloadUrl?.addOnSuccessListener {
-                    callbackURL(it.toString())
-                }
-            }.addOnFailureListener{ it.printStackTrace() }
+    override suspend fun sendPhotosToCloudStorage(photo: Photo): String {
+        return suspendCoroutine<String> { result ->
+            try {
+                val storageReference = FirebaseStorage.getInstance().reference
+                val userID = auth.currentUser?.uid
+                val ref = storageReference.child("images/users/$userID/${photo.name}.jpg")
+                ref.putFile(Uri.parse(photo.uriConverted)).addOnSuccessListener { itTask ->
+                    itTask.metadata?.reference?.downloadUrl?.addOnSuccessListener { url ->
+                        result.resume(url.toString())
+                    }
+                }.addOnFailureListener{ exception -> result.resumeWith(Result.failure(exception)) }
 
-        } catch (exception: FileNotFoundException) {
-            exception.printStackTrace()
+            } catch (exception: FileNotFoundException) {
+                exception.printStackTrace()
+            }
         }
     }
 
@@ -524,8 +548,13 @@ class RealEstateRepository(
      * @param estate : [Estate] to send
      * @param dbReference : Database reference
      */
-    override fun sendEstateToRealtimeDatabase(estate: Estate, dbReference: DatabaseReference) {
+    override fun sendEstateToRealtimeDatabase(estate: Estate) {
         dbReference.child(estate.firebaseId).setValue(estate.toEstateDataFb())
+    }
+
+    override fun updateEstatePhotoInRealtimeDatabase(firebaseId: String, url: String, node: String) {
+       dbReference.child(firebaseId).child("listPhotoDataFb")
+                                           .child(node).child("uriConverted").setValue(url)
     }
 
     /**
@@ -533,8 +562,7 @@ class RealEstateRepository(
      * @param dbReference : Database reference
      * @param callback : callback to return new database update
      */
-    override fun initializeChildEventListener(dbReference: DatabaseReference, callback: (Estate) -> Unit) {
-
+    override fun initializeChildEventListener(callback: (Estate) -> Unit) {
         val childListener = object : ChildEventListener {
             override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
                 if (!lockSQLiteDBUpdate) {

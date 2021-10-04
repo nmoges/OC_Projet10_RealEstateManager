@@ -185,10 +185,9 @@ class FragmentEstateDetails : Fragment() {
         selectedEstateToDisplay?.let { itEstate ->
             estateViewModel.initializeWithSelectedEstateValues(itEstate)
             estateViewModel.updateDateEstate(true)
-            estateViewModel.getNewEstate((activity as MainActivity).getFirebaseAuth(), context)
+            estateViewModel.getNewEstate(context)
                 .observe(viewLifecycleOwner, { itUpdatedEstate ->
-                    estateViewModel.updateSQLiteDatabase(true, itUpdatedEstate,
-                        (activity as MainActivity).getFirebaseDatabaseReference()) { }
+                    estateViewModel.updateSQLiteDatabase(true, itUpdatedEstate) {}
                 })
         }
     }
@@ -271,12 +270,12 @@ class FragmentEstateDetails : Fragment() {
     }
 
     override fun onPause() {
-        super.onPause()
         builderConfirmDialog?.let { dialogsViewModel.confirmDialogStatus = it.isShowing }
+        super.onPause()
     }
 
     override fun onDestroy() {
-        super.onDestroy()
         builderConfirmDialog?.let { if (it.isShowing) it.dismiss() }
+        super.onDestroy()
     }
 }

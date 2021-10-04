@@ -798,13 +798,13 @@ class FragmentSearch : Fragment() {
     }
 
     override fun onPause() {
-        super.onPause()
         saveInViewModels()
+        super.onPause()
     }
 
     override fun onDestroy() {
-        super.onDestroy()
         dismissDisplayedDialogs()
+        super.onDestroy()
     }
 
     /**

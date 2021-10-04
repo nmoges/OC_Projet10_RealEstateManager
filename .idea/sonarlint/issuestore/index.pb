@@ -74,16 +74,10 @@ Papp/src/main/java/com/openclassrooms/realestatemanager/ui/MediaDisplayHandler.k
 Qapp/src/main/java/com/openclassrooms/realestatemanager/utils/poi/POIComparator.kt,a\2\a2e24b30d4ee6eb9697954b1990dfc546644ddeb
 q
 Aapp/src/main/java/com/openclassrooms/realestatemanager/AppInfo.kt,f\8\f8e7cae62fac8f3581a3f05de0e89e15f032b39e
-‡
-Wapp/src/main/java/com/openclassrooms/realestatemanager/ui/fragments/FragmentSettings.kt,b\1\b193deea59c9970fe6b0d46e03ea191e71f7b375
 ˆ
 Xapp/src/main/java/com/openclassrooms/realestatemanager/ui/adapters/ListEstatesAdapter.kt,d\0\d06173742ed2234766d9661946f87a9e6e2a544f
 Ž
 ^app/src/main/java/com/openclassrooms/realestatemanager/viewmodels/ListTagsFragmentViewModel.kt,1\a\1aee7f56924dd466da2443c46f4cd9beac961a67
-‚
-Rapp/src/main/java/com/openclassrooms/realestatemanager/ui/fragments/FragmentMap.kt,d\f\df4c479f53f84cbfe4339d948ac2f6733360b003
-…
-Uapp/src/main/java/com/openclassrooms/realestatemanager/ui/fragments/FragmentSearch.kt,3\7\37821cd1226743e1f0344773b1d2a4fde1aeb286
 ‹
 [app/src/main/java/com/openclassrooms/realestatemanager/viewmodels/SearchFiltersViewModel.kt,8\e\8ebae4e1f238d3b748a05f4ad703655827ed6a98
 <
@@ -134,8 +128,6 @@ u
 Edata/src/main/java/com/openclassrooms/data/firebase/LocationDataFb.kt,1\d\1d7c575e9a17fe1109767c9f57762daf0019410f
 Œ
 \app/src/main/java/com/openclassrooms/realestatemanager/ui/activities/MainActivityCallback.kt,1\c\1cb48a5261bf2e9a2c1fe4e64e68b72dc736910c
-‹
-[app/src/main/java/com/openclassrooms/realestatemanager/receiver/NetworkBroadcastReceiver.kt,f\1\f117ec76d658633e3629a8628f6a9bf4340324de
 i
 9data/src/main/java/com/openclassrooms/data/model/Photo.kt,a\9\a907f34156a39e88c7dc7b44852a028026430553
 j
@@ -152,11 +144,13 @@ z
 Jdata/src/main/java/com/openclassrooms/data/entities/PointOfInterestData.kt,e\0\e02122442c4323754ea46945b73468d2248d6293
 |
 Ldata/src/main/java/com/openclassrooms/data/firebase/PointOfInterestDataFb.kt,f\0\f0bc6782c0f1d1ca698b7dcd78b18dbbf42b738c
-ˆ
-Xapp/src/main/java/com/openclassrooms/realestatemanager/ui/fragments/FragmentNewEstate.kt,1\0\10e9fd407e603b8e87eac8081b920670bdebfc8a
 h
 8data/src/main/java/com/openclassrooms/data/Converters.kt,2\f\2fc8704203e81ede550fb13a356ab619955a9d84
-Œ
-\app/src/main/java/com/openclassrooms/realestatemanager/ui/fragments/FragmentEstateDetails.kt,b\9\b942265427bb7d6d6717bf6813fb573821668d1b
-‰
-Yapp/src/main/java/com/openclassrooms/realestatemanager/ui/fragments/FragmentListEstate.kt,0\b\0b357c8f4a12d1fd6b84157cb7f44cffd452c782
+P
+ app/src/main/AndroidManifest.xml,8\c\8c55c3ccc257e5907959013f99656e4c8ec3903e
+j
+:data/src/main/java/com/openclassrooms/data/dao/DatesDao.kt,9\3\93c2ff06aa6101fd97c0adfe22c91cecb7f19391
+k
+;data/src/main/java/com/openclassrooms/data/dao/EstateDao.kt,d\a\da01de06cbf65a4ca044e74cd5a21a35791f1874
+y
+Idata/src/main/java/com/openclassrooms/data/provider/RealEstateProvider.kt,8\9\898f309dfc5cc0cc61d64991673c29f7046189df

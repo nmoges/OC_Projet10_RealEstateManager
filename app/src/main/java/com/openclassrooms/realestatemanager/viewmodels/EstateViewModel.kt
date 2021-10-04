@@ -2,20 +2,14 @@ package com.openclassrooms.realestatemanager.viewmodels
 
 import android.content.Context
 import android.location.Geocoder
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.libraries.places.api.model.Place
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.ktx.database
-import com.google.firebase.ktx.Firebase
 import com.openclassrooms.data.entities.PointOfInterestData
 import com.openclassrooms.data.model.*
 import com.openclassrooms.data.repository.RealEstateRepositoryAccess
-import com.openclassrooms.data.toEstateData
 import com.openclassrooms.realestatemanager.Utils
 import com.openclassrooms.realestatemanager.utils.poi.POIComparator
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -51,10 +45,7 @@ class EstateViewModel @Inject constructor(
     /** Temporary value storing the position in the list of agents */
     var nameAgentSelected: String = ""
 
-    init {
-        Firebase.database.setPersistenceEnabled(true)
-        resetEstate()
-    }
+    init { resetEstate() }
 
     /**
      * Creates a new [Estate].
@@ -81,8 +72,8 @@ class EstateViewModel @Inject constructor(
      * Access "initializeChildEventListener()" method from [repositoryAccess].
      * @param dbReference : Realtime Database reference
      */
-    fun initializeChildEventListener(dbReference: DatabaseReference, callback: () -> (Unit)) {
-        repositoryAccess.initializeChildEventListener(dbReference) { itEstate ->
+    fun initializeChildEventListener(callback: () -> (Unit)) {
+        repositoryAccess.initializeChildEventListener { itEstate ->
             viewModelScope.launch {
                 val oldEstateData = repositoryAccess.getEstateWithFirebaseId(itEstate.firebaseId)
                 val agent = repositoryAccess.getAgentByFields(itEstate.agent.firstName, itEstate.agent.lastName)
@@ -92,12 +83,8 @@ class EstateViewModel @Inject constructor(
                     insertInteriorInDatabase(itEstate.interior, id)
                     insertDatesInDatabase(itEstate.dates, id)
                     insertLocationInDatabase(itEstate.location, id)
-                    itEstate.listPhoto.forEach {
-                        insertPhotoInDatabase(it, id)
-                    }
-                    itEstate.listPointOfInterest.forEach {
-                        insertPointOfInterestInDatabase(it, id)
-                    }
+                    itEstate.listPhoto.forEach { insertPhotoInDatabase(it, id) }
+                    itEstate.listPointOfInterest.forEach { insertPointOfInterestInDatabase(it, id) }
                 }
                 else { // Update
                     itEstate.id = oldEstateData.idEstate
@@ -178,7 +165,7 @@ class EstateViewModel @Inject constructor(
      * Returns a LiveData containing the new estate/updated estate to send to database.
      * @return : LiveData<Estate>
      */
-    fun getNewEstate(auth: FirebaseAuth, context: Context?): LiveData<Estate> {
+    fun getNewEstate(context: Context?): LiveData<Estate> {
         val newEstate = MutableLiveData<Estate>()
         viewModelScope.launch {
             // Update agent
@@ -201,13 +188,12 @@ class EstateViewModel @Inject constructor(
                 context?.let {
                     if (Utils.isInternetAvailable(context)) {
                         for (i in estate.listPhoto.size-numberPhotosAdded until estate.listPhoto.size) {
-                            repositoryAccess.sendPhotosToCloudStorage(estate.listPhoto[i], auth) { itURL ->
-                                estate.listPhoto[i].uriConverted = itURL
-                                if (i == estate.listPhoto.size-1 && estate.listPhoto[i].uriConverted == itURL) {
+                                val url = repositoryAccess.sendPhotosToCloudStorage(estate.listPhoto[i])
+                                estate.listPhoto[i].uriConverted = url
+                                if (i == estate.listPhoto.size-1 && estate.listPhoto[i].uriConverted == url) {
                                     numberPhotosAdded = 0
                                     newEstate.postValue(estate)
                                 }
-                            }
                         }
                     }
                     else {
@@ -225,11 +211,8 @@ class EstateViewModel @Inject constructor(
     /**
      * Access insert estate method from repository interface.
      * @param estate : estate data to store in table_photos
-     * @param type : defines type of insertion (false : estate created by user (auto generated id)
-     *                                          true : estate from Realtime database (id already exists)
      */
-    private suspend fun insertEstateInDatabase(estate: Estate, type: Boolean): Long {
-       // val id = repositoryAccess.insertEstate(estate, type)
+    private suspend fun insertEstateInDatabase(estate: Estate): Long {
         val id = repositoryAccess.insertEstate(estate)
         insertInteriorInDatabase(estate.interior, id)
         insertDatesInDatabase(estate.dates, id)
@@ -291,23 +274,20 @@ class EstateViewModel @Inject constructor(
      * Determines if database operation is an insertion or an update.
      * @param typeUpdate : type of operation in database
      */
-    fun updateSQLiteDatabase(typeUpdate: Boolean,
-                             estate: Estate, dbReference:
-                             DatabaseReference, callbackDbUpdate : () -> Unit) {
+    fun updateSQLiteDatabase(typeUpdate: Boolean, estate: Estate, callback: () -> Unit) {
         viewModelScope.launch {
             if (!typeUpdate) {
-                val id = insertEstateInDatabase(estate, false)
+                val id = insertEstateInDatabase(estate)
                 estate.id = id
                 repositoryAccess.setLockSQLDBUpdate(true)
-                repositoryAccess.sendEstateToRealtimeDatabase(estate, dbReference)
-
+                repositoryAccess.sendEstateToRealtimeDatabase(estate)
             }
             else {
                 updateEstateInDatabase(estate)
                 repositoryAccess.setLockSQLDBUpdate(true)
-                repositoryAccess.sendEstateToRealtimeDatabase(estate, dbReference)
+                repositoryAccess.sendEstateToRealtimeDatabase(estate)
             }
-            callbackDbUpdate()
+            callback()
         }
     }
 
@@ -409,5 +389,4 @@ class EstateViewModel @Inject constructor(
                                                           associatedId: Long) {
         repositoryAccess.deletePointOfInterest(pointOfInterest, associatedId)
     }
-
 }

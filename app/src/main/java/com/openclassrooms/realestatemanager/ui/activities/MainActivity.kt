@@ -33,7 +33,6 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
 import com.openclassrooms.data.model.Agent
 import com.openclassrooms.realestatemanager.AppInfo
 import com.openclassrooms.realestatemanager.BuildConfig
@@ -105,13 +104,6 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
     /** Status of the network bar */
     private var networkBarDisplayStatus = true
 
-    /** To access user Firebase Authentication information */
-    private lateinit var auth: FirebaseAuth
-
-    private lateinit var dbFirebase: FirebaseDatabase
-
-    private lateinit var dbReference: DatabaseReference
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -119,7 +111,6 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
         listEstatesViewModel = ViewModelProvider(this)[ListEstatesViewModel::class.java]
         listFragmentsViewModel = ViewModelProvider(this)[ListTagsFragmentViewModel::class.java]
         estatesViewModel = ViewModelProvider(this)[EstateViewModel::class.java]
-        initializeFirebase()
         checkScreenProperties()
         initializeDialogAddAgent()
         initializeDialogLogout()
@@ -143,7 +134,7 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
      */
     private fun initializeDatabaseChildEventListener() {
         handleFragmentListEstateDialog(true)
-        estatesViewModel.initializeChildEventListener(dbReference) {
+        estatesViewModel.initializeChildEventListener {
             handleFragmentListEstateDialog(false)
         }
     }
@@ -165,15 +156,6 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
     override fun onPause() {
         super.onPause()
         unregisterReceiver(networkBroadcastReceiver)
-    }
-
-    /**
-     * Initialize Firebase tools.
-     */
-    private fun initializeFirebase() {
-        auth = FirebaseAuth.getInstance()
-        dbFirebase = FirebaseDatabase.getInstance()
-        dbReference = dbFirebase.getReference("estates")
     }
 
     /**
@@ -272,7 +254,7 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
      * Callback for SQLite Database photos URI updates.
      */
     override fun updateURIsPhotosInDB() {
-   //     listEstatesViewModel.updatePhotosURIInSQLiteDB(auth, dbReference)
+        listEstatesViewModel.updatePhotosURIInSQLiteDB()
     }
 
     /**
@@ -765,13 +747,13 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
      * Access [FirebaseAuth] instance
      * @return : [auth]
      */
-    fun getFirebaseAuth(): FirebaseAuth = auth
+    //fun getFirebaseAuth(): FirebaseAuth = auth
 
     /**
      * Access Firebase [DatabaseReference] instance
      * @return : [dbReference]
      */
-    fun getFirebaseDatabaseReference(): DatabaseReference = dbReference
+   // fun getFirebaseDatabaseReference(): DatabaseReference = dbReference
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
