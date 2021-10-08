@@ -16,6 +16,11 @@ import com.openclassrooms.data.database.RealEstateManagerDatabase
  * @param status : estate status (available or sold)
  * @param idFirebase : firebase id in Realtime database
  */
+//TODO() : Ajouter contrainte pour unicité de l'id firebase
+/*
+EXAMPLE :
+@Entity(indices = {@Index(value = {"first_name", "last_name"}, unique = true)})
+ */
 @Entity(tableName = "table_estates",
     foreignKeys = [ForeignKey(entity = AgentData::class,
         parentColumns = arrayOf("id"),

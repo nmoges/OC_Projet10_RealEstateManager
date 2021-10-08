@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.os.Build;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -73,9 +74,7 @@ public class Utils {
         DateFormat dateFormat;
         if (Locale.getDefault().getLanguage().equals("en"))
             dateFormat = new SimpleDateFormat("MM/dd/yyyy");
-        else
-            dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-
+        else dateFormat = new SimpleDateFormat("dd/MM/yyyy");
         return dateFormat.parse(date);
     }
 

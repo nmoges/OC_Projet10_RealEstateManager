@@ -70,33 +70,24 @@ class EstateViewModel @Inject constructor(
 
     /**
      * Access "initializeChildEventListener()" method from [repositoryAccess].
-     * @param dbReference : Realtime Database reference
      */
     fun initializeChildEventListener(callback: () -> (Unit)) {
         repositoryAccess.initializeChildEventListener { itEstate ->
             viewModelScope.launch {
-                val oldEstateData = repositoryAccess.getEstateWithFirebaseId(itEstate.firebaseId)
+                val oldEstateId = repositoryAccess.getEstateWithFirebaseId(itEstate.firebaseId)
+                //TODO() : condition if : si null, insertion new agent dans SQL db
                 val agent = repositoryAccess.getAgentByFields(itEstate.agent.firstName, itEstate.agent.lastName)
-                itEstate.agent.id = agent.idAgent
-                if (oldEstateData == null) { // Insert
-                    val id = repositoryAccess.insertEstate(itEstate)
-                    insertInteriorInDatabase(itEstate.interior, id)
-                    insertDatesInDatabase(itEstate.dates, id)
-                    insertLocationInDatabase(itEstate.location, id)
-                    itEstate.listPhoto.forEach { insertPhotoInDatabase(it, id) }
-                    itEstate.listPointOfInterest.forEach { insertPointOfInterestInDatabase(it, id) }
-                }
+                itEstate.agent.id = agent.id
+                if (oldEstateId == null) // Insert
+                    insertEstateInDatabase(itEstate)
                 else { // Update
-                    itEstate.id = oldEstateData.idEstate
-                    itEstate.location.id = oldEstateData.idEstate
-                    itEstate.interior.id = oldEstateData.idEstate
-                    itEstate.dates.id = oldEstateData.idEstate
-                    repositoryAccess.updateEstate(itEstate)
-                    updateInteriorInDatabase(itEstate.interior, itEstate.id)
-                    updateLocationInDatabase(itEstate.location, itEstate.id)
-                    updateDatesInDatabase(itEstate.dates, itEstate.id)
-                    updatePhotosInDatabase(itEstate)
-                    updatePointsOfInterestInDatabase(itEstate)
+                    oldEstateId.let { id ->
+                        itEstate.id = id
+                        itEstate.location.id = id
+                        itEstate.interior.id = id
+                        itEstate.dates.id = id
+                    }
+                    updateEstateInDatabase(itEstate)
                 }
                 // End loading estates
                 callback()

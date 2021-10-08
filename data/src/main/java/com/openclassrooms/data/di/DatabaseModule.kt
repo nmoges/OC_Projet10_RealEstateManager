@@ -17,7 +17,6 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object DatabaseModule {
-// TODO : passer DAOs en internal
     @Singleton
     @Provides
     fun provideDatabase(@ApplicationContext context: Context): RealEstateManagerDatabase {

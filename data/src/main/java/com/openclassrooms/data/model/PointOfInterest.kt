@@ -9,5 +9,4 @@ import java.util.*
  */
 class PointOfInterest(
     var id: Long = 0,
-    var name: String = "",
-    val firebaseId: String = UUID.randomUUID().toString())
+    var name: String = "")

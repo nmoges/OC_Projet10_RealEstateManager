@@ -10,5 +10,4 @@ import java.util.*
 class Photo(
     var id: Long = 0,
     var uriConverted: String = "",
-    var name: String = "",
-    val firebaseId: String = UUID.randomUUID().toString())
+    var name: String = "")

@@ -21,7 +21,4 @@ interface PhotoDao {
 
     @Update
     suspend fun updatePhoto(photoData: PhotoData)
-
-    @Query("SELECT * FROM table_photos WHERE id_firebase = :id")
-    suspend fun getPhotoByFirebaseId(id: String): PhotoData
 }

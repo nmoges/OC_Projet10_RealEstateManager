@@ -1,16 +1,20 @@
 package com.openclassrooms.data.repository
 
 import android.app.Activity
+import android.app.Application
+import android.content.Context
 import android.database.Cursor
 import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.sqlite.db.SimpleSQLiteQuery
+import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.ktx.initialize
 import com.google.firebase.storage.FirebaseStorage
 import com.openclassrooms.data.*
 import com.openclassrooms.data.dao.*
@@ -33,7 +37,7 @@ interface RealEstateRepositoryAccess {
 
     suspend fun updateEstate(estate: Estate)
 
-    suspend fun getEstateWithFirebaseId(id: String): EstateData?
+    suspend fun getEstateWithFirebaseId(id: String): Long?
 
     fun getCursorEstateWithId(id: Long): Cursor
 
@@ -45,8 +49,6 @@ interface RealEstateRepositoryAccess {
     suspend fun getPhotosURIFromCloudStorage(): List<Pair<Photo, Long>>
 
     suspend fun updatePhoto(photo: Photo, associatedId: Long)
-
-    suspend fun getPhotoByFirebaseId(id: String): PhotoData
 
     // -------------------------------- InteriorDao ------------------------------------------------
     suspend fun insertInterior(interior: Interior, associatedId: Long)
@@ -60,7 +62,8 @@ interface RealEstateRepositoryAccess {
 
     suspend fun getAllAgents(): List<Agent>
 
-    suspend fun getAgentByFields(firstName: String, lastName: String): AgentData
+    // TODO : Make Agent nullable
+    suspend fun getAgentByFields(firstName: String, lastName: String): Agent
 
     // -------------------------------- DatesDao ---------------------------------------------------
     suspend fun insertDates(dates: Dates, associatedId: Long): Long
@@ -80,8 +83,6 @@ interface RealEstateRepositoryAccess {
     suspend fun deletePointOfInterest(pointOfInterest: PointOfInterest, associatedId: Long)
 
     suspend fun getPointsOfInterest(id: Long): List<PointOfInterest>
-
-    suspend fun getPointOfInterestByFirebaseId(id: String): PointOfInterestData
 
     // -------------------------------- FullEstateDao ----------------------------------------------
     fun loadAllEstates(): LiveData<List<FullEstateData>>
@@ -120,7 +121,9 @@ class RealEstateRepository(
     private val agentDao: AgentDao,
     private val datesDao: DatesDao,
     private val pointOfInterestDao: PointOfInterestDao,
-    private val fullEstateDao: FullEstateDao):
+    private val fullEstateDao: FullEstateDao,
+    private val context: Context
+):
     RealEstateRepositoryAccess {
 
     private lateinit var auth: FirebaseAuth
@@ -133,6 +136,7 @@ class RealEstateRepository(
      * Initialize Firebase tools.
      */
     private fun initializeFirebase() {
+        FirebaseApp.initializeApp(context)
         Firebase.database.setPersistenceEnabled(true)
         auth = FirebaseAuth.getInstance()
         dbFirebase = FirebaseDatabase.getInstance()
@@ -166,8 +170,10 @@ class RealEstateRepository(
      * @param id : firebase id
      * @param : [EstateData]
      */
-    override suspend fun getEstateWithFirebaseId(id: String): EstateData? =
-        estateDao.getEstateWithFirebaseId(id)
+    override suspend fun getEstateWithFirebaseId(id: String): Long? {
+        val estateData = estateDao.getEstateWithFirebaseId(id)
+        return if (estateData != null) estateData.idEstate else null
+    }
 
     /**
      * Accesses DAO Estate get method.
@@ -196,14 +202,6 @@ class RealEstateRepository(
         photoDao.getPhotos(id).forEach { listPhoto.add(it.toPhoto()) }
         return listPhoto
     }
-
-    /**
-     * Accesses DAO Photo getter method
-     * @param id : firebase id of the requested row in database
-     * @return : [PhotoData]
-     */
-    override suspend fun getPhotoByFirebaseId(id: String): PhotoData =
-        photoDao.getPhotoByFirebaseId(id)
 
     /**
      * Sends existing photos to Cloud Storage to get an URL in return.
@@ -291,8 +289,11 @@ class RealEstateRepository(
      * @param firstName : first name of an agent
      * @param lastName : last name of an agent
      */
-    override suspend fun getAgentByFields(firstName: String, lastName: String): AgentData =
-         agentDao.getAgentByFields(firstName, lastName)
+    override suspend fun getAgentByFields(firstName: String, lastName: String): Agent {
+        val agentData = agentDao.getAgentByFields(firstName, lastName)
+        return agentData.toAgent()
+    }
+
 
     // -------------------------------- DatesDao --------------------------------
     /**
@@ -380,15 +381,6 @@ class RealEstateRepository(
         return listPointsOfInterest
     }
 
-    /**
-     * Accesses DAO PointOfInteret getter method
-     * @param id : firebase id of the requested row in database
-     * @return : [PointOfInterestData] requested row
-     */
-    override suspend fun getPointOfInterestByFirebaseId(id: String): PointOfInterestData =
-         pointOfInterestDao.getPointOfInterestByFirebaseId(id)
-
-
     // -------------------------------- FullEstateDao --------------------------------
     /**
      * Accesses DAO load Estates method
@@ -414,7 +406,6 @@ class RealEstateRepository(
      * @param _nbFilters : number of filters enabled
      *
      */
-    //TODO() : A déplacer dans une data classe
     override fun getSearchResults(price: List<Int?>, surface: List<Int?>,
                                   status: Boolean?, dates: List<String?>,
                                   listPoi : MutableList<String>?, _nbFilters: Int):
@@ -566,14 +557,21 @@ class RealEstateRepository(
         val childListener = object : ChildEventListener {
             override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
                 if (!lockSQLiteDBUpdate) {
+                    Log.i("CHILDEVENT", "ADDED")
+                    if (previousChildName != null) {
+                        Log.i("CHILDEVENT", previousChildName)
+                    }
                     val child = snapshot.getValue(EstateDataFb::class.java)
-                    child?.let { callback(it.toEstate()) }
+                    child?.let {
+                        if (it.firebaseId != previousChildName) callback(it.toEstate())
+                    }
                 }
                 else lockSQLiteDBUpdate = false
             }
 
             override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
                 if (!lockSQLiteDBUpdate) {
+                    Log.i("CHILDEVENT", "CHANGED")
                     val child = snapshot.getValue(EstateDataFb::class.java)
                     child?.let { callback(it.toEstate()) }
                 }

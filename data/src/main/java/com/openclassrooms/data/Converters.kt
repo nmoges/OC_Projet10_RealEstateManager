@@ -74,8 +74,7 @@ fun EstateDataFb.toEstate(): Estate {
 fun Photo.toPhotoData(associatedId: Long) = PhotoData(
     uriConverted = this.uriConverted,
     name = this.name,
-    associatedId = associatedId,
-    idFirebase = this.firebaseId)
+    associatedId = associatedId)
 
 fun PhotoData.toPhoto() = Photo(
     id = idPhoto,
@@ -83,13 +82,11 @@ fun PhotoData.toPhoto() = Photo(
     name = this.name)
 
 fun Photo.toPhotoDataFb() = PhotoDataFb(
-    firebaseId = this.firebaseId,
     uriConverted = this.uriConverted,
     name = this.name
 )
 
 fun PhotoDataFb.toPhoto() = Photo(
-    firebaseId = this.firebaseId,
     uriConverted = this.uriConverted,
     name = this.name
 )
@@ -152,8 +149,7 @@ fun LocationDataFb.toLocation() = Location(
 // PointOfInterest converters
 fun PointOfInterest.toPointOfInterestData(associatedId: Long) = PointOfInterestData(
     name = name,
-    associatedId = associatedId,
-    idFirebase = this.firebaseId
+    associatedId = associatedId
 )
 
 fun PointOfInterestData.toPointOfInterest() = PointOfInterest(
@@ -162,13 +158,11 @@ fun PointOfInterestData.toPointOfInterest() = PointOfInterest(
 )
 
 fun PointOfInterest.toPointOfInterestDataFb() = PointOfInterestDataFb(
-    name = this.name,
-    firebaseId = this.firebaseId
+    name = this.name
 )
 
 fun PointOfInterestDataFb.toPointOfInterest() = PointOfInterest(
-    name = this.name,
-    firebaseId = this.firebaseId
+    name = this.name
 )
 
 // Agent converters
