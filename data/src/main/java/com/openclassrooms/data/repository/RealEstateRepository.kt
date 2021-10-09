@@ -62,8 +62,7 @@ interface RealEstateRepositoryAccess {
 
     suspend fun getAllAgents(): List<Agent>
 
-    // TODO : Make Agent nullable
-    suspend fun getAgentByFields(firstName: String, lastName: String): Agent
+    suspend fun getAgentByFields(firstName: String, lastName: String): Agent?
 
     // -------------------------------- DatesDao ---------------------------------------------------
     suspend fun insertDates(dates: Dates, associatedId: Long): Long
@@ -289,9 +288,9 @@ class RealEstateRepository(
      * @param firstName : first name of an agent
      * @param lastName : last name of an agent
      */
-    override suspend fun getAgentByFields(firstName: String, lastName: String): Agent {
+    override suspend fun getAgentByFields(firstName: String, lastName: String): Agent? {
         val agentData = agentDao.getAgentByFields(firstName, lastName)
-        return agentData.toAgent()
+        return if (agentData == null) null else agentData.toAgent()
     }
 
 
@@ -557,10 +556,6 @@ class RealEstateRepository(
         val childListener = object : ChildEventListener {
             override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
                 if (!lockSQLiteDBUpdate) {
-                    Log.i("CHILDEVENT", "ADDED")
-                    if (previousChildName != null) {
-                        Log.i("CHILDEVENT", previousChildName)
-                    }
                     val child = snapshot.getValue(EstateDataFb::class.java)
                     child?.let {
                         if (it.firebaseId != previousChildName) callback(it.toEstate())

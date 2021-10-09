@@ -23,5 +23,5 @@ interface AgentDao {
     suspend fun getAllAgents(): List<AgentData>
 
     @Query("SELECT * FROM table_agents WHERE first_name = :firstName AND last_name = :lastName")
-    suspend fun getAgentByFields(firstName: String, lastName: String): AgentData
+    suspend fun getAgentByFields(firstName: String, lastName: String): AgentData?
 }

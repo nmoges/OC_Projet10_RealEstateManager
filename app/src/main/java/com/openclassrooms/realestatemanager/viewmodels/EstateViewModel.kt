@@ -75,9 +75,15 @@ class EstateViewModel @Inject constructor(
         repositoryAccess.initializeChildEventListener { itEstate ->
             viewModelScope.launch {
                 val oldEstateId = repositoryAccess.getEstateWithFirebaseId(itEstate.firebaseId)
-                //TODO() : condition if : si null, insertion new agent dans SQL db
-                val agent = repositoryAccess.getAgentByFields(itEstate.agent.firstName, itEstate.agent.lastName)
-                itEstate.agent.id = agent.id
+                val agent = repositoryAccess.getAgentByFields(itEstate.agent.firstName,
+                                                              itEstate.agent.lastName)
+                if (agent == null) {
+                    val idNewAgent = repositoryAccess
+                                            .insertAgent(Agent(firstName = itEstate.agent.firstName,
+                                                               lastName = itEstate.agent.lastName))
+                    itEstate.agent.id = idNewAgent
+                }
+                else itEstate.agent.id = agent.id
                 if (oldEstateId == null) // Insert
                     insertEstateInDatabase(itEstate)
                 else { // Update

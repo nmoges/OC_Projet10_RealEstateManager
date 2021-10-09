@@ -1,9 +1,6 @@
 package com.openclassrooms.data.entities
 
-import androidx.room.ColumnInfo
-import androidx.room.Entity
-import androidx.room.ForeignKey
-import androidx.room.PrimaryKey
+import androidx.room.*
 import com.openclassrooms.data.database.RealEstateManagerDatabase
 
 /**
@@ -16,15 +13,11 @@ import com.openclassrooms.data.database.RealEstateManagerDatabase
  * @param status : estate status (available or sold)
  * @param idFirebase : firebase id in Realtime database
  */
-//TODO() : Ajouter contrainte pour unicité de l'id firebase
-/*
-EXAMPLE :
-@Entity(indices = {@Index(value = {"first_name", "last_name"}, unique = true)})
- */
 @Entity(tableName = "table_estates",
-    foreignKeys = [ForeignKey(entity = AgentData::class,
-        parentColumns = arrayOf("id"),
-        childColumns = arrayOf("id_agent"))])
+        indices = [Index(value = ["id_firebase"], unique = true)],
+        foreignKeys = [ForeignKey(entity = AgentData::class,
+                                  parentColumns = arrayOf("id"),
+                                  childColumns = arrayOf("id_agent"))])
 data class EstateData(
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "id_estate")
