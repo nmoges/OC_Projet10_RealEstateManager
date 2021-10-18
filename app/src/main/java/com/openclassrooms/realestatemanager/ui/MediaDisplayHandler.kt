@@ -17,7 +17,6 @@ import com.openclassrooms.realestatemanager.ui.activities.MainActivity
 /**
  * Class defined to handle display of new FrameLayouts containing selected estate photos.
  */
-//TODO() : Create fun returning a FrameLayout.LayoutParams object
 class MediaDisplayHandler {
 
     companion object {

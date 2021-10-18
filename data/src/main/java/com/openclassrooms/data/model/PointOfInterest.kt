@@ -1,7 +1,5 @@
 package com.openclassrooms.data.model
 
-import java.util.*
-
 /**
  * Defines a point of interest.
  * @param id : point of interest id

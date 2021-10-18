@@ -42,6 +42,7 @@ object AppInfo {
     // Notification parameters
     const val CHANNEL_ID = "CHANNEL_ID"
     const val CHANNEL_NAME = "channel_real_estate_manager_app"
+    const val CHANNEL_DESCRIPTION = "description"
 
     // LocationListener parameters
     const val LOCATION_REFRESH_TIME: Long = 15000

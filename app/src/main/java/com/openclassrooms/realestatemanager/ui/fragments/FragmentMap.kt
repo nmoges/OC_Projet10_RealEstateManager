@@ -147,7 +147,6 @@ class FragmentMap : Fragment(), OnMapReadyCallback {
     /**
      * Displays estates in a [GoogleMap]. Only estates close to user position are
      * displayed (distance < 1000m).
-     * @param map : Google map
      */
     private fun displayEstatesMarkersOnMap() {
         currentPosition?.let { itPosition ->

@@ -36,10 +36,8 @@ class SignInActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivitySignInBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
         // Check if user is currently logged-in
         if (FirebaseAuth.getInstance().currentUser != null) startMainActivity()
-
         handleConnexionButtonsListeners()
     }
 
@@ -72,7 +70,6 @@ class SignInActivity : AppCompatActivity() {
      * Intent launcher for auto-generated authentication activity
      */
     private fun startMainActivity() {
-        // Launch MainActivity
         val intent = Intent(this, MainActivity::class.java)
         startActivity(intent)
     }

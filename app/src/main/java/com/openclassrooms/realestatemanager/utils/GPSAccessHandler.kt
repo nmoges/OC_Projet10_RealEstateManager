@@ -16,7 +16,6 @@ import com.openclassrooms.realestatemanager.AppInfo
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.ui.activities.MainActivity
 
-
 object GPSAccessHandler {
     /** [SharedPreferences] file */
     private lateinit var filePreferences: SharedPreferences

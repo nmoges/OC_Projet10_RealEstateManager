@@ -17,11 +17,10 @@ interface EstateDao {
     @Update
     suspend fun updateEstateData(estateData: EstateData)
 
-    // ---------------------------------- TEST -------------------------
-    // TODO() : Add suspend
     @Query("SELECT * FROM table_estates WHERE id_estate = :id")
     fun getCursorEstateWithId(id: Long): Cursor
 
     @Query("SELECT * FROM table_estates WHERE id_firebase = :id")
     suspend fun getEstateWithFirebaseId(id: String): EstateData?
+
 }

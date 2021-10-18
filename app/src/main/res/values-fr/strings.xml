@@ -178,4 +178,16 @@
     <string name="str_dialog_search_title">Selectionner filtres</string>
     <string name="str_value_surface_slider">%1$d m2</string>
     <string name="str_value_price_slider">$%1$d</string>
+    <string name="str_dialog_reset_filters_title">Réinitialiser filtres</string>
+    <string name="str_dialog_reset_filters_message">Tous les filtres seront supprimés et réinitialisés. Confirmer ?</string>
+
+    <!-- POIProvider.kt -->
+    <string name="poi_bar">Bar</string>
+    <string name="poi_cafe">Café</string>
+    <string name="poi_library">Bibiothèque</string>
+    <string name="poi_market">Supermarché</string>
+    <string name="poi_museum">Musée</string>
+    <string name="poi_park">Parc</string>
+    <string name="poi_restaurant">Restaurant</string>
+    <string name="poi_school">École</string>
 </resources>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="poi">
+        <item>Bar</item>
+        <item>Café</item>
+        <item>Bibiothèque</item>
+        <item>Supermarché</item>
+        <item>Musée</item>
+        <item>Parc</item>
+        <item>Restaurant</item>
+        <item>École</item>
+    </string-array>
+
+    <array name="slider_price_values">
+        <item>0</item>          <!-- min value -->
+        <item>2000000</item>    <!-- max value -->
+        <item>100000</item>     <!-- step -->
+    </array>
+
+    <array name="slider_surface_values">
+        <item>0</item>          <!-- min value -->
+        <item>500</item>        <!-- max value -->
+        <item>50</item>         <!-- step -->
+    </array>
+</resources>

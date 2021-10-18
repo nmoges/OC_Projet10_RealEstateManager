@@ -134,6 +134,7 @@ class ListEstatesAdapter(private val context: Context, private val onItemClicked
 
     /**
      * Convert price to correct format before displaying on RecyclerView.
+     * @param price : Price in String format
      */
     private fun formatPrice(price: String) : String {
         val priceDecimal: Int = (price.toDouble()).toInt()
@@ -143,6 +144,7 @@ class ListEstatesAdapter(private val context: Context, private val onItemClicked
 
     /**
      * Deselect previous selected item (only one item at a time can be selected)
+     * @param position : position in listEstates
      */
     fun clearPreviousSelection(position: Int) {
         var found = false

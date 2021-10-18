@@ -15,7 +15,7 @@ import com.openclassrooms.realestatemanager.R
  */
 class NotificationHandler(val context: Context) {
 
-    private val manager: NotificationManager =
+    val manager: NotificationManager =
                        context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
     /**
@@ -41,7 +41,7 @@ class NotificationHandler(val context: Context) {
      * Defines notification priority.
      * @return : priority
      */
-    private fun getNotificationPriority(): Int {
+    fun getNotificationPriority(): Int {
         return  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
                     Notification.PRIORITY_DEFAULT
                 else NotificationCompat.PRIORITY_DEFAULT
@@ -51,11 +51,11 @@ class NotificationHandler(val context: Context) {
      * Defines notification channel.
      */
     @RequiresApi(Build.VERSION_CODES.O)
-    private fun createChannel() {
+    fun createChannel() {
         val channel = NotificationChannel(AppInfo.CHANNEL_ID,
                                           AppInfo.CHANNEL_NAME,
                                           NotificationManager.IMPORTANCE_DEFAULT)
-        channel.description = "description"
+        channel.description = AppInfo.CHANNEL_DESCRIPTION
         manager.createNotificationChannel(channel)
     }
 }

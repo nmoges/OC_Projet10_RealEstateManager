@@ -68,6 +68,7 @@ class FragmentListEstate : Fragment() {
         addObserverToViewModel()
         handleFloatingActionButton()
         checkDialogStatusInViewModel()
+        Log.i("FRAGMENT", "onViewCreated")
     }
 
     /**

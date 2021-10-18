@@ -1,7 +1,5 @@
 package com.openclassrooms.data.model
 
-import java.util.*
-
 /**
  * Defines a photo.
  * @param uriConverted : Converted uri value associated with a photo.

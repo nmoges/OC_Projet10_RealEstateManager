@@ -2,8 +2,6 @@ package com.openclassrooms.realestatemanager.authentication
 
 import android.content.Context
 import com.firebase.ui.auth.AuthUI
-import com.google.android.gms.auth.api.Auth
-import com.openclassrooms.realestatemanager.ui.activities.MainActivity
 
 /**
  * Provides Firebase back-end service

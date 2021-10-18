@@ -3,7 +3,6 @@ package com.openclassrooms.realestatemanager.ui.fragments
 import android.app.AlertDialog
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import android.widget.FrameLayout
 import androidx.core.view.get
@@ -185,9 +184,10 @@ class FragmentEstateDetails : Fragment() {
         selectedEstateToDisplay?.let { itEstate ->
             estateViewModel.initializeWithSelectedEstateValues(itEstate)
             estateViewModel.updateDateEstate(true)
-            estateViewModel.getNewEstate(context)
+            estateViewModel.getNewEstate(context, (activity as MainActivity).auth)
                 .observe(viewLifecycleOwner, { itUpdatedEstate ->
-                    estateViewModel.updateSQLiteDatabase(true, itUpdatedEstate) {}
+                    estateViewModel.updateSQLiteDatabase((activity as MainActivity).dbReference,
+                                              true, itUpdatedEstate) {}
                 })
         }
     }

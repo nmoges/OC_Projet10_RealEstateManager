@@ -231,6 +231,9 @@ class FragmentNewEstate : Fragment() {
             .create()
     }
 
+    /**
+     * Initializes an [AlertDialog.Builder] for [builderProgressBarDialog] property.
+     */
     private fun initializeDialogProgressBar() {
         val viewProgressBarDialog: View? = LayoutInflaterProvider
             .getViewFromLayoutInflater(R.layout.dialog_progress_bar, context)
@@ -465,6 +468,7 @@ class FragmentNewEstate : Fragment() {
 
     /**
      * Gets a [Uri] photo value from Gallery or Camera.
+     * @param uri : photo uri
      */
     fun addNewPhotoUri(uri: Uri?) {
         if (uri != null) {
@@ -610,8 +614,10 @@ class FragmentNewEstate : Fragment() {
      */
     private fun updateSelectedEstateFromViewModel() {
         saveEstateValuesInViewModel()
-        estateViewModel.getNewEstate(context).observe(viewLifecycleOwner, { itEstate ->
-                estateViewModel.updateSQLiteDatabase(updateEstate, itEstate) {
+        estateViewModel.getNewEstate(context,
+            (activity as MainActivity).auth).observe(viewLifecycleOwner, { itEstate ->
+                estateViewModel.updateSQLiteDatabase((activity as MainActivity).dbReference,
+                                                            updateEstate, itEstate) {
                     // Callback after database updated
                     confirmExit = true
                     builderProgressBarDialog?.dismiss()

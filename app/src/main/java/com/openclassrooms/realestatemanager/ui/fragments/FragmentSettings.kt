@@ -108,10 +108,12 @@ class FragmentSettings : Fragment() {
         binding.cardViewDeleteAccount.setOnTouchListener { _, event ->
             when(event.action) {
                 MotionEvent.ACTION_DOWN -> {
-                    binding.cardViewDeleteAccount.setBackgroundResource(R.drawable.background_card_view_clicked)
+                    binding.cardViewDeleteAccount
+                           .setBackgroundResource(R.drawable.background_card_view_clicked)
                     true }
                 MotionEvent.ACTION_UP -> {
-                    binding.cardViewDeleteAccount.setBackgroundResource(R.drawable.background_card_view_unclicked)
+                    binding.cardViewDeleteAccount
+                           .setBackgroundResource(R.drawable.background_card_view_unclicked)
                     builderDeleteAccountDialog.show()
                     true
                 }
@@ -161,14 +163,10 @@ class FragmentSettings : Fragment() {
     private fun handleCurrencySelectionDialogButtons(view: View?) {
         // EURO currency button
         view?.findViewById<ConstraintLayout>(R.id.constraint_layout_view_euro_currency)
-            ?.setOnClickListener {
-                updateCurrency("EUR")
-            }
+            ?.setOnClickListener { updateCurrency("EUR") }
         // USD currency button
         view?.findViewById<ConstraintLayout>(R.id.constraint_layout_view_usd_currency)
-            ?.setOnClickListener {
-                updateCurrency( "USD")
-            }
+            ?.setOnClickListener { updateCurrency( "USD") }
     }
 
     /**

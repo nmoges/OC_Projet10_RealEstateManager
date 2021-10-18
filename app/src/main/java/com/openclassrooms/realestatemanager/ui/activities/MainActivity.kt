@@ -12,12 +12,14 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.text.Editable
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewPropertyAnimator
 import androidx.annotation.IdRes
 import androidx.annotation.LayoutRes
 import androidx.annotation.StringRes
+import androidx.annotation.VisibleForTesting
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.edit
 import androidx.core.content.res.ResourcesCompat
@@ -33,6 +35,9 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
 import com.openclassrooms.data.model.Agent
 import com.openclassrooms.realestatemanager.AppInfo
 import com.openclassrooms.realestatemanager.BuildConfig
@@ -104,6 +109,15 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
     /** Status of the network bar */
     private var networkBarDisplayStatus = true
 
+    /** Firebase authentication */
+    lateinit var auth: FirebaseAuth
+
+    /** Realtime database */
+    private lateinit var dbFirebase: FirebaseDatabase
+
+    /** Database reference */
+    lateinit var dbReference: DatabaseReference
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -111,6 +125,7 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
         listEstatesViewModel = ViewModelProvider(this)[ListEstatesViewModel::class.java]
         listFragmentsViewModel = ViewModelProvider(this)[ListTagsFragmentViewModel::class.java]
         estatesViewModel = ViewModelProvider(this)[EstateViewModel::class.java]
+        initializeFirebase()
         checkScreenProperties()
         initializeDialogAddAgent()
         initializeDialogLogout()
@@ -130,11 +145,20 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
     }
 
     /**
+     * Initialize Firebase tools.
+     */
+    private fun initializeFirebase() {
+        auth = FirebaseAuth.getInstance()
+        dbFirebase = FirebaseDatabase.getInstance()
+        dbReference = dbFirebase.getReference("estates")
+    }
+
+    /**
      * Access "initializeChildEventListener()" method from [EstateViewModel].
      */
     private fun initializeDatabaseChildEventListener() {
         handleFragmentListEstateDialog(true)
-        estatesViewModel.initializeChildEventListener {
+        estatesViewModel.initializeChildEventListener(dbReference) {
             handleFragmentListEstateDialog(false)
         }
     }
@@ -254,7 +278,7 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
      * Callback for SQLite Database photos URI updates.
      */
     override fun updateURIsPhotosInDB() {
-        listEstatesViewModel.updatePhotosURIInSQLiteDB()
+        listEstatesViewModel.updatePhotosURIInSQLiteDB(dbReference, auth)
     }
 
     /**
@@ -532,7 +556,7 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
      * Check if main activity child fragment associated with specified [tag] is displayed.
      * @param tag : Tag fragment
      */
-    private fun isFragmentDisplayed(tag: String): Boolean =
+    fun isFragmentDisplayed(tag: String): Boolean =
         supportFragmentManager.findFragmentByTag(tag) != null
 
     /**
@@ -725,7 +749,7 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
      * Gets which [FragmentListEstate] is displayed according to the type of screen and orientation.
      * @return : fragment displayed
      */
-    private fun getFragmentList(): Fragment? =
+    fun getFragmentList(): Fragment? =
         if (typeOrientation && typeLayout)
             supportFragmentManager.findFragmentByTag(AppInfo.TAG_FRAGMENT_LIST_ESTATE_LARGE)
         else
@@ -742,18 +766,6 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
         // Autocomplete request result
         if (requestCode == 200) handleAutocompleteResult(resultCode, data)
     }
-
-    /**
-     * Access [FirebaseAuth] instance
-     * @return : [auth]
-     */
-    //fun getFirebaseAuth(): FirebaseAuth = auth
-
-    /**
-     * Access Firebase [DatabaseReference] instance
-     * @return : [dbReference]
-     */
-   // fun getFirebaseDatabaseReference(): DatabaseReference = dbReference
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)

@@ -284,8 +284,8 @@ class FragmentSearch : Fragment() {
      */
     private fun initializeConfirmationResetDialog() {
         builderConfirmReset = AlertDialog.Builder(activity)
-            .setTitle("Reset filters")
-            .setMessage("All the filters will be removed and set to default value. Confirm ?")
+            .setTitle(R.string.str_dialog_reset_filters_title)
+            .setMessage(R.string.str_dialog_reset_filters_message)
             .setPositiveButton(resources.getString(R.string.str_dialog_confirm)) { _, _ ->
                 resetAllFilters()
                 resetSearchResults()
@@ -767,7 +767,6 @@ class FragmentSearch : Fragment() {
             startDate = textInputStartDate.text,
             endDate = textInputEndDate.text)
 
-       // Log.i("CHECK_VALUE", "${searchFiltersViewModel.initializeStatusFilter(checkBoxStatus.isChecked)}")
         // Send request
         if (searchFiltersViewModel.nbFilters > 0) {
             searchFiltersViewModel

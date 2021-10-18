@@ -7,6 +7,10 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.libraries.places.api.model.Place
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
 import com.openclassrooms.data.entities.PointOfInterestData
 import com.openclassrooms.data.model.*
 import com.openclassrooms.data.repository.RealEstateRepositoryAccess
@@ -45,7 +49,10 @@ class EstateViewModel @Inject constructor(
     /** Temporary value storing the position in the list of agents */
     var nameAgentSelected: String = ""
 
-    init { resetEstate() }
+    init {
+        Firebase.database.setPersistenceEnabled(true)
+        resetEstate()
+    }
 
     /**
      * Creates a new [Estate].
@@ -71,8 +78,8 @@ class EstateViewModel @Inject constructor(
     /**
      * Access "initializeChildEventListener()" method from [repositoryAccess].
      */
-    fun initializeChildEventListener(callback: () -> (Unit)) {
-        repositoryAccess.initializeChildEventListener { itEstate ->
+    fun initializeChildEventListener(dbReference: DatabaseReference, callback: () -> (Unit)) {
+        repositoryAccess.initializeChildEventListener(dbReference) { itEstate ->
             viewModelScope.launch {
                 val oldEstateId = repositoryAccess.getEstateWithFirebaseId(itEstate.firebaseId)
                 val agent = repositoryAccess.getAgentByFields(itEstate.agent.firstName,
@@ -162,7 +169,7 @@ class EstateViewModel @Inject constructor(
      * Returns a LiveData containing the new estate/updated estate to send to database.
      * @return : LiveData<Estate>
      */
-    fun getNewEstate(context: Context?): LiveData<Estate> {
+    fun getNewEstate(context: Context?, auth: FirebaseAuth): LiveData<Estate> {
         val newEstate = MutableLiveData<Estate>()
         viewModelScope.launch {
             // Update agent
@@ -185,7 +192,8 @@ class EstateViewModel @Inject constructor(
                 context?.let {
                     if (Utils.isInternetAvailable(context)) {
                         for (i in estate.listPhoto.size-numberPhotosAdded until estate.listPhoto.size) {
-                                val url = repositoryAccess.sendPhotosToCloudStorage(estate.listPhoto[i])
+                                val url = repositoryAccess.sendPhotosToCloudStorage(estate.listPhoto[i],
+                                                                                    auth)
                                 estate.listPhoto[i].uriConverted = url
                                 if (i == estate.listPhoto.size-1 && estate.listPhoto[i].uriConverted == url) {
                                     numberPhotosAdded = 0
@@ -271,18 +279,21 @@ class EstateViewModel @Inject constructor(
      * Determines if database operation is an insertion or an update.
      * @param typeUpdate : type of operation in database
      */
-    fun updateSQLiteDatabase(typeUpdate: Boolean, estate: Estate, callback: () -> Unit) {
+    fun updateSQLiteDatabase(dbReference: DatabaseReference,
+                             typeUpdate: Boolean,
+                             estate: Estate,
+                             callback: () -> Unit) {
         viewModelScope.launch {
             if (!typeUpdate) {
                 val id = insertEstateInDatabase(estate)
                 estate.id = id
                 repositoryAccess.setLockSQLDBUpdate(true)
-                repositoryAccess.sendEstateToRealtimeDatabase(estate)
+                repositoryAccess.sendEstateToRealtimeDatabase(estate, dbReference)
             }
             else {
                 updateEstateInDatabase(estate)
                 repositoryAccess.setLockSQLDBUpdate(true)
-                repositoryAccess.sendEstateToRealtimeDatabase(estate)
+                repositoryAccess.sendEstateToRealtimeDatabase(estate, dbReference)
             }
             callback()
         }

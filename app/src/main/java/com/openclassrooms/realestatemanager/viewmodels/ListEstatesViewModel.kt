@@ -5,6 +5,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DatabaseReference
 import com.openclassrooms.data.entities.FullEstateData
 import com.openclassrooms.data.model.Agent
 import com.openclassrooms.data.model.Estate
@@ -107,10 +109,10 @@ class ListEstatesViewModel @Inject constructor(
     /**
      * Updates photos estates in NoSQL DB with URL.
      */
-    fun updatePhotosURIInSQLiteDB() {
+    fun updatePhotosURIInSQLiteDB(dbReference: DatabaseReference, auth: FirebaseAuth) {
         viewModelScope.launch {
             // Send Photo to Cloud Storage
-            val pair = repositoryAccess.getPhotosURIFromCloudStorage()
+            val pair = repositoryAccess.getPhotosURIFromCloudStorage(auth)
             for (i in pair.indices) {
                 repositoryAccess.updatePhoto(pair[i].first, pair[i].second)
                 // Send updated Estate to Realtime DB
@@ -119,7 +121,8 @@ class ListEstatesViewModel @Inject constructor(
                 updatedEstate?.let { estate ->
                     repositoryAccess.updateEstatePhotoInRealtimeDatabase(estate.firebaseId,
                         pair[i].first.uriConverted,
-                        i.toString())
+                        i.toString(),
+                        dbReference)
                 }
             }
         }

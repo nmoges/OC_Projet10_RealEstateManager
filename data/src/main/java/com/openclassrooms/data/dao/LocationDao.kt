@@ -1,9 +1,7 @@
 package com.openclassrooms.data.dao
 
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Update
+import androidx.annotation.VisibleForTesting
+import androidx.room.*
 import com.openclassrooms.data.database.RealEstateManagerDatabase
 import com.openclassrooms.data.entities.LocationData
 
@@ -18,4 +16,8 @@ interface LocationDao {
 
     @Update
     suspend fun updateLocationData(locationData: LocationData)
+
+    @VisibleForTesting
+    @Query("SELECT * FROM table_locations WHERE id_location = :id")
+    suspend fun getLocationById(id: Long): LocationData
 }
