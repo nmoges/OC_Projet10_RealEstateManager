@@ -6,8 +6,12 @@ import androidx.room.Query
 import androidx.room.RawQuery
 import androidx.room.Transaction
 import androidx.sqlite.db.SimpleSQLiteQuery
+import com.openclassrooms.data.database.RealEstateManagerDatabase
 import com.openclassrooms.data.entities.FullEstateData
 
+/**
+ * Data access object interface to access tables_estates and linking rows with others tables.
+ */
 @Dao
 interface FullEstateDao {
 

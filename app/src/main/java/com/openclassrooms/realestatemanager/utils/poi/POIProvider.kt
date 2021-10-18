@@ -1,5 +1,8 @@
 package com.openclassrooms.realestatemanager.utils.poi
 
+/**
+ * Object defining a set of functions to handle provide point of interest values.
+ */
 object POIProvider {
 
     /**

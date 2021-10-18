@@ -6,6 +6,9 @@ import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
 import junit.framework.Assert.assertEquals
 
+/**
+ * Test file for model classes.
+ */
 @RunWith(JUnit4::class)
 class ModelTest {
 

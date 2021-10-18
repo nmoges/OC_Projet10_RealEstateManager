@@ -14,7 +14,9 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 
-
+/**
+ * Test file for Content provider functionality.
+ */
 @RunWith(AndroidJUnit4::class)
 class ContentProviderTest {
 

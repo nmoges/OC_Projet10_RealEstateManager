@@ -13,6 +13,9 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 
+/**
+ * Test file for [NotificationHandler] class.
+ */
 @RunWith(AndroidJUnit4::class)
 class NotificationHandlerTest {
 

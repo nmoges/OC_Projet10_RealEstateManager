@@ -4,6 +4,9 @@ import com.openclassrooms.realestatemanager.Utils
 import java.text.ParseException
 import java.util.*
 
+/**
+ * Object defining a set of functions to handle dates comparison.
+ */
 object DateComparator {
 
     /**

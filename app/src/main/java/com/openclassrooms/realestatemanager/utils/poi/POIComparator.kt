@@ -2,6 +2,9 @@ package com.openclassrooms.realestatemanager.utils.poi
 
 import com.openclassrooms.data.model.PointOfInterest
 
+/**
+ * Object defining a set of functions to compare points of interest.
+ */
 object POIComparator {
 
     /**

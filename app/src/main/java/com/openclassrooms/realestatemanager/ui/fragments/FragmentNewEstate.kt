@@ -7,7 +7,6 @@ import android.net.Uri
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.*
 import android.widget.ArrayAdapter
 import android.widget.FrameLayout
@@ -189,18 +188,16 @@ class FragmentNewEstate : Fragment() {
     private fun initializeDialogListAgents() {
         listEstatesViewModel.listAgents.observe(viewLifecycleOwner, { itList ->
             val listAgents = mutableListOf<Agent>()
-            itList.forEach { itAgent ->
-                listAgents.add(itAgent)
-            }
+            itList.forEach { itAgent -> listAgents.add(itAgent) }
             val context = context
             if (context != null) {
-                val adapter: ArrayAdapter<String> = ArrayAdapter(context,android.R.layout.select_dialog_item)
-                if (listAgents != null) {
-                    listAgents.forEach { adapter.add("${it.firstName} ${it.lastName}") }
-                    builderListAgentsDialog = AlertDialog.Builder(activity)
-                        .setTitle(resources.getString(R.string.str_dialog_select_agent_title))
-                        .setAdapter(adapter) { _, which ->
-                            updateNameAgentEditText(which+1, adapter.getItem(which)) }.create() }
+                val adapter: ArrayAdapter<String> =
+                                           ArrayAdapter(context,android.R.layout.select_dialog_item)
+                listAgents.forEach { adapter.add("${it.firstName} ${it.lastName}") }
+                builderListAgentsDialog = AlertDialog.Builder(activity)
+                    .setTitle(resources.getString(R.string.str_dialog_select_agent_title))
+                    .setAdapter(adapter) { _, which ->
+                        updateNameAgentEditText(which+1, adapter.getItem(which)) }.create()
             }
         })
         listEstatesViewModel.restoreListAgents()
@@ -285,7 +282,8 @@ class FragmentNewEstate : Fragment() {
         val textInputEditText: TextInputEditText? =
             viewNameMediaDialog?.findViewById(R.id.new_media_text_input_edit)
         textInputEditText?.addTextChangedListener(textWatcher)
-        textInputEditText?.text = StringHandler.convertStringToEditable(dialogsViewModel.textNameMediaDialog)
+        textInputEditText?.text =
+                         StringHandler.convertStringToEditable(dialogsViewModel.textNameMediaDialog)
         builderNameMediaDialog = AlertDialog.Builder(activity)
             .setTitle(resources.getString(R.string.str_dialog_name_media_title))
             .setView(viewNameMediaDialog)
@@ -379,13 +377,17 @@ class FragmentNewEstate : Fragment() {
         with(binding) {
             // TextInputEditText
             nameSectionEdit.text = StringHandler.convertStringToEditable(estateViewModel.estate.type)
-            locationSectionEdit.text = StringHandler.convertStringToEditable(estateViewModel.estate.location.address)
-            descSectionEdit.text = StringHandler.convertStringToEditable(estateViewModel.estate.description)
-            val nameAgent = "${estateViewModel.estate.agent.firstName} ${estateViewModel.estate.agent.lastName}"
+            locationSectionEdit.text =
+                      StringHandler.convertStringToEditable(estateViewModel.estate.location.address)
+            descSectionEdit.text =
+                      StringHandler.convertStringToEditable(estateViewModel.estate.description)
+            val nameAgent =
+                "${estateViewModel.estate.agent.firstName} ${estateViewModel.estate.agent.lastName}"
             agentSectionEdit.text = StringHandler.convertStringToEditable(nameAgent)
             if (currency == "EUR") {
                 val priceConverted = Utils.convertDollarToEuro(estateViewModel.estate.price)
-                priceSectionEdit.text = StringHandler.convertStringToEditable(priceConverted.toString())
+                priceSectionEdit.text =
+                                    StringHandler.convertStringToEditable(priceConverted.toString())
             }
             else priceSectionEdit.text =
                 StringHandler.convertStringToEditable(estateViewModel.estate.price.toString())
@@ -492,9 +494,7 @@ class FragmentNewEstate : Fragment() {
      * Restores the list of photo of an [Estate].
      */
     private fun updateHorizontalScrollViewWithPhotos() {
-        if (estateViewModel.estate != null) {
-            estateViewModel.estate.listPhoto.forEach { photo -> addNewFrameLayoutToBinding(photo) }
-        }
+        estateViewModel.estate.listPhoto.forEach { photo -> addNewFrameLayoutToBinding(photo) }
     }
 
     /**
@@ -540,6 +540,7 @@ class FragmentNewEstate : Fragment() {
      * @param color : color to apply
      * @param colorLight : light color to apply
      */
+    @Suppress("DEPRECATION")
     private fun updateSlidersColor(@ColorRes color: Int, @ColorRes colorLight: Int) {
         binding.apply {
             sliderRooms.apply {

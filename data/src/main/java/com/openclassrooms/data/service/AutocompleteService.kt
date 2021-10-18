@@ -6,6 +6,9 @@ import com.google.android.libraries.places.widget.Autocomplete
 import com.google.android.libraries.places.widget.model.AutocompleteActivityMode
 import com.openclassrooms.data.R
 
+/**
+ * Object defining a set of functions for autocomplete requests.
+ */
 object AutocompleteService {
     private const val AUTOCOMPLETE_REQUEST_CODE = 200
 

@@ -3,7 +3,6 @@ package com.openclassrooms.realestatemanager.ui.adapters
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Build
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,10 +12,10 @@ import androidx.core.net.toUri
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.android.material.textview.MaterialTextView
+import com.openclassrooms.data.model.Estate
 import com.openclassrooms.realestatemanager.AppInfo
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.Utils
-import com.openclassrooms.data.model.Estate
 import com.openclassrooms.realestatemanager.ui.activities.MainActivity
 import com.openclassrooms.realestatemanager.utils.ProgressBarHandler
 
@@ -76,6 +75,7 @@ class ListEstatesAdapter(private val context: Context, private val onItemClicked
      * @param holder : view holder
      * @param position : position in [listEstates] list
      */
+    @Suppress("DEPRECATION")
     private fun displayPrice(holder: ListEstateViewHolder, position: Int) {
         // Handle conversion USD -> EUR if needed
         val price: Int = if (currency == "USD") listEstates[position].price
@@ -118,6 +118,7 @@ class ListEstatesAdapter(private val context: Context, private val onItemClicked
      * @param holder : view holder
      * @param position : position in [listEstates] list
      */
+    @Suppress("DEPRECATION")
     private fun displayBackgroundColor(holder: ListEstateViewHolder, position: Int) {
         if (listEstates[position].selected)
             holder.item.apply {

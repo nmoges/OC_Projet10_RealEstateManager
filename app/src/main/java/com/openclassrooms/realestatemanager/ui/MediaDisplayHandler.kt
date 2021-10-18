@@ -106,10 +106,8 @@ class MediaDisplayHandler {
         fun createNewFrameLayout(photo: Photo, activity: MainActivity): FrameLayout {
             // Set image
             val imageView: ImageView = createNewImageView(photo.uriConverted.toUri(), activity)
-
             // Set translucent view
             val view: View = createNewBackgroundView(activity)
-
             // Set text
             val text: TextView = createText(photo.name, activity)
             val frameLayout = FrameLayout(activity)

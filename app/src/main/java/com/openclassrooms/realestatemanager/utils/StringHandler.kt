@@ -4,6 +4,9 @@ import android.content.Context
 import android.text.Editable
 import androidx.annotation.StringRes
 
+/**
+ * Object defining a set of functions to String objects.
+ */
 object StringHandler {
 
     /**

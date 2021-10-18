@@ -121,7 +121,7 @@ class FragmentSearch : Fragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+                              savedInstanceState: Bundle?): View {
         binding = FragmentSearchBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -516,7 +516,7 @@ class FragmentSearch : Fragment() {
      */
     private fun handleCheckBoxStatus() {
         viewLayoutDialog?.let {
-            checkBoxStatus = it.findViewById<CheckBox>(R.id.checkbox_status)
+            checkBoxStatus = it.findViewById(R.id.checkbox_status)
             checkBoxStatus.apply {
                 this.isChecked = searchFiltersViewModel.checkBoxTypeStatus
                 setOnCheckedChangeListener { _, isChecked ->
@@ -534,7 +534,7 @@ class FragmentSearch : Fragment() {
      */
     private fun handleCheckBoxPOIStatus() {
         viewLayoutDialog?.let { itView ->
-            checkBoxPOI = itView.findViewById<CheckBox>(R.id.checkbox_poi)
+            checkBoxPOI = itView.findViewById(R.id.checkbox_poi)
             checkBoxPOI.apply {
                 this.isChecked = searchFiltersViewModel.checkBoxPOIStatus
                 setOnCheckedChangeListener { _, isChecked ->
@@ -729,6 +729,7 @@ class FragmentSearch : Fragment() {
      * @param backgroundColor : color fo the [MaterialButton] background
      * @param button : [MaterialButton] to update
      */
+    @Suppress("DEPRECATION")
     private fun setColorsMaterialButton(@ColorRes textColor: Int,
                                         @ColorRes backgroundColor: Int,
                                         button: MaterialButton) {

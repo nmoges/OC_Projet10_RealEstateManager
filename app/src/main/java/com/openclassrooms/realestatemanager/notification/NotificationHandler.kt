@@ -41,6 +41,7 @@ class NotificationHandler(val context: Context) {
      * Defines notification priority.
      * @return : priority
      */
+    @Suppress("DEPRECATION")
     fun getNotificationPriority(): Int {
         return  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
                     Notification.PRIORITY_DEFAULT

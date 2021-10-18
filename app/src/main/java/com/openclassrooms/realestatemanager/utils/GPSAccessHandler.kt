@@ -26,6 +26,7 @@ object GPSAccessHandler {
     /** Contains the number of permission requests sent by user */
     private var nbRequest: Int = 0
 
+    /** Array containing a list of permissions */
     private val permission = arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION)
 
     /**
@@ -60,14 +61,10 @@ object GPSAccessHandler {
                 AppInfo.REQUEST_PERMISSIONS_CODE)
         }
         else { // Don't ask again checked
-            if (!ActivityCompat.shouldShowRequestPermissionRationale(activity, permission[0])) {
+            if (!ActivityCompat.shouldShowRequestPermissionRationale(activity, permission[0]))
                 displayAccessLocationDialog(activity)
-            }
-            else {
-                ActivityCompat.requestPermissions(activity, permission,
-                    AppInfo.REQUEST_PERMISSIONS_CODE
-                )
-            }
+            else ActivityCompat.requestPermissions(activity, permission,
+                                                   AppInfo.REQUEST_PERMISSIONS_CODE)
         }
         nbRequest++
         editor.putInt(AppInfo.PREF_PERMISSION_LOCATION, nbRequest).apply()
@@ -105,7 +102,6 @@ object GPSAccessHandler {
                                  estateLatLng.latitude,
                                  estateLatLng.longitude,
                                  result)
-
         // Display estates which distance is < 1000m from user location
         if (result[0] < 1000) return true
         return false

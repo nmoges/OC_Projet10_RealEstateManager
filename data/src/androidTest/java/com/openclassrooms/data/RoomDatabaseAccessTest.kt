@@ -1,9 +1,9 @@
 package com.openclassrooms.data
 
-import android.util.Log
 import com.openclassrooms.data.database.RealEstateManagerDatabase
 import com.openclassrooms.data.model.*
 import com.openclassrooms.data.repository.RealEstateRepositoryAccess
+import com.openclassrooms.data.repository.RealEstateRepository
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.runBlocking
@@ -15,6 +15,9 @@ import org.junit.Rule
 import org.junit.Test
 import javax.inject.Inject
 
+/**
+ * Test file for [RealEstateRepository] file.
+ */
 @HiltAndroidTest
 class RoomDatabaseAccessTest {
 
@@ -102,7 +105,7 @@ class RoomDatabaseAccessTest {
     fun test_insert_and_update_dates_in_room_database() {
         runBlocking {
             val id = repositoryAccess.insertDates(dates, 1)
-            var datesFromDb = repositoryAccess.getDatesById(id)
+            val datesFromDb = repositoryAccess.getDatesById(id)
             assertNotNull(datesFromDb)
             datesFromDb?.let {
                 assertEquals(dates.dateEntry, it.dateEntry)

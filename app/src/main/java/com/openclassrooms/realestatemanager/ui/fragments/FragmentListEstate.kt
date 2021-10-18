@@ -3,7 +3,6 @@ package com.openclassrooms.realestatemanager.ui.fragments
 import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import androidx.appcompat.view.menu.MenuBuilder
 import androidx.fragment.app.Fragment
@@ -68,7 +67,6 @@ class FragmentListEstate : Fragment() {
         addObserverToViewModel()
         handleFloatingActionButton()
         checkDialogStatusInViewModel()
-        Log.i("FRAGMENT", "onViewCreated")
     }
 
     /**

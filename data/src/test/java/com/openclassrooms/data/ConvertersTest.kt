@@ -6,6 +6,9 @@ import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
 import junit.framework.Assert.assertEquals
 
+/**
+ * Test file for [Converters] file.
+ */
 @RunWith(JUnit4::class)
 class ConvertersTest {
 

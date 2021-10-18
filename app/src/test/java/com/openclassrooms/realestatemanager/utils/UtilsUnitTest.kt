@@ -7,6 +7,9 @@ import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
 import java.util.*
 
+/**
+ * Test file for [Utils] file.
+ */
 @RunWith(JUnit4::class)
 class UtilsUnitTest {
 

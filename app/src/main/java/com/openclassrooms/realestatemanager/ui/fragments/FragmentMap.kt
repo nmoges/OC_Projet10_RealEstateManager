@@ -66,7 +66,6 @@ class FragmentMap : Fragment(), OnMapReadyCallback {
     /** Shared preferences for saving user location */
     private var sharedPrefLocation: SharedPreferences? = null
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
@@ -225,14 +224,12 @@ class FragmentMap : Fragment(), OnMapReadyCallback {
      * @param gpsStatus : Activation status of the device GPS.
      */
     private fun updateFloatingButtonIconDisplay(gpsStatus: Boolean) {
-        if (gpsStatus) {
+        if (gpsStatus)
             binding.fabGps.setImageDrawable(ResourcesCompat
                    .getDrawable(resources, R.drawable.ic_baseline_gps_fixed_24dp_white, null))
-        }
-        else {
+        else
             binding.fabGps.setImageDrawable(ResourcesCompat
                    .getDrawable(resources, R.drawable.ic_baseline_gps_off_24dp_white, null))
-        }
     }
 
     /**
@@ -241,9 +238,8 @@ class FragmentMap : Fragment(), OnMapReadyCallback {
     private fun handleFloatingButtonClickEvents() {
         binding.fabGps.setOnClickListener {
             // If Location access not enabled
-            if (!GPSAccessHandler.checkLocationPermission(activity as MainActivity)) {
+            if (!GPSAccessHandler.checkLocationPermission(activity as MainActivity))
                 GPSAccessHandler.requestPermissionLocation(activity as MainActivity)
-            }
             else { // Else enabled
                 if (GPSAccessHandler.isGPSEnabled(locationManager)) {
                     // GPS activated

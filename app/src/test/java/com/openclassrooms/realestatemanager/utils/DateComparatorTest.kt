@@ -1,10 +1,13 @@
 package com.openclassrooms.realestatemanager.utils
 
+import junit.framework.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
-import junit.framework.Assert.assertEquals
 
+/**
+ * Test file for [DateComparator] file.
+ */
 @RunWith(JUnit4::class)
 class DateComparatorTest {
 

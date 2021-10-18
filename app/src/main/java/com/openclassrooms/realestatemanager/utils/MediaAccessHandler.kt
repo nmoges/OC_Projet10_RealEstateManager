@@ -22,7 +22,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 /**
- * Class defining a set of functions to access media storage.
+ * Object defining a set of functions to access media storage.
  */
 object MediaAccessHandler {
     /** [SharedPreferences] file */

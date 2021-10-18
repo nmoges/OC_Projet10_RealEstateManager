@@ -14,6 +14,10 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.openclassrooms.realestatemanager.ui.activities.MainActivity
+import com.openclassrooms.realestatemanager.ui.fragments.FragmentMap
+import com.openclassrooms.realestatemanager.ui.fragments.FragmentNewEstate
+import com.openclassrooms.realestatemanager.ui.fragments.FragmentSearch
+import com.openclassrooms.realestatemanager.ui.fragments.FragmentSettings
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Before
@@ -21,6 +25,9 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
+/**
+ * Test file for fragments display.
+ */
 @RunWith(AndroidJUnit4::class)
 class FragmentsTest {
     @get: Rule

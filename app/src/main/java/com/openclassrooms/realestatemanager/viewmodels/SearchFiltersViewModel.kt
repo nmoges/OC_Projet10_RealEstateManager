@@ -254,7 +254,8 @@ class SearchFiltersViewModel @Inject constructor(@ApplicationContext context: Co
      * @param endDate : Define max date
      * @return : "Dates" filter
      */
-    fun initializeDatesFilter(checkBoxStatus: Boolean, startDate: Editable?, endDate: Editable?): ArrayList<String?> {
+    fun initializeDatesFilter(checkBoxStatus: Boolean, startDate: Editable?,
+                              endDate: Editable?): ArrayList<String?> {
         var startDateFilter: String? = null
         var endDateFilter: String? = null
         val datesFilter: ArrayList<String?> = arrayListOf()

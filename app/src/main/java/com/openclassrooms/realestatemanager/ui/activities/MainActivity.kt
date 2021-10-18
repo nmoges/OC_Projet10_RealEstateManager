@@ -12,14 +12,12 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.text.Editable
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewPropertyAnimator
 import androidx.annotation.IdRes
 import androidx.annotation.LayoutRes
 import androidx.annotation.StringRes
-import androidx.annotation.VisibleForTesting
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.edit
 import androidx.core.content.res.ResourcesCompat
@@ -36,8 +34,6 @@ import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ktx.database
-import com.google.firebase.ktx.Firebase
 import com.openclassrooms.data.model.Agent
 import com.openclassrooms.realestatemanager.AppInfo
 import com.openclassrooms.realestatemanager.BuildConfig
@@ -229,6 +225,7 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
     /**
      * Handles toolbar initialization (support action bar and theme color).
      */
+    @Suppress("DEPRECATION")
     private fun initializeToolbar() {
         setSupportActionBar(binding.toolbar)
         val color: Int = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
@@ -542,9 +539,7 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
         if (typeOrientation && typeLayout) {
             val fragmentListEstate = supportFragmentManager
                 .findFragmentByTag(AppInfo.TAG_FRAGMENT_LIST_ESTATE_LARGE) as FragmentListEstate
-            fragmentListEstate.let {
-                it.handleClickOnEstateItem(position)
-            }
+            fragmentListEstate.handleClickOnEstateItem(position)
         }
         else {
             listEstatesViewModel.setSelectedEstate(position)
@@ -642,36 +637,27 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
     /**
      * Displays [FragmentEstateDetails].
      */
-    fun displayFragmentDetails() {
+    fun displayFragmentDetails() =
         launchTransaction(containerId, FragmentEstateDetails.newInstance(),
             AppInfo.TAG_FRAGMENT_ESTATE_DETAILS)
-    }
 
     /**
      * Displays [FragmentSettings].
      */
-    fun displayFragmentSettings() {
-        launchTransaction(containerId, FragmentSettings.newInstance(),
-            AppInfo.TAG_FRAGMENT_SETTINGS)
-    }
-
+    fun displayFragmentSettings() =
+        launchTransaction(containerId, FragmentSettings.newInstance(), AppInfo.TAG_FRAGMENT_SETTINGS)
 
     /**
      * Displays [FragmentSearch].
      */
-    fun displayFragmentSearch() {
-        launchTransaction(containerIdLists, FragmentSearch.newInstance(),
-            AppInfo.TAG_FRAGMENT_SEARCH)
-    }
-
+    fun displayFragmentSearch() =
+        launchTransaction(containerIdLists, FragmentSearch.newInstance(), AppInfo.TAG_FRAGMENT_SEARCH)
 
     /**
      * Displays [FragmentMap].
      */
-    fun displayFragmentMap() {
-        launchTransaction(containerId, FragmentMap.newInstance(),
-            AppInfo.TAG_FRAGMENT_MAP)
-    }
+    fun displayFragmentMap() =
+        launchTransaction(containerId, FragmentMap.newInstance(), AppInfo.TAG_FRAGMENT_MAP)
 
     /**
      * Displays [FragmentNewEstate].
@@ -700,7 +686,6 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
             clearSelectionInFragmentListEstate()
             clearSelectionInFragmentSearch()
         }
-
     }
 
     /**
@@ -749,13 +734,12 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
      * Gets which [FragmentListEstate] is displayed according to the type of screen and orientation.
      * @return : fragment displayed
      */
-    fun getFragmentList(): Fragment? =
+    private fun getFragmentList(): Fragment? =
         if (typeOrientation && typeLayout)
             supportFragmentManager.findFragmentByTag(AppInfo.TAG_FRAGMENT_LIST_ESTATE_LARGE)
-        else
-            supportFragmentManager.findFragmentByTag(AppInfo.TAG_FRAGMENT_LIST_ESTATE)
+        else supportFragmentManager.findFragmentByTag(AppInfo.TAG_FRAGMENT_LIST_ESTATE)
 
-
+    @Suppress("DEPRECATION")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         // From camera : Get Uri from saved value in SharedPreferences
