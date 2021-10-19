@@ -44,6 +44,7 @@ class SignInActivity : AppCompatActivity() {
     /**
      * Handles click events of buttons.
      */
+    @Suppress("DEPRECATION")
     private fun handleConnexionButtonsListeners() {
         val layout: AuthMethodPickerLayout = AuthMethodPickerLayout
             .Builder(R.layout.custom_auth_layout)
@@ -80,6 +81,7 @@ class SignInActivity : AppCompatActivity() {
      * @param resultCode : result code
      * @param data : returned intent
      */
+    @Suppress("DEPRECATION")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == RC_SIGN_IN) {

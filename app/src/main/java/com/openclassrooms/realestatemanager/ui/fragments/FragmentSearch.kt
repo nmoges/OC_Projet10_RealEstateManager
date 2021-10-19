@@ -467,7 +467,7 @@ class FragmentSearch : Fragment() {
      */
     private fun handleCheckboxPrice() {
         viewLayoutDialog?.let {
-            checkBoxPrice = it.findViewById<CheckBox>(R.id.checkbox_price)
+            checkBoxPrice = it.findViewById(R.id.checkbox_price)
             checkBoxPrice.apply {
                 this.isChecked = searchFiltersViewModel.checkBoxPriceStatus
                 setOnCheckedChangeListener { _, isChecked ->
@@ -483,7 +483,7 @@ class FragmentSearch : Fragment() {
      */
     private fun handleCheckBoxSurface() {
         viewLayoutDialog?.let {
-            checkBoxSurface = it.findViewById<CheckBox>(R.id.checkbox_surface)
+            checkBoxSurface = it.findViewById(R.id.checkbox_surface)
             checkBoxSurface.apply {
                 this.isChecked = searchFiltersViewModel.checkBoxSurfaceStatus
                 setOnCheckedChangeListener { _, isChecked ->
@@ -499,7 +499,7 @@ class FragmentSearch : Fragment() {
      */
     private fun handleCheckBoxDate() {
         viewLayoutDialog?.let {
-            checkBoxDate = it.findViewById<CheckBox>(R.id.checkbox_date)
+            checkBoxDate = it.findViewById(R.id.checkbox_date)
             checkBoxDate.apply {
                 this.isChecked = searchFiltersViewModel.checkBoxDateStatus
                 setOnCheckedChangeListener { _, isChecked ->

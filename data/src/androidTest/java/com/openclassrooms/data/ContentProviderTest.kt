@@ -32,8 +32,11 @@ class ContentProviderTest {
         contentResolver = InstrumentationRegistry.getInstrumentation().context.contentResolver
     }
 
+    /**
+     * Tests content provider access.
+     */
     @Test
-    fun getItemFromContentProvider() {
+    fun getCursorFromContentProvider() {
         val cursor: Cursor? = contentResolver.query(
             ContentUris.withAppendedId(RealEstateProvider.URI_ITEM, USER_ID),
             null,

@@ -14,12 +14,49 @@ buildscript {
         classpath "co.lujun:androidtagview:1.1.7"
     }
     ext {
-        ext.hilt_version = '2.39.1'
+        constraint_layout_version = '2.0.4'
+        card_view_version = '1.0.0'
+        facebook_sdk_version = '4.42.0'
+        firebase_bom_version = '28.1.0'
+        legacy_version = '1.0.0'
+        hilt_version = '2.39.1'
+        room_version = '2.3.0'
+        core_ktx_version = '1.6.0'
+        app_compat_version = '1.3.1'
+        material_version = '1.4.0'
+        places_version = '2.4.0'
+        volley_version = '1.2.1'
+        retrofit_version = '2.6.4'
+        okhttp_version = '3.12.12'
+        gson_version = '2.8.6'
+        converter_gson_version = '2.6.4'
+        interceptor_version = '3.12.12'
+        firebase_auth_version = '7.2.0'
+        firebase_storage_version = '7.1.1'
+        coroutine_test_version = '1.5.1'
+        junit_version = '4.13.2'
+        ext_junit_version = '1.1.3'
+        espresso_version = '3.4.0'
+        navigation_version = '2.3.5'
+        glide_version = '4.11.0'
+        coroutines_version = '1.5.0'
+        lifecycle_version = '2.4.0-alpha03'
+        lifecycle_vm_version = '1.0.0-alpha03'
+        maps_utils_version = '2.2.0'
+        play_service_maps_version = '17.0.1'
+        play_service_location_version = '18.0.0'
+        view_binding_version = '7.0.3'
+        tag_view_version = '1.1.7'
+        hilt_compiler_version = '1.0.0'
+        mockito_version = '2.19.0'
+        test_runner_version = '1.0.2'
+        //TODO : Déplacer versions des fichiers gradle
     }
 }
 
 allprojects {
     repositories {
+        // TODO() : virer jcenter
         jcenter()
         google()
         mavenCentral()

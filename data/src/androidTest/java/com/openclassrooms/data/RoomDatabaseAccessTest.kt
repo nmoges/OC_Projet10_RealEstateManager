@@ -2,8 +2,8 @@ package com.openclassrooms.data
 
 import com.openclassrooms.data.database.RealEstateManagerDatabase
 import com.openclassrooms.data.model.*
-import com.openclassrooms.data.repository.RealEstateRepositoryAccess
 import com.openclassrooms.data.repository.RealEstateRepository
+import com.openclassrooms.data.repository.RealEstateRepositoryAccess
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.runBlocking
@@ -146,7 +146,9 @@ class RoomDatabaseAccessTest {
     fun test_insert_and_delete_point_of_interest_in_room_database() {
         runBlocking {
             // INSERT
-            listPointOfInterest.forEach { repositoryAccess.insertPointOfInterest(it, 1) }
+            listPointOfInterest.forEach {
+                it.id = repositoryAccess.insertPointOfInterest(it, 1)
+            }
             var listFromDb = repositoryAccess.getPointsOfInterest(1)
             assertNotNull(listFromDb)
             for (i in listFromDb.indices) {

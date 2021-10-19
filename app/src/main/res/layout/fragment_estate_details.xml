@@ -326,7 +326,8 @@
             android:layout_width="@dimen/size_map"
             android:layout_height="@dimen/size_map"
             android:layout_marginTop="20dp"
-            android:layout_gravity="center"/>
+            android:layout_gravity="center"
+            android:contentDescription="@string/str_content_desc_map"/>
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -361,7 +362,7 @@
                     android:layout_height="wrap_content"
                     android:layout_row="0"
                     android:layout_column="1"
-                    android:text="Places nearby"
+                    android:text="@string/str_places_nearby_title"
                     android:textStyle="bold"
                     android:textSize="@dimen/text_description_grid"/>
             </GridLayout>
@@ -372,7 +373,7 @@
                 android:layout_height="wrap_content"
                 android:paddingStart="45dp"
                 android:paddingEnd="45dp"
-                android:text="-"
+                android:text="@string/str_no_tag"
                 android:visibility="visible"
                 android:textSize="@dimen/text_description_grid"
                 app:layout_constraintLeft_toLeftOf="parent"
@@ -392,9 +393,6 @@
                 app:container_background_color="@color/fui_transparent"
                 app:container_border_color="@color/fui_transparent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-
 
         <!-- "Status" section -->
         <com.google.android.material.textview.MaterialTextView

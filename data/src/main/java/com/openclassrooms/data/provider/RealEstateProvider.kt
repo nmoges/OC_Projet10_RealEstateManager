@@ -16,9 +16,9 @@ import java.lang.IllegalStateException
 class RealEstateProvider : ContentProvider() {
 
     companion object {
-        val AUTHORITY = "com.openclassrooms.data.provider"
-        val TABLE_NAME = "table_estates/" // /1
-        val URI_ITEM = Uri.parse("content://$AUTHORITY/$TABLE_NAME")
+        const val AUTHORITY = "com.openclassrooms.data.provider"
+        const val TABLE_NAME = "table_estates/"
+        val URI_ITEM: Uri = Uri.parse("content://$AUTHORITY/$TABLE_NAME")
     }
 
      @InstallIn(SingletonComponent::class)
@@ -26,6 +26,7 @@ class RealEstateProvider : ContentProvider() {
      interface EstateDaoEntryPoint {
          fun estateDao() : EstateDao
      }
+    // TODO() : remplacer par Repository
 
      private fun getEstateDao(context: Context): EstateDao {
          val hiltEntryPoint = EntryPointAccessors.fromApplication(
@@ -40,7 +41,7 @@ class RealEstateProvider : ContentProvider() {
                        selectionArgs: Array<out String>?, sortOrder: String?): Cursor? {
          val id = ContentUris.parseId(uri)
          val context = context?.applicationContext ?: throw  IllegalStateException()
-          val estateDao: EstateDao = getEstateDao(context)
+         val estateDao: EstateDao = getEstateDao(context)
          return estateDao.getCursorEstateWithId(id)
     }
 

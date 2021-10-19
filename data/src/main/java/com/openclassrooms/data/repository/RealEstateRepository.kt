@@ -83,7 +83,7 @@ interface RealEstateRepositoryAccess {
     suspend fun getLocationById(id: Long): Location
 
     // -------------------------------- PointOfInterestDao -----------------------------------------
-    suspend fun insertPointOfInterest(pointOfInterest: PointOfInterest, associatedId: Long)
+    suspend fun insertPointOfInterest(pointOfInterest: PointOfInterest, associatedId: Long): Long
 
     suspend fun deletePointOfInterest(pointOfInterest: PointOfInterest, associatedId: Long)
 
@@ -116,6 +116,7 @@ interface RealEstateRepositoryAccess {
 
 }
 
+// TODO : Ajouter méthode d'accès DAO pour le content provider
 /**
  * Repository class.
  */
@@ -345,7 +346,7 @@ class RealEstateRepository(
      * @param associatedId : Associated Estate id
      * @return : id of the inserted row in database
      */
-    override suspend fun insertPointOfInterest(pointOfInterest: PointOfInterest, associatedId: Long) =
+    override suspend fun insertPointOfInterest(pointOfInterest: PointOfInterest, associatedId: Long): Long =
         pointOfInterestDao.insertPointOfInterestData(pointOfInterest.toPointOfInterestData(associatedId))
 
     /**

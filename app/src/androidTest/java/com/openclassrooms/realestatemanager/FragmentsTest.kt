@@ -18,6 +18,7 @@ import com.openclassrooms.realestatemanager.ui.fragments.FragmentMap
 import com.openclassrooms.realestatemanager.ui.fragments.FragmentNewEstate
 import com.openclassrooms.realestatemanager.ui.fragments.FragmentSearch
 import com.openclassrooms.realestatemanager.ui.fragments.FragmentSettings
+import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Before
@@ -33,12 +34,11 @@ class FragmentsTest {
     @get: Rule
     var activityScenarioRule = ActivityScenarioRule(MainActivity::class.java)
 
-    lateinit var context: Context
+    private lateinit var context: Context
 
     @Before
     fun setUp() {
-        val scenario = activityScenarioRule.scenario
-        scenario.moveToState(Lifecycle.State.RESUMED)
+        activityScenarioRule.scenario.moveToState(Lifecycle.State.RESUMED)
         context = InstrumentationRegistry.getInstrumentation().targetContext
     }
 
@@ -229,5 +229,10 @@ class FragmentsTest {
             val currency = filePreferences.getString(AppInfo.PREF_CURRENCY, "USD")
             assertEquals("EUR", currency)
         }
+    }
+
+    @After
+    fun endTest() {
+        activityScenarioRule.scenario.close()
     }
 }

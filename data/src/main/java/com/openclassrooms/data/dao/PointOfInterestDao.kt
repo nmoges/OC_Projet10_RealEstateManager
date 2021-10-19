@@ -11,7 +11,7 @@ import com.openclassrooms.data.entities.PointOfInterestData
 interface PointOfInterestDao {
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertPointOfInterestData(pointOfInterestData: PointOfInterestData)
+    suspend fun insertPointOfInterestData(pointOfInterestData: PointOfInterestData): Long
 
     @Delete
     suspend fun deletePointOfInterestData(pointOfInterestData: PointOfInterestData)

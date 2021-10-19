@@ -30,6 +30,7 @@ class NotificationHandlerTest {
     /**
      * Tests if notification priority value is correctly returned by [NotificationHandler].
      */
+    @Suppress("DEPRECATION")
     @Test
     fun test_get_notification_priority() {
         val priority = notificationHandler.getNotificationPriority()

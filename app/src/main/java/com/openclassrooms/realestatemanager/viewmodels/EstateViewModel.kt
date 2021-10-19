@@ -9,8 +9,6 @@ import androidx.lifecycle.viewModelScope
 import com.google.android.libraries.places.api.model.Place
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.ktx.database
-import com.google.firebase.ktx.Firebase
 import com.openclassrooms.data.entities.PointOfInterestData
 import com.openclassrooms.data.model.*
 import com.openclassrooms.data.repository.RealEstateRepositoryAccess
@@ -49,10 +47,7 @@ class EstateViewModel @Inject constructor(
     /** Temporary value storing the position in the list of agents */
     var nameAgentSelected: String = ""
 
-    init {
-        Firebase.database.setPersistenceEnabled(true)
-        resetEstate()
-    }
+    init { resetEstate() }
 
     /**
      * Creates a new [Estate].

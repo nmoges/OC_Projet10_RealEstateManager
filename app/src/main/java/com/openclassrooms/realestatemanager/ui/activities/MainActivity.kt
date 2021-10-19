@@ -63,10 +63,10 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
     private lateinit var binding: ActivityMainBinding
 
     /** Defines type of layout displayed : */
-    var typeLayout: Boolean = false // true: activity_main.xml (large-land)/false: activity_main.xml
+    private var typeLayout: Boolean = false // true: activity_main.xml (large-land)/false: activity_main.xml
 
     /** Defines type of orientation  */
-    var typeOrientation: Boolean = false // true: Orientation landscape/false: Orientation portrait
+    private var typeOrientation: Boolean = false // true: Orientation landscape/false: Orientation portrait
 
     /** Id of the container used to display fragments */
     private var containerId: Int = 0
@@ -78,10 +78,10 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
     lateinit var listEstatesViewModel: ListEstatesViewModel
 
     /** Contains reference to [ListTagsFragmentViewModel] */
-    lateinit var listFragmentsViewModel: ListTagsFragmentViewModel
+    private lateinit var listFragmentsViewModel: ListTagsFragmentViewModel
 
     /** Contains reference to [EstateViewModel] */
-    lateinit var estatesViewModel: EstateViewModel
+    private lateinit var estatesViewModel: EstateViewModel
 
     /** Contains a reference to a [NetworkBroadcastReceiver] object */
     private val networkBroadcastReceiver: NetworkBroadcastReceiver = NetworkBroadcastReceiver(this)

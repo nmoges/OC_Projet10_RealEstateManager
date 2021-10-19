@@ -93,6 +93,7 @@ object MediaAccessHandler {
      * Open device photos gallery.
      * @param activity : Main activity
      */
+    @Suppress("DEPRECATION")
     fun openPhotosGallery(activity: MainActivity) {
         val intent = Intent().apply {
             type = "image/*"
@@ -141,6 +142,7 @@ object MediaAccessHandler {
      * @param activity : Main activity
      */
     @SuppressLint("QueryPermissionsNeeded")
+    @Suppress("DEPRECATION")
     fun openCamera(activity: MainActivity) {
         // Init SharedPreferences file
         val filePreferences: SharedPreferences =

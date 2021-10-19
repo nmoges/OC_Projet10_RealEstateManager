@@ -30,6 +30,9 @@
 
     <!-- menu_fragment_estate_details.xml -->
     <string name="str_item_edit">Édition</string>
+    <string name="str_content_desc_map">Carte indiquant la localisation du bien</string>
+    <string name="str_no_tag">-</string>
+    <string name="str_places_nearby_title">Lieux à proximité</string>
 
     <!-- menu_fragment_search.xml -->
     <string name="str_item_filter">Filtrer</string>
@@ -190,4 +193,26 @@
     <string name="poi_park">Parc</string>
     <string name="poi_restaurant">Restaurant</string>
     <string name="poi_school">École</string>
+
+    <!-- dialog_agent_creation.xml -->
+    <string name="str_dialog_first_name_agent">Prénom</string>
+    <string name="str_dialog_last_name_agent">Nom</string>
+
+    <!-- dialog_filters.xml -->
+    <string name="str_dialog_price_title">Prix</string>
+    <string name="str_dialog_price_min">$0</string>
+    <string name="str_dialog_price_max">$2000000</string>
+    <string name="str_dialog_surface_title">Surface</string>
+    <string name="str_dialog_surface_min">0 sqm</string>
+    <string name="str_dialog_surface_max">500 sqm</string>
+    <string name="str_dialog_date_title">Date</string>
+    <string name="str_dialog_date_min">De :</string>
+    <string name="str_dialog_date_max">À :</string>
+    <string name="str_dialog_status_title">Statut</string>
+    <string name="str_dialog_status_available">Disponible</string>
+    <string name="str_dialog_status_sold">Vendu</string>
+    <string name="str_dialog_poi_title">Points d\'intérêt</string>
+
+    <!-- dialog_progress_bar_launch.xml -->
+    <string name="str_dialog_progress_bar_text">Chargement des biens…</string>
 </resources>

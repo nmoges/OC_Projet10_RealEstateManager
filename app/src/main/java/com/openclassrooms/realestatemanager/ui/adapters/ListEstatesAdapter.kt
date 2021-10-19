@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -29,7 +30,7 @@ class ListEstatesAdapter(private val context: Context, private val onItemClicked
     var listEstates: MutableList<Estate> = mutableListOf()
 
     /** Contains the currency to display */
-    var currency: String = "USD"
+    private var currency: String = "USD"
 
     /** Parent activity */
     lateinit var activity: MainActivity
@@ -75,7 +76,6 @@ class ListEstatesAdapter(private val context: Context, private val onItemClicked
      * @param holder : view holder
      * @param position : position in [listEstates] list
      */
-    @Suppress("DEPRECATION")
     private fun displayPrice(holder: ListEstateViewHolder, position: Int) {
         // Handle conversion USD -> EUR if needed
         val price: Int = if (currency == "USD") listEstates[position].price
@@ -86,15 +86,11 @@ class ListEstatesAdapter(private val context: Context, private val onItemClicked
         // Handle style
         if (listEstates[position].selected)
             holder.price.apply {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
-                    setTextColor(resources.getColor(R.color.white, null))
-                else setTextColor(resources.getColor(R.color.white))
+                setTextColor(ContextCompat.getColor(context, R.color.white))
             }
         else holder.price.apply {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
-                    setTextColor(resources.getColor(R.color.pink, null))
-                else setTextColor(resources.getColor(R.color.pink))
-        }
+                setTextColor(ContextCompat.getColor(context, R.color.pink))
+            }
     }
 
     /**

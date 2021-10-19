@@ -1,10 +1,10 @@
 package com.openclassrooms.realestatemanager.ui.fragments
 
 import android.app.AlertDialog
-import android.os.Build
 import android.os.Bundle
 import android.view.*
 import android.widget.FrameLayout
+import androidx.core.content.ContextCompat
 import androidx.core.view.get
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -222,10 +222,7 @@ class FragmentEstateDetails : Fragment() {
                 val textToDisplay = resources.getString(R.string.str_sold_status) + ": $saleDateText"
                 binding.saleStatus.apply {
                     text = textToDisplay
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
-                        setTextColor(resources.getColor(R.color.red_google, null))
-                    else
-                        setTextColor(resources.getColor(R.color.red_google))
+                    setTextColor(ContextCompat.getColor(context, R.color.red_google))
                 }
             }
         }

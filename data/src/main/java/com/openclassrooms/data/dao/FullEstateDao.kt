@@ -6,7 +6,6 @@ import androidx.room.Query
 import androidx.room.RawQuery
 import androidx.room.Transaction
 import androidx.sqlite.db.SimpleSQLiteQuery
-import com.openclassrooms.data.database.RealEstateManagerDatabase
 import com.openclassrooms.data.entities.FullEstateData
 
 /**
