@@ -11,6 +11,11 @@ import com.openclassrooms.realestatemanager.ui.activities.MainActivityCallback
  */
 class NetworkBroadcastReceiver(private val callback: MainActivityCallback): BroadcastReceiver() {
 
+    /**
+     * Handles Network events.
+     * @param context : Context
+     * @param intent : Intent
+     */
     override fun onReceive(context: Context?, intent: Intent?) {
         callback.apply {
             updateConnectivityBarNetworkDisplay(Utils.isInternetAvailable(context))

@@ -196,14 +196,14 @@ class RoomDatabaseAccessTest {
         location = Location(id = 1, address = "78 Av. des Champs-Élysées, 75008 Paris, France",
                             district = "Paris", latitude = 48.87144620000001, longitude = 2.3045534)
         listPhotos = mutableListOf(
-            Photo(id = 1, name = "Kitchen",
-                  uriConverted = "https://firebasestorage.googleapis.com/v0/b/real-estate-manager-1ee3" +
-                        "6.appspot.com/o/images%2Fusers%2FAM5XBuhEikeVtWO3ochH12sHQt72%2FKitchen.jpg" +
-                        "?alt=media&token=ec07ca24-3443-44cb-bc91-46e97045231a"),
-            Photo(id = 2, name = "Living room",
-                  uriConverted = "https://firebasestorage.googleapis.com/v0/b/real-estate-manager-1ee36.ap" +
-                        "pspot.com/o/images%2Fusers%2FAM5XBuhEikeVtWO3ochH12sHQt72%2FLiving%20room.jpg?a" +
-                        "lt=media&token=facfce35-1ddc-4d98-bd14-abf186bd6a51")
+            Photo(id = 1, name = "Test photo 1",
+                  uriConverted = "https://firebasestorage.googleapis.com/v0/b/real-estate-manager-1e" +
+                          "e36.appspot.com/o/images%2Fusers%2FAM5XBuhEikeVtWO3ochH12sHQt72%2FTest_ph" +
+                          "oto_1.jpg?alt=media&token=5943c4ce-a3d5-4779-8817-879e65a91d48"),
+            Photo(id = 2, name = "Test photo 2",
+                  uriConverted = "https://firebasestorage.googleapis.com/v0/b/real-estate-manager-1e" +
+                          "e36.appspot.com/o/images%2Fusers%2FAM5XBuhEikeVtWO3ochH12sHQt72%2FTest_ph" +
+                          "oto_2.jpg?alt=media&token=216f50cb-9dcb-409e-a855-1770b7d615ef")
         )
         dates = Dates(id = 1, dateEntry = "2021-10-05", dateSale = "")
         listPointOfInterest = mutableListOf(

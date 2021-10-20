@@ -5,7 +5,7 @@ import java.text.ParseException
 import java.util.*
 
 /**
- * Object defining a set of functions to handle dates comparison.
+ * Object defining a dates comparison.
  */
 object DateComparator {
 

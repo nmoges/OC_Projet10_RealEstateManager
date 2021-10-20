@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable
 
 /**
- * Object defining a set of functions to handle progress bar properties.
+ * Object defining a progress bar provider.
  */
 object ProgressBarHandler {
 

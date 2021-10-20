@@ -3,7 +3,7 @@ package com.openclassrooms.realestatemanager.utils
 import com.openclassrooms.realestatemanager.BuildConfig
 
 /**
- * Object defining a set of functions to handle location estate uri creation.
+ * Object defining a location estate uri provider.
  */
 object MapHandler {
 

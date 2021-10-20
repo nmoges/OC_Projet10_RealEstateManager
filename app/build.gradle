@@ -38,8 +38,6 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "com.android.support.constraint:constraint-layout:$constraint_layout_version"
-   // implementation 'com.android.support:support-v4:28.0.0'
-    // TODO : Migrate AndroidX
 
     // Core KTX
     implementation "androidx.core:core-ktx:$core_ktx_version"

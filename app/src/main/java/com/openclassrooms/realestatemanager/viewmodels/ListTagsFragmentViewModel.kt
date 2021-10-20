@@ -9,7 +9,15 @@ class ListTagsFragmentViewModel: ViewModel() {
 
     var listTags: MutableList<String> = mutableListOf()
 
+    /**
+     * Adds tag to [listTags].
+     * @param tag : tag to add
+     */
     fun addFragmentTagToList(tag: String) = listTags.add(tag)
 
+    /**
+     * Removes tag from [listTags].
+     * @param tag : tag to remove
+     */
     fun removeTagToList(tag: String) = listTags.remove(tag)
 }

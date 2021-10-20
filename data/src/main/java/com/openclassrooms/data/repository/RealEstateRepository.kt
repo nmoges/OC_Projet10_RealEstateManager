@@ -116,7 +116,6 @@ interface RealEstateRepositoryAccess {
 
 }
 
-// TODO : Ajouter méthode d'accès DAO pour le content provider
 /**
  * Repository class.
  */
@@ -532,12 +531,12 @@ class RealEstateRepository(
      * @param estate : [Estate] to send
      * @param dbReference : Database reference
      */
-    override fun sendEstateToRealtimeDatabase(estate: Estate, dbReference : DatabaseReference) {
+    override fun sendEstateToRealtimeDatabase(estate: Estate, dbReference: DatabaseReference) {
         dbReference.child(estate.firebaseId).setValue(estate.toEstateDataFb())
     }
 
     override fun updateEstatePhotoInRealtimeDatabase(firebaseId: String, url: String, node: String,
-                                                     dbReference : DatabaseReference) {
+                                                     dbReference: DatabaseReference) {
        dbReference.child(firebaseId).child("listPhotoDataFb")
                                            .child(node).child("uriConverted").setValue(url)
     }
@@ -547,8 +546,7 @@ class RealEstateRepository(
      * @param dbReference : Database reference
      * @param callback : callback to return new database update
      */
-    override fun initializeChildEventListener(dbReference: DatabaseReference,
-                                              callback: (Estate) -> Unit) {
+    override fun initializeChildEventListener(dbReference: DatabaseReference, callback: (Estate) -> Unit) {
         val childListener = object : ChildEventListener {
             override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
                 if (!lockSQLiteDBUpdate) {

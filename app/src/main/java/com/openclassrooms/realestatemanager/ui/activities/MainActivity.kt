@@ -159,6 +159,10 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
         }
     }
 
+    /**
+     * Handles "Loading estates" dialog display.
+     * @param status : display status
+     */
     private fun handleFragmentListEstateDialog(status: Boolean) {
         val fragment = getFragmentList()
         fragment?.let {
@@ -274,9 +278,8 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
     /**
      * Callback for SQLite Database photos URI updates.
      */
-    override fun updateURIsPhotosInDB() {
+    override fun updateURIsPhotosInDB() =
         listEstatesViewModel.updatePhotosURIInSQLiteDB(dbReference, auth)
-    }
 
     /**
      * Handles connectivity bar button.
@@ -458,9 +461,8 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
             finish()
             overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
         }
-        else
-            Snackbar.make(binding.mainActivity, resources.getString(R.string.str_error_logout),
-                Snackbar.LENGTH_SHORT).show()
+        else Snackbar.make(binding.mainActivity, resources.getString(R.string.str_error_logout),
+                           Snackbar.LENGTH_SHORT).show()
     }
 
     /**
@@ -695,14 +697,10 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
         if (supportFragmentManager.backStackEntryCount == 0) {
             if (typeOrientation && typeLayout) handleBackgroundGridVisibility(View.VISIBLE)
             setToolbarProperties(R.string.str_toolbar_fragment_list_estate_title, false)
-            getFragmentList()?.let {
-                (it as FragmentListEstate).handleFabVisibility(View.VISIBLE)
-            }
+            getFragmentList()?.let { (it as FragmentListEstate).handleFabVisibility(View.VISIBLE) }
         }
         else {
-            getFragmentList()?.let {
-                (it as FragmentListEstate).handleFabVisibility(View.INVISIBLE)
-            }
+            getFragmentList()?.let { (it as FragmentListEstate).handleFabVisibility(View.INVISIBLE) }
         }
     }
 
@@ -725,9 +723,7 @@ class MainActivity : AppCompatActivity(), MainActivityCallback {
         val fragmentSearch: Fragment? =
             supportFragmentManager.findFragmentByTag(AppInfo.TAG_FRAGMENT_SEARCH)
         if (fragmentSearch != null) {
-            (fragmentSearch as FragmentSearch).apply {
-                clearCurrentSelection()
-            }
+            (fragmentSearch as FragmentSearch).apply { clearCurrentSelection() }
         }
     }
     /**

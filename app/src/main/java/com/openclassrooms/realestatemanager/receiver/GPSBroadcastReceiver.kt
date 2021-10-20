@@ -11,6 +11,11 @@ import com.openclassrooms.realestatemanager.utils.GPSAccessHandler
  */
 class GPSBroadcastReceiver(private val onGpsEventDetected: (Boolean) -> Unit ): BroadcastReceiver() {
 
+    /**
+     * Handles GPS events.
+     * @param context : Context
+     * @param intent : Intent
+     */
     override fun onReceive(context: Context?, intent: Intent?) {
         context?.let {
             val locationManager: LocationManager = context.getSystemService(Context.LOCATION_SERVICE)

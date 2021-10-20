@@ -187,7 +187,7 @@ class FragmentEstateDetails : Fragment() {
             estateViewModel.getNewEstate(context, (activity as MainActivity).auth)
                 .observe(viewLifecycleOwner, { itUpdatedEstate ->
                     estateViewModel.updateSQLiteDatabase((activity as MainActivity).dbReference,
-                                              true, itUpdatedEstate) {}
+                    true, itUpdatedEstate) {}
                 })
         }
     }

@@ -73,8 +73,8 @@ class EstateViewModel @Inject constructor(
     /**
      * Access "initializeChildEventListener()" method from [repositoryAccess].
      */
-    fun initializeChildEventListener(dbReference: DatabaseReference, callback: () -> (Unit)) {
-        repositoryAccess.initializeChildEventListener(dbReference) { itEstate ->
+     fun initializeChildEventListener(dbReference: DatabaseReference, callback: () -> (Unit)) {
+         repositoryAccess.initializeChildEventListener(dbReference) { itEstate ->
             viewModelScope.launch {
                 val oldEstateId = repositoryAccess.getEstateWithFirebaseId(itEstate.firebaseId)
                 val agent = repositoryAccess.getAgentByFields(itEstate.agent.firstName,

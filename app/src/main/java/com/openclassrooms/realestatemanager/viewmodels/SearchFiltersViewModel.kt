@@ -67,6 +67,7 @@ class SearchFiltersViewModel @Inject constructor(@ApplicationContext context: Co
     /** Defines values of the "Points of interest" filter */
     var listPOIStatus: MutableList<Boolean> = mutableListOf()
 
+    /** Defines search results */
     private val _searchResults: MutableLiveData<List<Estate>> = MutableLiveData()
     val searchResults: LiveData<List<Estate>>
         get() = _searchResults

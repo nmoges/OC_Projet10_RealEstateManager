@@ -6,10 +6,13 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.*
-import androidx.fragment.app.Fragment
+import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.edit
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.firebase.ui.auth.AuthUI
+import com.google.firebase.auth.FirebaseAuth
 import com.openclassrooms.realestatemanager.AppInfo
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.databinding.FragmentSettingsBinding
@@ -151,11 +154,31 @@ class FragmentSettings : Fragment() {
         builderDeleteAccountDialog = AlertDialog.Builder(activity)
             .setTitle(resources.getString(R.string.str_title_delete_account_dialog))
             .setMessage(resources.getString(R.string.str_text_delete_account_dialog))
-            .setPositiveButton(resources.getString(R.string.str_title_button_confirm)) { _, _ ->  }
+            .setPositiveButton(resources.getString(R.string.str_title_button_confirm)) { _, _ -> deleteAccount() }
             .setNegativeButton(resources.getString(R.string.str_dialog_button_cancel)) { _, _ ->  }
             .create()
     }
 
+    /**
+     * Handles Firebase user account deletion.
+     */
+    private fun deleteAccount() {
+        val user = FirebaseAuth.getInstance().currentUser
+        context?.let { context ->
+            user?.let {
+                AuthUI.getInstance().delete(context).addOnSuccessListener {
+                    Toast.makeText(context, R.string.toast_account_deleted, Toast.LENGTH_SHORT).show()
+                    (activity as MainActivity).apply {
+                        finish()
+                        overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
+                    }
+                }.addOnFailureListener {
+                    Toast.makeText(context, R.string.toast_error_delete_account, Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+
+    }
     /**
      * Handles interactions with dialog items.
      * @param view: View in which the dialog is attached

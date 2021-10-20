@@ -184,6 +184,10 @@
     <string name="str_dialog_reset_filters_title">Réinitialiser filtres</string>
     <string name="str_dialog_reset_filters_message">Tous les filtres seront supprimés et réinitialisés. Confirmer ?</string>
 
+    <!-- FragmentSettings.kt -->
+    <string name="toast_account_deleted">Compte supprimé</string>
+    <string name="toast_error_delete_account">Erreur pendant l\'opération</string>
+
     <!-- POIProvider.kt -->
     <string name="poi_bar">Bar</string>
     <string name="poi_cafe">Café</string>

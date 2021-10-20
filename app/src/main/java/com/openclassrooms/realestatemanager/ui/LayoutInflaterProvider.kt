@@ -5,6 +5,9 @@ import android.view.LayoutInflater
 import android.view.View
 import androidx.annotation.LayoutRes
 
+/**
+ * Object defining a layoutInflater provider.
+ */
 object LayoutInflaterProvider {
 
     /**

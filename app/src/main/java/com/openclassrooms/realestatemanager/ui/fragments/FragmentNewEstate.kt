@@ -55,7 +55,7 @@ class FragmentNewEstate : Fragment() {
     private lateinit var estateViewModel: EstateViewModel
 
     /** Defines new estate creation (false) or to modification of an existing one (true). */
-    var updateEstate: Boolean = false
+    private var updateEstate: Boolean = false
 
     /** Defines [AlertDialog] for "Add point of interest" functionality */
     private var builderAddPOIDialog: AlertDialog? = null
@@ -615,10 +615,8 @@ class FragmentNewEstate : Fragment() {
      */
     private fun updateSelectedEstateFromViewModel() {
         saveEstateValuesInViewModel()
-        estateViewModel.getNewEstate(context,
-            (activity as MainActivity).auth).observe(viewLifecycleOwner, { itEstate ->
-                estateViewModel.updateSQLiteDatabase((activity as MainActivity).dbReference,
-                                                            updateEstate, itEstate) {
+        estateViewModel.getNewEstate(context, (activity as MainActivity).auth).observe(viewLifecycleOwner, { itEstate ->
+                estateViewModel.updateSQLiteDatabase((activity as MainActivity).dbReference, updateEstate, itEstate) {
                     // Callback after database updated
                     confirmExit = true
                     builderProgressBarDialog?.dismiss()

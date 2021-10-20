@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.SharedPreferences
+import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Bundle
@@ -22,15 +23,14 @@ import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import com.openclassrooms.data.model.Estate
 import com.openclassrooms.realestatemanager.AppInfo
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.databinding.FragmentMapBinding
-import com.openclassrooms.data.model.Estate
 import com.openclassrooms.realestatemanager.receiver.GPSBroadcastReceiver
 import com.openclassrooms.realestatemanager.ui.activities.MainActivity
 import com.openclassrooms.realestatemanager.utils.GPSAccessHandler
 import com.openclassrooms.realestatemanager.viewmodels.ListEstatesViewModel
-import java.lang.IllegalStateException
 
 /**
  * [Fragment] subclass used to display a google map.
@@ -88,11 +88,19 @@ class FragmentMap : Fragment(), OnMapReadyCallback {
         initializeMap()
         initializeGPSBroadcast()
         handleFloatingButtonClickEvents()
-        locationListener = LocationListener {
-            map?.let { itMap ->
-                itMap.clear()
-                displayEstatesMarkersOnMap()
+        locationListener = object : LocationListener {
+            override fun onLocationChanged(location: Location) {
+                map?.let { itMap ->
+                    itMap.clear()
+                    displayEstatesMarkersOnMap()
+                }
             }
+
+            override fun onProviderEnabled(provider: String) { /* NOT USED */ }
+
+            override fun onProviderDisabled(provider: String) { /* NOT USED */ }
+
+            override fun onStatusChanged(provider: String, status: Int, extras: Bundle) { /* NOT USED */ }
         }
     }
 

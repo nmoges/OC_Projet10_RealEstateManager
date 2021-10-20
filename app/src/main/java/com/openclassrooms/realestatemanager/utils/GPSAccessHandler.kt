@@ -16,6 +16,9 @@ import com.openclassrooms.realestatemanager.AppInfo
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.ui.activities.MainActivity
 
+/**
+ * Object defining a set of method for location handling.
+ */
 object GPSAccessHandler {
     /** [SharedPreferences] file */
     private lateinit var filePreferences: SharedPreferences
