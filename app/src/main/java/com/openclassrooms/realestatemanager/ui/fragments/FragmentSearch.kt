@@ -680,11 +680,21 @@ class FragmentSearch : Fragment() {
             it.findViewById<MaterialTextView>(resMax).apply {
                 when(resMax) {
                     R.id.max_price -> {
-                        val text = resources.getString(R.string.str_value_price_slider, maxValue)
-                        setText(text) }
+                        var text: String =
+                            if (maxValue == 50000000)
+                                resources.getString(R.string.str_value_price_slider_max, maxValue)
+                            else
+                                resources.getString(R.string.str_value_price_slider, maxValue)
+                        setText(text)
+                    }
                     R.id.max_surface -> {
-                        val text = resources.getString(R.string.str_value_surface_slider, maxValue)
-                        setText(text) } }
+                        val text =
+                            if (maxValue == 500)
+                                resources.getString(R.string.str_value_surface_slider_max, maxValue)
+                            else
+                                resources.getString(R.string.str_value_surface_slider, maxValue)
+                        setText(text) }
+                }
             }
         }
     }

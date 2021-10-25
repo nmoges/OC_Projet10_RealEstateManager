@@ -47,7 +47,8 @@
             android:layout_marginStart="20dp"
             android:layout_marginEnd="20dp"
             android:valueFrom="0.0"
-            android:valueTo="2000000.0"
+            android:stepSize="1000000"
+            android:valueTo="50000000.0"
             android:enabled="false"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toBottomOf="@id/min_price"/>

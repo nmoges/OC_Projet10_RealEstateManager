@@ -36,7 +36,7 @@ class ContentProviderTest {
      * Tests content provider access.
      */
     @Test
-    fun getCursorFromContentProvider() {
+    fun test_get_cursor_from_content_provider() {
         val cursor: Cursor? = contentResolver.query(
             ContentUris.withAppendedId(RealEstateProvider.URI_ITEM, USER_ID),
             null,

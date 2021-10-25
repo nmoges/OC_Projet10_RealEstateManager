@@ -314,7 +314,7 @@ class FragmentNewEstate : Fragment() {
      */
     private fun initializeSliderMaterialText() {
         binding.apply {
-            sliderSurfaceValue.text = StringHandler.getSliderString(1000,
+            sliderSurfaceValue.text = StringHandler.getSliderString(500,
                 sliderSurface.value.toInt(), R.string.str_sqm_unit_greater_than_or_equal,
                 R.string.str_sqm_unit, true, context)
             sliderRoomsValue.text = StringHandler.getSliderString(20,
@@ -504,7 +504,7 @@ class FragmentNewEstate : Fragment() {
         var text: String?
         binding.apply {
             sliderSurface.addOnChangeListener{ _, _, _ ->
-                text = StringHandler.getSliderString(1000, sliderSurface.value.toInt(),
+                text = StringHandler.getSliderString(500, sliderSurface.value.toInt(),
                 R.string.str_sqm_unit_greater_than_or_equal, R.string.str_sqm_unit, true, context)
                 sliderSurfaceValue.text = text }
             sliderRooms.addOnChangeListener{ _, _, _ ->

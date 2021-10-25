@@ -12,9 +12,9 @@
     </string-array>
 
     <array name="slider_price_values">
-        <item>0</item>          <!-- min value -->
-        <item>2000000</item>    <!-- max value -->
-        <item>100000</item>     <!-- step -->
+        <item>1000000</item>          <!-- min value -->
+        <item>50000000</item>    <!-- max value -->
+        <item>1000000</item>     <!-- step -->
     </array>
 
     <array name="slider_surface_values">

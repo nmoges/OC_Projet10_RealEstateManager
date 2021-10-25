@@ -180,7 +180,9 @@
     <string name="str_toolbar_fragment_search_title">Rechercher des biens</string>
     <string name="str_dialog_search_title">Selectionner filtres</string>
     <string name="str_value_surface_slider">%1$d m2</string>
+    <string name="str_value_surface_slider_max">≥%1$d m2</string>
     <string name="str_value_price_slider">$%1$d</string>
+    <string name="str_value_price_slider_max">≥$%1$d</string>
     <string name="str_dialog_reset_filters_title">Réinitialiser filtres</string>
     <string name="str_dialog_reset_filters_message">Tous les filtres seront supprimés et réinitialisés. Confirmer ?</string>
 

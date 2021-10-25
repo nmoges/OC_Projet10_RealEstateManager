@@ -183,7 +183,9 @@
     <string name="str_toolbar_fragment_search_title">Search estates</string>
     <string name="str_dialog_search_title">Select filters</string>
     <string name="str_value_surface_slider">%1$d sqm</string>
+    <string name="str_value_surface_slider_max">≥%1$d sqm</string>
     <string name="str_value_price_slider">$%1$d</string>
+    <string name="str_value_price_slider_max">≥$%1$d</string>
     <string name="str_dialog_reset_filters_title">Reset filters</string>
     <string name="str_dialog_reset_filters_message">All the filters will be removed and set to default value. Confirm ?</string>
 
