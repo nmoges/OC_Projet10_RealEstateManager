@@ -5,6 +5,7 @@ import android.app.Application
 import android.content.Context
 import android.database.Cursor
 import android.net.Uri
+import android.util.Log
 import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData

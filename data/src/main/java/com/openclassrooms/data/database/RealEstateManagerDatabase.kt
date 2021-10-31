@@ -15,7 +15,7 @@ import com.openclassrooms.data.entities.DatesData
                       PhotoData::class,
                       AgentData::class,
                       DatesData::class,
-                      PointOfInterestData::class], version = 1, exportSchema = false)
+                      PointOfInterestData::class], version = 2, exportSchema = false)
 abstract class RealEstateManagerDatabase: RoomDatabase() {
 
     abstract val estateDao: EstateDao

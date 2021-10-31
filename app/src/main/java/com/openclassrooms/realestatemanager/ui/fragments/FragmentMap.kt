@@ -315,16 +315,12 @@ class FragmentMap : Fragment(), OnMapReadyCallback {
     private fun handleClicksOnMarkers(list: List<Estate>) {
         map.let { itMap ->
             itMap?.setOnInfoWindowClickListener { itMarker ->
-                var index = 0
-                var found = false
-                var position = 0
-                while (index < list.size && !found) {
-                    if (list[index].type == itMarker.title) {
-                        found = true
-                        position = index
-                    } else index++
+                val index = list.indexOfFirst {
+                    it.type == itMarker.title
                 }
-                launchFragmentDetails(position)
+                if (index != -1) {
+                    launchFragmentDetails(index)
+                }
             }
         }
     }

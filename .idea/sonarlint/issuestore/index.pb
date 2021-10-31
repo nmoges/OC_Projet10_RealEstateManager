@@ -24,8 +24,6 @@ s
 Cdata/src/main/java/com/openclassrooms/data/entities/InteriorData.kt,c\4\c4cf374e82c5b6c20dd9d05ee3da372f66f644f9
 Å
 Qapp/src/main/java/com/openclassrooms/realestatemanager/utils/CustomTextWatcher.kt,3\6\364820fa018f3aac6b3263a88946d3436999f781
-Ä
-Pdata/src/main/java/com/openclassrooms/data/database/RealEstateManagerDatabase.kt,c\f\cf13f5471418a4a7d857f040a9d908169edfa11f
 â
 Yapp/src/main/java/com/openclassrooms/realestatemanager/service/DummyListAgentGenerator.kt,5\f\5fe671e3fb31accf5982ae77c2cc55752fd6c2dc
 l
@@ -102,8 +100,6 @@ Idata/src/main/java/com/openclassrooms/data/service/AutocompleteService.kt,e\0\
 Mapp/src/main/java/com/openclassrooms/realestatemanager/utils/StringHandler.kt,e\2\e260499a1b93021bbd8b2e5de5a992969733878f
 ä
 Zapp/src/main/java/com/openclassrooms/realestatemanager/notification/NotificationHandler.kt,2\c\2cc36cd1c42d9255e61d09bf4e69efc809953ff7
-g
-7data/src/test/java/com/openclassrooms/data/ModelTest.kt,e\3\e30e06056a649593ba8514d0a5f3832e311a5cf7
 l
 <data/src/test/java/com/openclassrooms/data/ConvertersTest.kt,b\1\b1051a36bc5663b8e943dfe6e24f07c4992d89d0
 ç
@@ -144,10 +140,6 @@ Napp/src/androidTest/java/com/openclassrooms/realestatemanager/FragmentsTest.kt
 Xapp/src/androidTest/java/com/openclassrooms/realestatemanager/NotificationHandlerTest.kt,e\2\e22b372ecf11d276dc24480942f6b25637f7c83e
 Ü
 Vapp/src/main/java/com/openclassrooms/realestatemanager/ui/activities/SignInActivity.kt,a\0\a035330725176dbdadf66fa7a48fe60f59c22fe2
-à
-Xapp/src/main/java/com/openclassrooms/realestatemanager/ui/adapters/ListEstatesAdapter.kt,d\0\d06173742ed2234766d9661946f87a9e6e2a544f
-}
-Mdata/src/main/java/com/openclassrooms/data/repository/RealEstateRepository.kt,4\1\4196dc0dc96bd15b61ea58786c3ccdddae9a2ac4
 <
 build.gradle,f\0\f07866736216be0ee2aba49e392191aeae700a35
 ~
@@ -184,5 +176,7 @@ Wapp/src/main/java/com/openclassrooms/realestatemanager/receiver/GPSBroadcastRec
 ^app/src/main/java/com/openclassrooms/realestatemanager/viewmodels/ListTagsFragmentViewModel.kt,1\a\1aee7f56924dd466da2443c46f4cd9beac961a67
 @
 app/build.gradle,f\4\f4a01d6a4fcb971362ec00a83903fd3902f52164
-Ç
-Rapp/src/main/java/com/openclassrooms/realestatemanager/ui/fragments/FragmentMap.kt,d\f\df4c479f53f84cbfe4339d948ac2f6733360b003
+x
+Hdata/src/androidTest/java/com/openclassrooms/data/ContentProviderTest.kt,f\7\f76c7e9ecf0eefe231d2870a6aed613862188e90
+à
+Xapp/src/main/java/com/openclassrooms/realestatemanager/ui/fragments/FragmentNewEstate.kt,1\0\10e9fd407e603b8e87eac8081b920670bdebfc8a

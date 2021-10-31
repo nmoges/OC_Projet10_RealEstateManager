@@ -12,6 +12,9 @@ import junit.framework.Assert.assertEquals
 @RunWith(JUnit4::class)
 class ModelTest {
 
+    /**
+     * Tests if [Agent] object is correctly created.
+     */
     @Test
     fun test_agent_object_creation() {
         val agent = Agent(0, "FirstName", "LastName")
@@ -20,6 +23,9 @@ class ModelTest {
         assertEquals("LastName", agent.lastName)
     }
 
+    /**
+     * Tests if [Dates] object is correctly created.
+     */
     @Test
     fun test_dates_object_creation() {
         val dates = Dates()
@@ -28,6 +34,9 @@ class ModelTest {
         assertEquals("", dates.dateSale)
     }
 
+    /**
+     * Tests if [Interior] object is correctly created.
+     */
     @Test
     fun test_interior_object_creation() {
         val interior = Interior(id = 0,
@@ -42,6 +51,9 @@ class ModelTest {
         assertEquals(50, interior.surface)
     }
 
+    /**
+     * Tests if [Location] object correctly created.
+     */
     @Test
     fun test_location_object_creation() {
         val location = Location(id = 0,
@@ -56,6 +68,9 @@ class ModelTest {
         assertEquals("estate district", location.district)
     }
 
+    /**
+     * Tests if [Photo] object is correctly created.
+     */
     @Test
     fun test_photo_object_creation() {
         val photo = Photo(id = 0,
@@ -66,6 +81,9 @@ class ModelTest {
         assertEquals("name_photo", photo.name)
     }
 
+    /**
+     * Tests if [PointOfInterest] object is correctly created.
+     */
     @Test
     fun test_point_of_interest_creation() {
         val pointOfInterest = PointOfInterest(id = 0,
@@ -74,6 +92,9 @@ class ModelTest {
         assertEquals("Bar", pointOfInterest.name)
     }
 
+    /**
+     * Tests if [Estate] object is correctly created.
+     */
     @Test
     fun test_estate_creation() {
         val estate = Estate()

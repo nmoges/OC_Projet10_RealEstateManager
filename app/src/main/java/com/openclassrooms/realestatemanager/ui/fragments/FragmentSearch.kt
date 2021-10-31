@@ -680,7 +680,7 @@ class FragmentSearch : Fragment() {
             it.findViewById<MaterialTextView>(resMax).apply {
                 when(resMax) {
                     R.id.max_price -> {
-                        var text: String =
+                        val text: String =
                             if (maxValue == 50000000)
                                 resources.getString(R.string.str_value_price_slider_max, maxValue)
                             else
