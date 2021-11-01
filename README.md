@@ -18,7 +18,7 @@ Kotlin, XML
 New features might be added in future updates. 
 
 # Code architecture 
-![](https://raw.githubusercontent.com/nmoges/medias/master/schema.PNG?token=AK7OO7YQILLJPL3H6PANRXDBP2GZQ)
+![](https://raw.githubusercontent.com/nmoges/medias/master/schema.PNG?token=AK7OO73N3LKBAWVS4BS2OPLBP6Z24)
 
 # Setup
 To run this projet :
