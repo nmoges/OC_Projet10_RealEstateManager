@@ -143,7 +143,6 @@ class ListEstatesAdapter(private val context: Context, private val onItemClicked
      * Deselect previous selected item (only one item at a time can be selected)
      * @param position : position in listEstates
      */
-    //TODO : replace by method "indexOf"
     fun clearPreviousSelection(position: Int) {
         var found = false
         var index = 0
@@ -159,7 +158,6 @@ class ListEstatesAdapter(private val context: Context, private val onItemClicked
     /**
      * Clears current selected item.
      */
-    //TODO : replace by method "indexOf"
     @SuppressLint("NotifyDataSetChanged")
     fun clearCurrentSelection() {
         var found = false
